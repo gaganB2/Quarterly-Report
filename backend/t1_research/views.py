@@ -24,6 +24,8 @@ class T1ResearchViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         profile = Profile.objects.get(user=self.request.user)
         serializer.save(user=self.request.user, department=profile.department)
+    
+    
 
 class DepartmentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Department.objects.all()
