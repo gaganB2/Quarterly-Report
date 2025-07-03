@@ -1,75 +1,82 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
+  Container,
   Typography,
   Table,
-  TableHead,
   TableBody,
-  TableRow,
   TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Paper,
   CircularProgress,
-  Container
 } from "@mui/material";
+import axios from "axios";
 
 const T1ResearchList = () => {
-  const [submissions, setSubmissions] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSubmissions = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://127.0.0.1:8000/api/faculty/t1_1/", {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-      setSubmissions(response.data);
-    } catch (error) {
-      console.error("Failed to fetch submissions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetchSubmissions();
-  }, []);
+    axios
+      .get("http://127.0.0.1:8000/api/faculty/t1research/", {
+        headers: { Authorization: `Token ${token}` },
+      })
+      .then((res) => {
+        setArticles(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load submissions", err);
+        setLoading(false);
+      });
+  }, [token]);
+
+  if (loading) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Typography variant="h6">Loading Submissions...</Typography>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: "40px" }}>
-      <Typography variant="h4" gutterBottom>
-        My Submissions (T1.1)
+    <Container sx={{ mt: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        My Submitted Research Articles (T1.1)
       </Typography>
-      {loading ? (
-        <CircularProgress />
-      ) : submissions.length === 0 ? (
+      {articles.length === 0 ? (
         <Typography>No submissions found.</Typography>
       ) : (
-        <Paper>
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Title</TableCell>
-                <TableCell>Journal</TableCell>
-                <TableCell>Publication Date</TableCell>
+                <TableCell>Journal Name</TableCell>
+                <TableCell>ISSN</TableCell>
+                <TableCell>Impact Factor</TableCell>
                 <TableCell>Quarter</TableCell>
                 <TableCell>Year</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {submissions.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.journal_name}</TableCell>
-                  <TableCell>{item.publication_date}</TableCell>
-                  <TableCell>{item.quarter}</TableCell>
-                  <TableCell>{item.year}</TableCell>
+              {articles.map((article) => (
+                <TableRow key={article.id}>
+                  <TableCell>{article.title}</TableCell>
+                  <TableCell>{article.journal_name}</TableCell>
+                  <TableCell>{article.issn_number}</TableCell>
+                  <TableCell>{article.impact_factor}</TableCell>
+                  <TableCell>{article.quarter}</TableCell>
+                  <TableCell>{article.year}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </Paper>
+        </TableContainer>
       )}
     </Container>
   );
