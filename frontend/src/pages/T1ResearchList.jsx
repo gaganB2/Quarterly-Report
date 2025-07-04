@@ -19,7 +19,10 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+// import { Delete } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
+import { Snackbar, Alert } from "@mui/material";
+
 import axios from "axios";
 
 const T1ResearchList = () => {
@@ -27,8 +30,17 @@ const T1ResearchList = () => {
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+
   const [deleteId, setDeleteId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false); // NEW: edit dialog toggle
+  const [editData, setEditData] = useState(null); // NEW: form data to edit
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const token = localStorage.getItem("token");
 
@@ -85,6 +97,62 @@ const T1ResearchList = () => {
     setDeleteId(id);
     setConfirmOpen(true);
   };
+  const handleEditOpen = (article) => {
+    setEditData(article);
+    setEditOpen(true);
+  };
+
+  const handleEditChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSave = () => {
+  axios
+    .put(
+      `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
+      editData,
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    )
+    .then(() => {
+      setEditOpen(false);
+      fetchData();
+      setSnackbar({
+        open: true,
+        message: "Changes saved successfully",
+        severity: "success",
+      });
+    })
+    .catch((err) => {
+      console.error("Edit failed", err);
+      setSnackbar({
+        open: true,
+        message: "Failed to save changes",
+        severity: "error",
+      });
+      setEditOpen(false);
+    });
+};
+
+
+  // const handleEditSave = () => {
+  //   axios
+  //     .put(
+  //       `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
+  //       editData,
+  //       {
+  //         headers: { Authorization: `Token ${token}` },
+  //       }
+  //     )
+  //     .then(() => {
+  //       setEditOpen(false);
+  //       fetchData(); // Refresh data
+  //     })
+  //     .catch((err) => {
+  //       console.error("Update failed", err);
+  //     });
+  // };
 
   if (loading) {
     return (
@@ -134,7 +202,24 @@ const T1ResearchList = () => {
                   <TableCell>{article.impact_factor}</TableCell>
                   <TableCell>{article.quarter}</TableCell>
                   <TableCell>{article.year}</TableCell>
+                  {/* <TableCell align="center">
+                    <IconButton
+                      color="error"
+                      onClick={() => confirmDelete(article.id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell> */}
                   <TableCell align="center">
+                    <IconButton
+                      color="primary"
+                      onClick={() => {
+                        setEditData(article);
+                        setEditOpen(true);
+                      }}
+                    >
+                      <Edit />
+                    </IconButton>
                     <IconButton
                       color="error"
                       onClick={() => confirmDelete(article.id)}
@@ -150,10 +235,7 @@ const T1ResearchList = () => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-      >
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -169,6 +251,104 @@ const T1ResearchList = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Edit Dialog */}
+      <Dialog
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Edit Research Article</DialogTitle>
+        <DialogContent>
+          {editData && (
+            <>
+              <TextField
+                fullWidth
+                label="Title"
+                name="title"
+                value={editData.title}
+                onChange={(e) =>
+                  setEditData({ ...editData, title: e.target.value })
+                }
+                margin="dense"
+                required
+              />
+              <TextField
+                fullWidth
+                label="Journal Name"
+                name="journal_name"
+                value={editData.journal_name}
+                onChange={(e) =>
+                  setEditData({ ...editData, journal_name: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                fullWidth
+                label="ISSN Number"
+                name="issn_number"
+                value={editData.issn_number}
+                onChange={(e) =>
+                  setEditData({ ...editData, issn_number: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                fullWidth
+                label="Impact Factor"
+                name="impact_factor"
+                value={editData.impact_factor}
+                onChange={(e) =>
+                  setEditData({ ...editData, impact_factor: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                fullWidth
+                label="Quarter"
+                name="quarter"
+                value={editData.quarter}
+                onChange={(e) =>
+                  setEditData({ ...editData, quarter: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                fullWidth
+                label="Year"
+                name="year"
+                type="number"
+                value={editData.year}
+                onChange={(e) =>
+                  setEditData({ ...editData, year: e.target.value })
+                }
+                margin="dense"
+              />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} variant="contained" color="primary">
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          severity={snackbar.severity}
+          variant="filled"
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
