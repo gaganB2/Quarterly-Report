@@ -18,6 +18,8 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  Box,
+  MenuItem,
 } from "@mui/material";
 // import { Delete } from "@mui/icons-material";
 import { Delete, Edit } from "@mui/icons-material";
@@ -36,6 +38,15 @@ const T1ResearchList = () => {
 
   const [editOpen, setEditOpen] = useState(false); // NEW: edit dialog toggle
   const [editData, setEditData] = useState(null); // NEW: form data to edit
+  const [filterYear, setFilterYear] = useState("");
+  // const [yearFilter, setYearFilter] = useState("");
+  const [filterQuarter, setFilterQuarter] = useState("");
+
+  const [quarterFilter, setQuarterFilter] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("");
+
+  const [departments, setDepartments] = useState([]);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -44,15 +55,37 @@ const T1ResearchList = () => {
 
   const token = localStorage.getItem("token");
 
+  // const fetchData = () => {
+  //   setLoading(true);
+  //   axios
+  //     .get("http://127.0.0.1:8000/api/faculty/t1research/", {
+  //       headers: { Authorization: `Token ${token}` },
+  //     })
+  //     .then((res) => {
+  //       setArticles(res.data);
+  //       setFilteredArticles(res.data);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to load submissions", err);
+  //       setLoading(false);
+  //     });
+  // };
   const fetchData = () => {
     setLoading(true);
+
+    const params = {};
+    if (filterYear) params.year = filterYear;
+    if (filterQuarter) params.quarter = filterQuarter;
+    if (departmentFilter) params.department = departmentFilter;
+
     axios
       .get("http://127.0.0.1:8000/api/faculty/t1research/", {
         headers: { Authorization: `Token ${token}` },
+        params,
       })
       .then((res) => {
-        setArticles(res.data);
-        setFilteredArticles(res.data);
+        setArticles(res.data); // full list
         setLoading(false);
       })
       .catch((err) => {
@@ -65,14 +98,42 @@ const T1ResearchList = () => {
     fetchData();
   }, [token]);
 
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    const filtered = articles.filter(
-      (article) =>
-        article.title.toLowerCase().includes(query) ||
-        article.journal_name.toLowerCase().includes(query)
-    );
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/faculty/departments/", {
+        headers: { Authorization: `Token ${token}` },
+      })
+      .then((res) => setDepartments(res.data))
+      .catch((err) => console.error("Failed to load departments", err));
+  }, [token]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery, filterYear, filterQuarter, articles]);
+
+  const handleSearch = () => {
+    let filtered = articles;
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(
+        (article) =>
+          article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.journal_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (filterYear) {
+      filtered = filtered.filter(
+        (article) => article.year.toString() === filterYear.toString()
+      );
+    }
+
+    if (filterQuarter) {
+      filtered = filtered.filter(
+        (article) => article.quarter === filterQuarter
+      );
+    }
+
     setFilteredArticles(filtered);
   };
 
@@ -107,34 +168,33 @@ const T1ResearchList = () => {
   };
 
   const handleEditSave = () => {
-  axios
-    .put(
-      `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
-      editData,
-      {
-        headers: { Authorization: `Token ${token}` },
-      }
-    )
-    .then(() => {
-      setEditOpen(false);
-      fetchData();
-      setSnackbar({
-        open: true,
-        message: "Changes saved successfully",
-        severity: "success",
+    axios
+      .put(
+        `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
+        editData,
+        {
+          headers: { Authorization: `Token ${token}` },
+        }
+      )
+      .then(() => {
+        setEditOpen(false);
+        fetchData();
+        setSnackbar({
+          open: true,
+          message: "Changes saved successfully",
+          severity: "success",
+        });
+      })
+      .catch((err) => {
+        console.error("Edit failed", err);
+        setSnackbar({
+          open: true,
+          message: "Failed to save changes",
+          severity: "error",
+        });
+        setEditOpen(false);
       });
-    })
-    .catch((err) => {
-      console.error("Edit failed", err);
-      setSnackbar({
-        open: true,
-        message: "Failed to save changes",
-        severity: "error",
-      });
-      setEditOpen(false);
-    });
-};
-
+  };
 
   // const handleEditSave = () => {
   //   axios
@@ -168,12 +228,66 @@ const T1ResearchList = () => {
       <Typography variant="h5" gutterBottom>
         My Submitted Research Articles (T1.1)
       </Typography>
+      <Box display="flex" gap={2} mt={2}>
+        <TextField
+          label="Year"
+          type="number"
+          value={filterYear}
+          onChange={(e) => setFilterYear(e.target.value)}
+          onBlur={(e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val >= 2000 && val <= 2100) {
+              setFilterYear(val);
+            } else {
+              setFilterYear(""); // Reset if invalid
+            }
+          }}
+          inputProps={{
+            min: 2000,
+            max: 2100,
+          }}
+          size="small"
+          sx={{ mr: 2 }}
+          placeholder="e.g. 2025"
+        />
+
+        <TextField
+          label="Quarter"
+          select
+          value={quarterFilter}
+          onChange={(e) => setQuarterFilter(e.target.value)}
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value="Q1">Q1</MenuItem>
+          <MenuItem value="Q2">Q2</MenuItem>
+          <MenuItem value="Q3">Q3</MenuItem>
+          <MenuItem value="Q4">Q4</MenuItem>
+        </TextField>
+        <TextField
+          select
+          label="Department"
+          value={departmentFilter}
+          onChange={(e) => setDepartmentFilter(e.target.value)}
+          size="small"
+          sx={{ mr: 2, minWidth: 180 }}
+        >
+          <MenuItem value="">All Departments</MenuItem>
+          {departments.map((dept) => (
+            <MenuItem key={dept.id} value={dept.id}>
+              {dept.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
 
       <TextField
         fullWidth
-        label="Search by Title or Journal"
+        label="Title or Journal"
         value={searchQuery}
-        onChange={handleSearch}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+          handleSearch();
+        }}
         margin="normal"
       />
 
