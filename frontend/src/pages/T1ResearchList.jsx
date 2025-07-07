@@ -282,6 +282,7 @@ const T1ResearchList = () => {
                 <TableCell>Impact Factor</TableCell>
                 <TableCell>Quarter</TableCell>
                 <TableCell>Year</TableCell>
+                <TableCell>Document</TableCell> {/* ✅ New column added */}
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -294,14 +295,28 @@ const T1ResearchList = () => {
                   <TableCell>{article.impact_factor}</TableCell>
                   <TableCell>{article.quarter}</TableCell>
                   <TableCell>{article.year}</TableCell>
-                  {/* <TableCell align="center">
-                    <IconButton
-                      color="error"
-                      onClick={() => confirmDelete(article.id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </TableCell> */}
+
+                  {/* ✅ Document Link */}
+                  <TableCell>
+                    {article.document_link ? (
+                      <Button
+                        href={article.document_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="small"
+                        variant="outlined"
+                        color="secondary"
+                      >
+                        View
+                      </Button>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        —
+                      </Typography>
+                    )}
+                  </TableCell>
+
+                  {/* ✅ Actions */}
                   <TableCell align="center">
                     <IconButton
                       color="primary"
@@ -397,6 +412,17 @@ const T1ResearchList = () => {
               />
               <TextField
                 fullWidth
+                label="Document Link"
+                name="document_link"
+                value={editData.document_link}
+                onChange={(e) =>
+                  setEditData({ ...editData, document_link: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                select
+                fullWidth
                 label="Quarter"
                 name="quarter"
                 value={editData.quarter}
@@ -404,7 +430,29 @@ const T1ResearchList = () => {
                   setEditData({ ...editData, quarter: e.target.value })
                 }
                 margin="dense"
-              />
+              >
+                <MenuItem value="Q1">Q1</MenuItem>
+                <MenuItem value="Q2">Q2</MenuItem>
+                <MenuItem value="Q3">Q3</MenuItem>
+                <MenuItem value="Q4">Q4</MenuItem>
+              </TextField>
+              <TextField
+                select
+                fullWidth
+                label="Department"
+                name="department"
+                value={editData.department}
+                onChange={(e) =>
+                  setEditData({ ...editData, department: e.target.value })
+                }
+                margin="dense"
+              >
+                {departments.map((dept) => (
+                  <MenuItem key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </MenuItem>
+                ))}
+              </TextField>
               <TextField
                 fullWidth
                 label="Year"
@@ -419,6 +467,7 @@ const T1ResearchList = () => {
             </>
           )}
         </DialogContent>
+
         <DialogActions>
           <Button onClick={() => setEditOpen(false)} color="inherit">
             Cancel
