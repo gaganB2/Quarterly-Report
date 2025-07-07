@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import {
   Container,
   Typography,
@@ -52,6 +55,38 @@ const T1ResearchList = () => {
   });
 
   const token = localStorage.getItem("token");
+
+  const handleExportExcel = () => {
+    if (filteredArticles.length === 0) {
+      setSnackbar({
+        open: true,
+        message: "No data to export",
+        severity: "info",
+      });
+      return;
+    }
+
+    const exportData = filteredArticles.map((article) => ({
+      Title: article.title,
+      "Journal Name": article.journal_name,
+      "ISSN Number": article.issn_number,
+      "Impact Factor": article.impact_factor,
+      Quarter: article.quarter,
+      Year: article.year,
+      "Document Link": article.document_link || "—",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "T1.1 Submissions");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "T1.1_Submissions.xlsx");
+  };
 
   // ✅ API call: filtered fetch from backend
   const fetchData = () => {
@@ -196,6 +231,17 @@ const T1ResearchList = () => {
       <Typography variant="h5" gutterBottom>
         My Submitted Research Articles (T1.1)
       </Typography>
+      <Box display="flex" justifyContent="flex-end" mb={1}>
+        <Button
+          onClick={handleExportExcel}
+          variant="outlined"
+          color="success"
+          size="small"
+        >
+          Export to Excel
+        </Button>
+      </Box>
+
       <Box display="flex" gap={2} mt={2}>
         <TextField
           label="Year"
@@ -282,10 +328,11 @@ const T1ResearchList = () => {
                 <TableCell>Impact Factor</TableCell>
                 <TableCell>Quarter</TableCell>
                 <TableCell>Year</TableCell>
-                <TableCell>Document</TableCell> {/* ✅ New column added */}
+                <TableCell>Document</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {filteredArticles.map((article) => (
                 <TableRow key={article.id}>
@@ -295,8 +342,6 @@ const T1ResearchList = () => {
                   <TableCell>{article.impact_factor}</TableCell>
                   <TableCell>{article.quarter}</TableCell>
                   <TableCell>{article.year}</TableCell>
-
-                  {/* ✅ Document Link */}
                   <TableCell>
                     {article.document_link ? (
                       <Button
@@ -315,8 +360,6 @@ const T1ResearchList = () => {
                       </Typography>
                     )}
                   </TableCell>
-
-                  {/* ✅ Actions */}
                   <TableCell align="center">
                     <IconButton
                       color="primary"
