@@ -39,11 +39,8 @@ const T1ResearchList = () => {
   const [editOpen, setEditOpen] = useState(false); // NEW: edit dialog toggle
   const [editData, setEditData] = useState(null); // NEW: form data to edit
   const [filterYear, setFilterYear] = useState("");
-  // const [yearFilter, setYearFilter] = useState("");
   const [filterQuarter, setFilterQuarter] = useState("");
   const debounceTimer = useRef(null);
-
-  // const [quarterFilter, setQuarterFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
 
   const [departments, setDepartments] = useState([]);
@@ -81,12 +78,6 @@ const T1ResearchList = () => {
       });
   };
 
-  useEffect(() => {
-    if (token) {
-      fetchData();
-    }
-  }, [token, filterQuarter, departmentFilter]);
-
   // ✅ 🏛️ Load departments once
   useEffect(() => {
     if (!token) return;
@@ -104,6 +95,18 @@ const T1ResearchList = () => {
     if (!articles.length) return;
     handleSearch();
   }, [searchQuery, articles]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(() => {
+      fetchData();
+    }, 600); // <- Lowered debounce time for faster UX
+
+    return () => clearTimeout(debounceTimer.current);
+  }, [filterYear, filterQuarter, departmentFilter, token]);
 
   // ✅ Search Handler
   const handleSearch = () => {
@@ -239,7 +242,10 @@ const T1ResearchList = () => {
           select
           label="Department"
           value={departmentFilter}
-          onChange={(e) => setDepartmentFilter(e.target.value)}
+          onChange={(e) => {
+            setDepartmentFilter(e.target.value);
+            fetchData(); // ✅ TRIGGER fetch immediately
+          }}
           size="small"
           sx={{ mr: 2, minWidth: 180 }}
         >
