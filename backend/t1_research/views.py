@@ -8,15 +8,6 @@ class T1ResearchViewSet(viewsets.ModelViewSet):
     serializer_class = T1ResearchArticleSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     profile = Profile.objects.get(user=user)
-
-    #     if profile.role == 'Admin':
-    #         return T1_ResearchArticle.objects.all()
-    #     elif profile.role == 'HOD':
-    #         return T1_ResearchArticle.objects.filter(department=profile.department)
-    #     return T1_ResearchArticle.objects.filter(user=user)
     
     def get_queryset(self):
         user = self.request.user

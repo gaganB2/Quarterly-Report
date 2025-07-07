@@ -24,7 +24,7 @@ import {
 // import { Delete } from "@mui/icons-material";
 import { Delete, Edit } from "@mui/icons-material";
 import { Snackbar, Alert } from "@mui/material";
-
+import { useRef } from "react";
 import axios from "axios";
 
 const T1ResearchList = () => {
@@ -41,8 +41,9 @@ const T1ResearchList = () => {
   const [filterYear, setFilterYear] = useState("");
   // const [yearFilter, setYearFilter] = useState("");
   const [filterQuarter, setFilterQuarter] = useState("");
+  const debounceTimer = useRef(null);
 
-  const [quarterFilter, setQuarterFilter] = useState("");
+  // const [quarterFilter, setQuarterFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
 
   const [departments, setDepartments] = useState([]);
@@ -55,22 +56,7 @@ const T1ResearchList = () => {
 
   const token = localStorage.getItem("token");
 
-  // const fetchData = () => {
-  //   setLoading(true);
-  //   axios
-  //     .get("http://127.0.0.1:8000/api/faculty/t1research/", {
-  //       headers: { Authorization: `Token ${token}` },
-  //     })
-  //     .then((res) => {
-  //       setArticles(res.data);
-  //       setFilteredArticles(res.data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to load submissions", err);
-  //       setLoading(false);
-  //     });
-  // };
+  // ✅ API call: filtered fetch from backend
   const fetchData = () => {
     setLoading(true);
 
@@ -85,7 +71,8 @@ const T1ResearchList = () => {
         params,
       })
       .then((res) => {
-        setArticles(res.data); // full list
+        setArticles(res.data); // Full list
+        setFilteredArticles(res.data); // Start with same
         setLoading(false);
       })
       .catch((err) => {
@@ -95,10 +82,15 @@ const T1ResearchList = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [token]);
+    if (token) {
+      fetchData();
+    }
+  }, [token, filterQuarter, departmentFilter]);
 
+  // ✅ 🏛️ Load departments once
   useEffect(() => {
+    if (!token) return;
+
     axios
       .get("http://127.0.0.1:8000/api/faculty/departments/", {
         headers: { Authorization: `Token ${token}` },
@@ -107,10 +99,13 @@ const T1ResearchList = () => {
       .catch((err) => console.error("Failed to load departments", err));
   }, [token]);
 
+  // ✅ 🔍 Local search across current `articles`
   useEffect(() => {
+    if (!articles.length) return;
     handleSearch();
-  }, [searchQuery, filterYear, filterQuarter, articles]);
+  }, [searchQuery, articles]);
 
+  // ✅ Search Handler
   const handleSearch = () => {
     let filtered = articles;
 
@@ -119,18 +114,6 @@ const T1ResearchList = () => {
         (article) =>
           article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           article.journal_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (filterYear) {
-      filtered = filtered.filter(
-        (article) => article.year.toString() === filterYear.toString()
-      );
-    }
-
-    if (filterQuarter) {
-      filtered = filtered.filter(
-        (article) => article.quarter === filterQuarter
       );
     }
 
@@ -196,24 +179,6 @@ const T1ResearchList = () => {
       });
   };
 
-  // const handleEditSave = () => {
-  //   axios
-  //     .put(
-  //       `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
-  //       editData,
-  //       {
-  //         headers: { Authorization: `Token ${token}` },
-  //       }
-  //     )
-  //     .then(() => {
-  //       setEditOpen(false);
-  //       fetchData(); // Refresh data
-  //     })
-  //     .catch((err) => {
-  //       console.error("Update failed", err);
-  //     });
-  // };
-
   if (loading) {
     return (
       <Container sx={{ mt: 4 }}>
@@ -231,31 +196,37 @@ const T1ResearchList = () => {
       <Box display="flex" gap={2} mt={2}>
         <TextField
           label="Year"
-          type="number"
+          type="text"
           value={filterYear}
-          onChange={(e) => setFilterYear(e.target.value)}
-          onBlur={(e) => {
-            const val = parseInt(e.target.value, 10);
-            if (!isNaN(val) && val >= 2000 && val <= 2100) {
+          onChange={(e) => {
+            const val = e.target.value;
+            if (/^\d{0,4}$/.test(val)) {
               setFilterYear(val);
-            } else {
-              setFilterYear(""); // Reset if invalid
             }
           }}
-          inputProps={{
-            min: 2000,
-            max: 2100,
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const yearInt = parseInt(filterYear, 10);
+              if (!isNaN(yearInt) && yearInt >= 2000 && yearInt <= 2100) {
+                setFilterYear(yearInt.toString()); // Normalize
+                fetchData(); // ✅ Trigger fetch manually
+              } else {
+                setFilterYear("");
+              }
+            }
           }}
+          placeholder="e.g. 2025"
           size="small"
           sx={{ mr: 2 }}
-          placeholder="e.g. 2025"
         />
 
         <TextField
           label="Quarter"
           select
-          value={quarterFilter}
-          onChange={(e) => setQuarterFilter(e.target.value)}
+          value={filterQuarter}
+          onChange={(e) => setFilterQuarter(e.target.value)}
+          size="small"
+          sx={{ minWidth: 120 }}
         >
           <MenuItem value="">All</MenuItem>
           <MenuItem value="Q1">Q1</MenuItem>
@@ -263,6 +234,7 @@ const T1ResearchList = () => {
           <MenuItem value="Q3">Q3</MenuItem>
           <MenuItem value="Q4">Q4</MenuItem>
         </TextField>
+
         <TextField
           select
           label="Department"
