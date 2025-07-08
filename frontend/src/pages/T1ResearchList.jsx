@@ -56,37 +56,44 @@ const T1ResearchList = () => {
 
   const token = localStorage.getItem("token");
 
-  const handleExportExcel = () => {
-    if (filteredArticles.length === 0) {
-      setSnackbar({
-        open: true,
-        message: "No data to export",
-        severity: "info",
-      });
-      return;
-    }
 
-    const exportData = filteredArticles.map((article) => ({
-      Title: article.title,
-      "Journal Name": article.journal_name,
-      "ISSN Number": article.issn_number,
-      "Impact Factor": article.impact_factor,
-      Quarter: article.quarter,
-      Year: article.year,
-      "Document Link": article.document_link || "—",
-    }));
+const handleExportToExcel = () => {
+  const exportData = filteredArticles.map((article) => ({
+    Title: article.title,
+    Journal: article.journal_name,
+    ISSN: article.issn_number,
+    "Impact Factor": article.impact_factor,
+    "Internal Authors": article.internal_authors,
+    "External Authors": article.external_authors,
+    Indexing: [
+      article.indexing_wos && "WOS",
+      article.indexing_scopus && "Scopus",
+      article.indexing_ugc && "UGC",
+      article.indexing_other,
+    ]
+      .filter(Boolean)
+      .join(", "),
+    Quarter: article.quarter,
+    Year: article.year,
+    "Document Link": article.document_link,
+  }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "T1.1 Submissions");
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "T1_Research");
 
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "T1.1_Submissions.xlsx");
-  };
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(blob, "T1_Research_Articles.xlsx");
+};
+
 
   // ✅ API call: filtered fetch from backend
   const fetchData = () => {
@@ -164,12 +171,22 @@ const T1ResearchList = () => {
         headers: { Authorization: `Token ${token}` },
       })
       .then(() => {
-        setConfirmOpen(false);
+        setSnackbar({
+          open: true,
+          message: "Deleted successfully",
+          severity: "success",
+        });
+        setConfirmOpen(false); // close confirmation
         setDeleteId(null);
-        fetchData();
+        fetchData(); // refresh table
       })
       .catch((err) => {
         console.error("Deletion failed", err);
+        setSnackbar({
+          open: true,
+          message: "Failed to delete",
+          severity: "error",
+        });
         setConfirmOpen(false);
         setDeleteId(null);
       });
@@ -198,13 +215,13 @@ const T1ResearchList = () => {
         }
       )
       .then(() => {
-        setEditOpen(false);
-        fetchData();
         setSnackbar({
           open: true,
           message: "Changes saved successfully",
           severity: "success",
         });
+        setEditOpen(false); // Close after showing snackbar
+        fetchData(); // Refresh the data
       })
       .catch((err) => {
         console.error("Edit failed", err);
@@ -231,16 +248,7 @@ const T1ResearchList = () => {
       <Typography variant="h5" gutterBottom>
         My Submitted Research Articles (T1.1)
       </Typography>
-      <Box display="flex" justifyContent="flex-end" mb={1}>
-        <Button
-          onClick={handleExportExcel}
-          variant="outlined"
-          color="success"
-          size="small"
-        >
-          Export to Excel
-        </Button>
-      </Box>
+  
 
       <Box display="flex" gap={2} mt={2}>
         <TextField
@@ -315,6 +323,16 @@ const T1ResearchList = () => {
         margin="normal"
       />
 
+      <Box display="flex" justifyContent="flex-end" mb={1}>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleExportToExcel}
+        >
+          Export to Excel
+        </Button>
+      </Box>
+
       {filteredArticles.length === 0 ? (
         <Typography>No matching submissions found.</Typography>
       ) : (
@@ -326,6 +344,9 @@ const T1ResearchList = () => {
                 <TableCell>Journal Name</TableCell>
                 <TableCell>ISSN</TableCell>
                 <TableCell>Impact Factor</TableCell>
+                <TableCell>Internal Authors</TableCell>
+                <TableCell>External Authors</TableCell>
+                <TableCell>Indexing (WOS/Scopus/UGC/Other)</TableCell>
                 <TableCell>Quarter</TableCell>
                 <TableCell>Year</TableCell>
                 <TableCell>Document</TableCell>
@@ -340,6 +361,18 @@ const T1ResearchList = () => {
                   <TableCell>{article.journal_name}</TableCell>
                   <TableCell>{article.issn_number}</TableCell>
                   <TableCell>{article.impact_factor}</TableCell>
+                  <TableCell>{article.internal_authors}</TableCell>
+                  <TableCell>{article.external_authors}</TableCell>
+                  <TableCell>
+                    {[
+                      article.indexing_wos && "WOS",
+                      article.indexing_scopus && "Scopus",
+                      article.indexing_ugc && "UGC",
+                      article.indexing_other,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </TableCell>
                   <TableCell>{article.quarter}</TableCell>
                   <TableCell>{article.year}</TableCell>
                   <TableCell>
@@ -443,6 +476,86 @@ const T1ResearchList = () => {
                 }
                 margin="dense"
               />
+
+              {/* ✅ Indexing checkboxes */}
+              <Typography variant="subtitle1" sx={{ mt: 2 }}>
+                Indexing
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 1 }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editData.indexing_wos || false}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        indexing_wos: e.target.checked,
+                      })
+                    }
+                  />{" "}
+                  Web of Science
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editData.indexing_scopus || false}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        indexing_scopus: e.target.checked,
+                      })
+                    }
+                  />{" "}
+                  Scopus
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editData.indexing_ugc || false}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        indexing_ugc: e.target.checked,
+                      })
+                    }
+                  />{" "}
+                  UGC-CARE
+                </label>
+              </Box>
+
+              <TextField
+                fullWidth
+                label="Other Indexing"
+                name="indexing_other"
+                value={editData.indexing_other || ""}
+                onChange={(e) =>
+                  setEditData({ ...editData, indexing_other: e.target.value })
+                }
+                margin="dense"
+              />
+
+              {/* ✅ Authors */}
+              <TextField
+                fullWidth
+                label="Internal Authors (BIT)"
+                name="internal_authors"
+                value={editData.internal_authors || ""}
+                onChange={(e) =>
+                  setEditData({ ...editData, internal_authors: e.target.value })
+                }
+                margin="dense"
+              />
+              <TextField
+                fullWidth
+                label="External Authors"
+                name="external_authors"
+                value={editData.external_authors || ""}
+                onChange={(e) =>
+                  setEditData({ ...editData, external_authors: e.target.value })
+                }
+                margin="dense"
+              />
+
               <TextField
                 fullWidth
                 label="Impact Factor"

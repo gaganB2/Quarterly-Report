@@ -18,9 +18,13 @@ const T1ResearchForm = () => {
     journal_name: "",
     publication_date: "",
     issn_number: "",
-    indexing: "",
+    indexing_wos: false,
+    indexing_scopus: false,
+    indexing_ugc: false,
+    indexing_other: "",
     impact_factor: "",
-    co_authors: "",
+    internal_authors: "",
+    external_authors: "",
     document_link: "",
     quarter: "",
     year: "",
@@ -76,9 +80,13 @@ const T1ResearchForm = () => {
           journal_name: "",
           publication_date: "",
           issn_number: "",
-          indexing: "",
+          indexing_wos: false,
+          indexing_scopus: false,
+          indexing_ugc: false,
+          indexing_other: "",
           impact_factor: "",
-          co_authors: "",
+          internal_authors: "",
+          external_authors: "",
           document_link: "",
           quarter: "",
           year: "",
@@ -152,14 +160,69 @@ const T1ResearchForm = () => {
           onChange={handleChange}
           margin="normal"
         />
+        <Typography variant="subtitle1" sx={{ mt: 2 }}>
+          Indexing
+        </Typography>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.indexing_wos}
+              onChange={(e) =>
+                setFormData({ ...formData, indexing_wos: e.target.checked })
+              }
+            />{" "}
+            Web of Science
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.indexing_scopus}
+              onChange={(e) =>
+                setFormData({ ...formData, indexing_scopus: e.target.checked })
+              }
+            />{" "}
+            Scopus
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.indexing_ugc}
+              onChange={(e) =>
+                setFormData({ ...formData, indexing_ugc: e.target.checked })
+              }
+            />{" "}
+            UGC-CARE
+          </label>
+        </Box>
+
         <TextField
           fullWidth
-          label="Indexing"
-          name="indexing"
-          value={formData.indexing}
+          label="Other Indexing"
+          name="indexing_other"
+          value={formData.indexing_other}
           onChange={handleChange}
           margin="normal"
         />
+
+        <TextField
+          fullWidth
+          label="Internal Authors (BIT Faculty)"
+          name="internal_authors"
+          value={formData.internal_authors}
+          onChange={handleChange}
+          margin="normal"
+        />
+
+        <TextField
+          fullWidth
+          label="External Authors"
+          name="external_authors"
+          value={formData.external_authors}
+          onChange={handleChange}
+          margin="normal"
+        />
+
         <TextField
           fullWidth
           label="Impact Factor"
@@ -168,14 +231,7 @@ const T1ResearchForm = () => {
           onChange={handleChange}
           margin="normal"
         />
-        <TextField
-          fullWidth
-          label="Co-Authors"
-          name="co_authors"
-          value={formData.co_authors}
-          onChange={handleChange}
-          margin="normal"
-        />
+
         <TextField
           fullWidth
           label="Document Link"
