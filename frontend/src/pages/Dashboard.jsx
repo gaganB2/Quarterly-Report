@@ -1,41 +1,32 @@
 import React from "react";
+import MainLayout from "../layout/MainLayout";
+import { Typography, Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-function Dashboard() {
+const Dashboard = () => {
   const navigate = useNavigate();
+  const username = localStorage.getItem("username");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  const username = localStorage.getItem("username");
-
   return (
-    <div style={styles.container}>
-      <h2>Welcome, {username || "Faculty"} 👋</h2>
-      <p>You are logged in to the Faculty Dashboard.</p>
-      <button style={styles.button} onClick={handleLogout}>
-        Logout
-      </button>
-    </div>
+    <MainLayout>
+      <Box p={3}>
+        <Typography variant="h5" gutterBottom>
+          Welcome, {username || "Faculty"} 👋
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          You are logged in to the Faculty Dashboard.
+        </Typography>
+        <Button variant="contained" color="error" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
+    </MainLayout>
   );
-}
-
-const styles = {
-  container: {
-    padding: "2rem",
-    fontFamily: "Arial, sans-serif",
-  },
-  button: {
-    marginTop: "1rem",
-    padding: "10px 20px",
-    backgroundColor: "#1976d2",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
 };
 
 export default Dashboard;
