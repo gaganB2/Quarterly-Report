@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
-  Button,
-  MenuItem,
-  Typography,
   Box,
   Container,
+  Grid,
+  Paper,
+  Typography,
+  TextField,
+  MenuItem,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Button,
+  CircularProgress,
   Snackbar,
   Alert,
 } from "@mui/material";
-import axios from "axios";
-import MainLayout from "../layout/MainLayout"; // ✅ Wrap inside sidebar layout
+import { motion } from "framer-motion";
+// import MainLayout from "../layout/MainLayout";
+import apiClient from "../api/axios";
+
 
 const T1ResearchForm = () => {
+  // form state
   const [formData, setFormData] = useState({
     department: "",
     title: "",
@@ -32,27 +43,26 @@ const T1ResearchForm = () => {
   });
 
   const [departments, setDepartments] = useState([]);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "info",
-  });
-  const token = localStorage.getItem("token");
+  const [loadingDeps, setLoadingDeps] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
+  // load departments on mount
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/faculty/departments/", {
-        headers: { Authorization: `Token ${token}` },
+    let mounted = true;
+    apiClient
+      .get("api/faculty/departments/")
+      .then((res) => {
+        if (mounted) setDepartments(res.data);
       })
-      .then((res) => setDepartments(res.data))
       .catch(() => {
-        setSnackbar({
-          open: true,
-          message: "Failed to load departments",
-          severity: "error",
-        });
+        setSnackbar({ open: true, message: "Failed to load departments", severity: "error" });
+      })
+      .finally(() => {
+        if (mounted) setLoadingDeps(false);
       });
-  }, [token]);
+    return () => { mounted = false; };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -62,226 +72,283 @@ const T1ResearchForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post("http://127.0.0.1:8000/api/faculty/t1research/", formData, {
-        headers: { Authorization: `Token ${token}` },
-      })
-      .then(() => {
-        setSnackbar({
-          open: true,
-          message: "Submission successful",
-          severity: "success",
-        });
-        setFormData({
-          department: "",
-          title: "",
-          journal_name: "",
-          publication_date: "",
-          issn_number: "",
-          indexing_wos: false,
-          indexing_scopus: false,
-          indexing_ugc: false,
-          indexing_other: "",
-          impact_factor: "",
-          internal_authors: "",
-          external_authors: "",
-          document_link: "",
-          quarter: "",
-          year: "",
-        });
-      })
-      .catch(() => {
-        setSnackbar({
-          open: true,
-          message: "Submission failed",
-          severity: "error",
-        });
+    setSubmitting(true);
+    try {
+      await apiClient.post("api/faculty/t1research/", formData);
+      setSnackbar({ open: true, message: "Submission successful", severity: "success" });
+      // reset form
+      setFormData({
+        department: "",
+        title: "",
+        journal_name: "",
+        publication_date: "",
+        issn_number: "",
+        indexing_wos: false,
+        indexing_scopus: false,
+        indexing_ugc: false,
+        indexing_other: "",
+        impact_factor: "",
+        internal_authors: "",
+        external_authors: "",
+        document_link: "",
+        quarter: "",
+        year: "",
       });
+    } catch {
+      setSnackbar({ open: true, message: "Submission failed", severity: "error" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <MainLayout>
-      <Container maxWidth="sm" sx={{ mt: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Submit Research Article (T1.1)
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            select
-            fullWidth
-            name="department"
-            label="Department"
-            value={formData.department}
-            onChange={handleChange}
-            margin="normal"
-            required
+    // <MainLayout>
+      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: 4,
+              borderRadius: 2,
+              background: (theme) =>
+                theme.palette.mode === "light"
+                  ? "linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)"
+                  : undefined,
+            }}
           >
-            {departments.map((dept) => (
-              <MenuItem key={dept.id} value={dept.id}>
-                {dept.name}
-              </MenuItem>
-            ))}
-          </TextField>
+            {/* Form Header */}
+            <Box mb={3}>
+              <Typography variant="h5" fontWeight={600}>
+                Submit Research Article (T1.1)
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Fill in the details below and click Submit.
+              </Typography>
+            </Box>
 
-          <TextField
-            fullWidth
-            label="Title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            margin="normal"
-            required
-          />
+            {/* Show loader until departments load */}
+            {loadingDeps ? (
+              <Box display="flex" justifyContent="center" py={6}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box component="form" onSubmit={handleSubmit}>
+                <Grid container spacing={3}>
+                  {/* Department */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      select
+                      fullWidth
+                      name="department"
+                      label="Department"
+                      value={formData.department}
+                      onChange={handleChange}
+                      required
+                    >
+                      {departments.map((dept) => (
+                        <MenuItem key={dept.id} value={dept.id}>
+                          {dept.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Journal Name"
-            name="journal_name"
-            value={formData.journal_name}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Title */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      required
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Publication Date"
-            type="date"
-            name="publication_date"
-            value={formData.publication_date}
-            onChange={handleChange}
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-          />
+                  {/* Journal Name */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Journal Name"
+                      name="journal_name"
+                      value={formData.journal_name}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="ISSN Number"
-            name="issn_number"
-            value={formData.issn_number}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Publication Date */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Publication Date"
+                      type="date"
+                      name="publication_date"
+                      value={formData.publication_date}
+                      onChange={handleChange}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
 
-          {/* Indexing Checkboxes */}
-          <Typography variant="subtitle1" sx={{ mt: 2 }}>
-            Indexing
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-            {[
-              { name: "indexing_wos", label: "Web of Science" },
-              { name: "indexing_scopus", label: "Scopus" },
-              { name: "indexing_ugc", label: "UGC-CARE" },
-            ].map((item) => (
-              <label key={item.name}>
-                <input
-                  type="checkbox"
-                  name={item.name}
-                  checked={formData[item.name]}
-                  onChange={handleChange}
-                />{" "}
-                {item.label}
-              </label>
-            ))}
-          </Box>
+                  {/* ISSN */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="ISSN Number"
+                      name="issn_number"
+                      value={formData.issn_number}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Other Indexing"
-            name="indexing_other"
-            value={formData.indexing_other}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Indexing */}
+                  <Grid item xs={12} sm={6}>
+                    <FormControl component="fieldset">
+                      <FormLabel component="legend">Indexing</FormLabel>
+                      <FormGroup row>
+                        {[
+                          { name: "indexing_wos", label: "Web of Science" },
+                          { name: "indexing_scopus", label: "Scopus" },
+                          { name: "indexing_ugc", label: "UGC-CARE" },
+                        ].map((opt) => (
+                          <FormControlLabel
+                            key={opt.name}
+                            control={
+                              <Checkbox
+                                name={opt.name}
+                                checked={formData[opt.name]}
+                                onChange={handleChange}
+                              />
+                            }
+                            label={opt.label}
+                          />
+                        ))}
+                      </FormGroup>
+                    </FormControl>
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Internal Authors (BIT Faculty)"
-            name="internal_authors"
-            value={formData.internal_authors}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Other Indexing */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Other Indexing"
+                      name="indexing_other"
+                      value={formData.indexing_other}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="External Authors"
-            name="external_authors"
-            value={formData.external_authors}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Authors */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Internal Authors (BIT Faculty)"
+                      name="internal_authors"
+                      value={formData.internal_authors}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Impact Factor"
-            name="impact_factor"
-            value={formData.impact_factor}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="External Authors"
+                      name="external_authors"
+                      value={formData.external_authors}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Document Link"
-            name="document_link"
-            value={formData.document_link}
-            onChange={handleChange}
-            margin="normal"
-          />
+                  {/* Impact Factor */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Impact Factor"
+                      name="impact_factor"
+                      value={formData.impact_factor}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            select
-            fullWidth
-            name="quarter"
-            label="Quarter"
-            value={formData.quarter}
-            onChange={handleChange}
-            margin="normal"
-            required
-          >
-            {["Q1", "Q2", "Q3", "Q4"].map((q) => (
-              <MenuItem key={q} value={q}>
-                {q}
-              </MenuItem>
-            ))}
-          </TextField>
+                  {/* Document Link */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Document Link"
+                      name="document_link"
+                      value={formData.document_link}
+                      onChange={handleChange}
+                    />
+                  </Grid>
 
-          <TextField
-            fullWidth
-            label="Year"
-            name="year"
-            type="number"
-            value={formData.year}
-            onChange={handleChange}
-            margin="normal"
-            required
-            inputProps={{ min: 2000, max: 2100 }}
-          />
+                  {/* Quarter */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      select
+                      fullWidth
+                      name="quarter"
+                      label="Quarter"
+                      value={formData.quarter}
+                      onChange={handleChange}
+                      required
+                    >
+                      {["Q1", "Q2", "Q3", "Q4"].map((q) => (
+                        <MenuItem key={q} value={q}>
+                          {q}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
 
-          <Box mt={2}>
-            <Button variant="contained" color="primary" type="submit" fullWidth>
-              Submit
-            </Button>
-          </Box>
-        </form>
+                  {/* Year */}
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      name="year"
+                      label="Year"
+                      value={formData.year}
+                      onChange={handleChange}
+                      required
+                      inputProps={{ min: 2000, max: 2100 }}
+                    />
+                  </Grid>
+                </Grid>
 
+                {/* Submit Button */}
+                <Box mt={4} textAlign="center">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={submitting}
+                    sx={{ px: 6 }}
+                  >
+                    {submitting ? <CircularProgress size={24} color="inherit" /> : "Submit"}
+                  </Button>
+                </Box>
+              </Box>
+            )}
+          </Paper>
+        </motion.div>
+
+        {/* Global Snackbar */}
         <Snackbar
           open={snackbar.open}
-          autoHideDuration={3000}
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          autoHideDuration={4000}
+          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
         >
-          <Alert
-            severity={snackbar.severity}
-            variant="filled"
-            onClose={() => setSnackbar({ ...snackbar, open: false })}
-          >
+          <Alert severity={snackbar.severity} variant="filled">
             {snackbar.message}
           </Alert>
         </Snackbar>
       </Container>
-    </MainLayout>
+    // </MainLayout>
   );
 };
 

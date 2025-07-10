@@ -1,10 +1,19 @@
-// Login component
+// src/pages/Login.jsx
+
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../api/axios";
+import {
+  Box,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+} from "@mui/material";
 
 const Login = () => {
-  const [username, setUsername] = useState("");  // Django uses 'username' not 'email'
+  const [username, setUsername] = useState("");  
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -12,13 +21,15 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      const response = await axios.post("http://localhost:8000/api-token-auth/", {
+      const response = await apiClient.post("api-token-auth/", {
         username,
         password,
       });
 
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("username", username);
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid credentials. Please try again.");
@@ -26,32 +37,59 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "100px auto" }}>
-      <h2>Faculty Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+        p: 2,
+      }}
+    >
+      <Paper elevation={6} sx={{ maxWidth: 400, width: "100%", p: 4 }}>
+        <Typography variant="h5" gutterBottom align="center">
+          Faculty Login
+        </Typography>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleLogin}>
+          <TextField
+            label="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            fullWidth
             autoFocus
+            margin="normal"
           />
-        </div>
-        <div style={{ marginTop: "10px" }}>
-          <label>Password:</label>
-          <input
+
+          <TextField
+            label="Password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            fullWidth
+            margin="normal"
           />
-        </div>
-        <button type="submit" style={{ marginTop: "20px" }}>Login</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
-    </div>
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ mt: 3 }}
+          >
+            Login
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

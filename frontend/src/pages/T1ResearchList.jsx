@@ -1,439 +1,496 @@
-import React, { useEffect, useState } from "react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+// src/pages/T1ResearchList.jsx
 
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
+  Box,
+  Grid,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
+  TextField,
+  MenuItem,
+  Button,
+  CircularProgress,
   TableContainer,
+  Paper,
+  Table,
   TableHead,
   TableRow,
-  Paper,
-  CircularProgress,
-  TextField,
+  TableCell,
+  TableBody,
   IconButton,
+  Card,
+  CardContent,
+  CardActions,
   Dialog,
-  DialogActions,
+  DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogTitle,
-  Button,
-  Box,
-  MenuItem,
+  DialogActions,
+  Snackbar,
+  Alert,
+  useTheme,
+  useMediaQuery,
+  FormControl,
+  FormLabel,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
-// import { Delete } from "@mui/icons-material";
+
 import { Delete, Edit } from "@mui/icons-material";
-import { Snackbar, Alert } from "@mui/material";
-import { useRef } from "react";
-import axios from "axios";
+// import MainLayout from "../layout/MainLayout";
+import apiClient from "../api/axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import DownloadIcon from "@mui/icons-material/Download";
 
-const T1ResearchList = () => {
+export default function T1ResearchList() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+
+  // State
   const [articles, setArticles] = useState([]);
-  const [filteredArticles, setFilteredArticles] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const [deleteId, setDeleteId] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-
-  const [editOpen, setEditOpen] = useState(false); // NEW: edit dialog toggle
-  const [editData, setEditData] = useState(null); // NEW: form data to edit
+  const [depsLoading, setDepsLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [filterYear, setFilterYear] = useState("");
   const [filterQuarter, setFilterQuarter] = useState("");
-  const debounceTimer = useRef(null);
-  const [departmentFilter, setDepartmentFilter] = useState("");
-
-  const [departments, setDepartments] = useState([]);
-
+  const [filterDept, setFilterDept] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const token = localStorage.getItem("token");
+  // Edit dialog state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
 
+  const debounce = useRef();
 
-const handleExportToExcel = () => {
-  const exportData = filteredArticles.map((article) => ({
-    Title: article.title,
-    Journal: article.journal_name,
-    ISSN: article.issn_number,
-    "Impact Factor": article.impact_factor,
-    "Internal Authors": article.internal_authors,
-    "External Authors": article.external_authors,
-    Indexing: [
-      article.indexing_wos && "WOS",
-      article.indexing_scopus && "Scopus",
-      article.indexing_ugc && "UGC",
-      article.indexing_other,
-    ]
-      .filter(Boolean)
-      .join(", "),
-    Quarter: article.quarter,
-    Year: article.year,
-    "Document Link": article.document_link,
-  }));
+  // ---------- Export handler ----------
+  const handleExport = () => {
+    const exportData = filtered.map((a) => ({
+      Title: a.title,
+      Journal: a.journal_name,
+      ISSN: a.issn_number,
+      Impact: a.impact_factor,
+      Internal: a.internal_authors,
+      External: a.external_authors,
+      Indexing: [
+        a.indexing_wos && "WOS",
+        a.indexing_scopus && "Scopus",
+        a.indexing_ugc && "UGC",
+        a.indexing_other,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      Quarter: a.quarter,
+      Year: a.year,
+      Document: a.document_link,
+    }));
 
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "T1_Research");
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "T1");
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([buf]), "T1_Research_Articles.xlsx");
+  };
 
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: "xlsx",
-    type: "array",
-  });
-
-  const blob = new Blob([excelBuffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-
-  saveAs(blob, "T1_Research_Articles.xlsx");
-};
-
-
-  // ✅ API call: filtered fetch from backend
+  // ---------- Fetch submissions ----------
   const fetchData = () => {
     setLoading(true);
-
     const params = {};
     if (filterYear) params.year = filterYear;
     if (filterQuarter) params.quarter = filterQuarter;
-    if (departmentFilter) params.department = departmentFilter;
+    if (filterDept) params.department = filterDept;
 
-    axios
-      .get("http://127.0.0.1:8000/api/faculty/t1research/", {
-        headers: { Authorization: `Token ${token}` },
-        params,
+    apiClient
+      .get("api/faculty/t1research/", { params })
+      .then(({ data }) => {
+        setArticles(data);
+        setFiltered(data);
       })
-      .then((res) => {
-        setArticles(res.data); // Full list
-        setFilteredArticles(res.data); // Start with same
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load submissions", err);
-        setLoading(false);
-      });
+      .catch((err) => console.error("Fetch failed:", err))
+      .finally(() => setLoading(false));
   };
 
-  // ✅ 🏛️ Load departments once
+  // ---------- Fetch departments ----------
   useEffect(() => {
-    if (!token) return;
-
-    axios
-      .get("http://127.0.0.1:8000/api/faculty/departments/", {
-        headers: { Authorization: `Token ${token}` },
+    let mounted = true;
+    apiClient
+      .get("api/faculty/departments/")
+      .then(({ data }) => {
+        if (mounted) setDepartments(data);
       })
-      .then((res) => setDepartments(res.data))
-      .catch((err) => console.error("Failed to load departments", err));
-  }, [token]);
+      .catch((err) => console.error("Deps fetch failed:", err))
+      .finally(() => {
+        if (mounted) setDepsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-  // ✅ 🔍 Local search across current `articles`
+  // Debounced fetch on filter change (including initial mount)
   useEffect(() => {
-    if (!articles.length) return;
-    handleSearch();
-  }, [searchQuery, articles]);
+    clearTimeout(debounce.current);
+    debounce.current = setTimeout(fetchData, 500);
+    return () => clearTimeout(debounce.current);
+  }, [filterYear, filterQuarter, filterDept]);
 
+  // Local search effect
   useEffect(() => {
-    if (!token) return;
-
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
-    debounceTimer.current = setTimeout(() => {
-      fetchData();
-    }, 600); // <- Lowered debounce time for faster UX
-
-    return () => clearTimeout(debounceTimer.current);
-  }, [filterYear, filterQuarter, departmentFilter, token]);
-
-  // ✅ Search Handler
-  const handleSearch = () => {
-    let filtered = articles;
-
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (article) =>
-          article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          article.journal_name.toLowerCase().includes(searchQuery.toLowerCase())
+    const term = search.trim().toLowerCase();
+    if (!term) {
+      setFiltered(articles);
+    } else {
+      setFiltered(
+        articles.filter(
+          (a) =>
+            a.title.toLowerCase().includes(term) ||
+            a.journal_name.toLowerCase().includes(term)
+        )
       );
     }
+  }, [search, articles]);
 
-    setFilteredArticles(filtered);
+  // ---------- Delete handlers ----------
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setConfirmOpen(true);
   };
 
   const handleDelete = () => {
-    axios
-      .delete(`http://127.0.0.1:8000/api/faculty/t1research/${deleteId}/`, {
-        headers: { Authorization: `Token ${token}` },
-      })
+    apiClient
+      .delete(`api/faculty/t1research/${deleteId}/`)
       .then(() => {
         setSnackbar({
           open: true,
           message: "Deleted successfully",
           severity: "success",
         });
-        setConfirmOpen(false); // close confirmation
-        setDeleteId(null);
-        fetchData(); // refresh table
+        fetchData();
       })
-      .catch((err) => {
-        console.error("Deletion failed", err);
+      .catch(() => {
         setSnackbar({
           open: true,
-          message: "Failed to delete",
+          message: "Delete failed",
           severity: "error",
         });
-        setConfirmOpen(false);
-        setDeleteId(null);
-      });
+      })
+      .finally(() => setConfirmOpen(false));
   };
 
-  const confirmDelete = (id) => {
-    setDeleteId(id);
-    setConfirmOpen(true);
-  };
+  // ---------- Edit handlers ----------
   const handleEditOpen = (article) => {
     setEditData(article);
     setEditOpen(true);
   };
 
   const handleEditChange = (e) => {
-    setEditData({ ...editData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setEditData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleEditSave = () => {
-    axios
-      .put(
-        `http://127.0.0.1:8000/api/faculty/t1research/${editData.id}/`,
-        editData,
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      )
+    apiClient
+      .put(`api/faculty/t1research/${editData.id}/`, editData)
       .then(() => {
         setSnackbar({
           open: true,
-          message: "Changes saved successfully",
+          message: "Changes saved",
           severity: "success",
         });
-        setEditOpen(false); // Close after showing snackbar
-        fetchData(); // Refresh the data
+        setEditOpen(false);
+        fetchData();
       })
-      .catch((err) => {
-        console.error("Edit failed", err);
+      .catch(() => {
         setSnackbar({
           open: true,
           message: "Failed to save changes",
           severity: "error",
         });
-        setEditOpen(false);
       });
   };
 
-  if (loading) {
-    return (
-      <Container sx={{ mt: 4 }}>
-        <Typography variant="h6">Loading Submissions...</Typography>
-        <CircularProgress />
-      </Container>
-    );
-  }
-
   return (
-    <Container sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        My Submitted Research Articles (T1.1)
-      </Typography>
-  
-
-      <Box display="flex" gap={2} mt={2}>
-        <TextField
-          label="Year"
-          type="text"
-          value={filterYear}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (/^\d{0,4}$/.test(val)) {
-              setFilterYear(val);
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              const yearInt = parseInt(filterYear, 10);
-              if (!isNaN(yearInt) && yearInt >= 2000 && yearInt <= 2100) {
-                setFilterYear(yearInt.toString()); // Normalize
-                fetchData(); // ✅ Trigger fetch manually
-              } else {
-                setFilterYear("");
-              }
-            }
-          }}
-          placeholder="e.g. 2025"
-          size="small"
-          sx={{ mr: 2 }}
-        />
-
-        <TextField
-          label="Quarter"
-          select
-          value={filterQuarter}
-          onChange={(e) => setFilterQuarter(e.target.value)}
-          size="small"
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value="">All</MenuItem>
-          <MenuItem value="Q1">Q1</MenuItem>
-          <MenuItem value="Q2">Q2</MenuItem>
-          <MenuItem value="Q3">Q3</MenuItem>
-          <MenuItem value="Q4">Q4</MenuItem>
-        </TextField>
-
-        <TextField
-          select
-          label="Department"
-          value={departmentFilter}
-          onChange={(e) => {
-            setDepartmentFilter(e.target.value);
-            fetchData(); // ✅ TRIGGER fetch immediately
-          }}
-          size="small"
-          sx={{ mr: 2, minWidth: 180 }}
-        >
-          <MenuItem value="">All Departments</MenuItem>
-          {departments.map((dept) => (
-            <MenuItem key={dept.id} value={dept.id}>
-              {dept.name}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
-
-      <TextField
-        fullWidth
-        label="Title or Journal"
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value);
-          handleSearch();
-        }}
-        margin="normal"
-      />
-
-      <Box display="flex" justifyContent="flex-end" mb={1}>
+    // <MainLayout>
+    <Container sx={{ mt: 4, mb: 4 }}>
+      {/* Header */}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        flexWrap="wrap"
+        mb={3}
+      >
+        <Typography variant="h5" fontWeight={600}>
+          My Research Submissions
+        </Typography>
         <Button
           variant="contained"
-          color="success"
-          onClick={handleExportToExcel}
+          onClick={() => navigate("/submit-t1")}
+          sx={{ height: 48 }}
         >
-          Export to Excel
+          + New Submission
         </Button>
       </Box>
 
-      {filteredArticles.length === 0 ? (
-        <Typography>No matching submissions found.</Typography>
-      ) : (
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>Journal Name</TableCell>
-                <TableCell>ISSN</TableCell>
-                <TableCell>Impact Factor</TableCell>
-                <TableCell>Internal Authors</TableCell>
-                <TableCell>External Authors</TableCell>
-                <TableCell>Indexing (WOS/Scopus/UGC/Other)</TableCell>
-                <TableCell>Quarter</TableCell>
-                <TableCell>Year</TableCell>
-                <TableCell>Document</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
+      {/* Sticky Filters */}
+      <Paper
+        sx={{
+          position: "sticky",
+          top: theme.mixins.toolbar.minHeight + 16,
+          zIndex: 2,
+          p: 2,
+          mb: 2,
+          backgroundColor: theme.palette.background.paper,
+        }}
+      >
+        <Grid container spacing={2} alignItems="center">
+          {/* Year: 12 cols on xs, 4 on sm, 2 on md */}
+          <Grid item xs={12} sm={4} md={2}>
+            <TextField
+              label="Year"
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value.replace(/\D/, ""))}
+              placeholder="2025"
+              fullWidth
+              size="small"
+              sx={{ height: 48 }}
+            />
+          </Grid>
 
-            <TableBody>
-              {filteredArticles.map((article) => (
-                <TableRow key={article.id}>
-                  <TableCell>{article.title}</TableCell>
-                  <TableCell>{article.journal_name}</TableCell>
-                  <TableCell>{article.issn_number}</TableCell>
-                  <TableCell>{article.impact_factor}</TableCell>
-                  <TableCell>{article.internal_authors}</TableCell>
-                  <TableCell>{article.external_authors}</TableCell>
-                  <TableCell>
-                    {[
-                      article.indexing_wos && "WOS",
-                      article.indexing_scopus && "Scopus",
-                      article.indexing_ugc && "UGC",
-                      article.indexing_other,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </TableCell>
-                  <TableCell>{article.quarter}</TableCell>
-                  <TableCell>{article.year}</TableCell>
-                  <TableCell>
-                    {article.document_link ? (
-                      <Button
-                        href={article.document_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="small"
-                        variant="outlined"
-                        color="secondary"
-                      >
-                        View
-                      </Button>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary">
-                        —
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      color="primary"
-                      onClick={() => {
-                        setEditData(article);
-                        setEditOpen(true);
+          {/* Quarter: 12 on xs, 4 on sm, 2 on md */}
+          <Grid item xs={12} sm={4} md={2}>
+            <TextField
+              select
+              label="Quarter"
+              value={filterQuarter}
+              onChange={(e) => setFilterQuarter(e.target.value)}
+              fullWidth
+              size="small"
+              sx={{ height: 48 }}
+            >
+              <MenuItem value="">All</MenuItem>
+              {["Q1", "Q2", "Q3", "Q4"].map((q) => (
+                <MenuItem key={q} value={q}>
+                  {q}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* Department: 12 on xs, 8 on sm, 3 on md */}
+          <Grid item xs={12} sm={8} md={3}>
+            <TextField
+              select
+              label="Department"
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              fullWidth
+              size="small"
+              sx={{ height: 48 }}
+              disabled={depsLoading}
+            >
+              <MenuItem value="">All</MenuItem>
+              {departments.map((d) => (
+                <MenuItem key={d.id} value={d.id}>
+                  {d.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* Search: 12 on xs, 12 on sm, 4 on md */}
+          <Grid item xs={12} sm={12} md={4}>
+            <TextField
+              fullWidth
+              placeholder="Search by title or journal…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              size="small"
+              sx={{ height: 48 }}
+            />
+          </Grid>
+
+          {/* Export: 12 on xs, 4 on sm, 1 on md, right-aligned */}
+          <Grid
+            item
+            xs={12}
+            sm={4}
+            md={1}
+            sx={{ textAlign: { xs: "left", sm: "right" } }}
+          >
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              onClick={handleExport}
+              disabled={loading || !filtered.length}
+              sx={{ height: 48 }}
+            >
+              Export
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Content */}
+      {loading ? (
+        <Box display="flex" justifyContent="center" py={6}>
+          <CircularProgress />
+        </Box>
+      ) : isMobile ? (
+        /* Mobile Card View */
+        <Grid container spacing={2}>
+          {filtered.map((a) => (
+            <Grid item xs={12} key={a.id}>
+              <Card elevation={2}>
+                <CardContent>
+                  <Typography variant="h6" noWrap gutterBottom>
+                    {a.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" noWrap>
+                    {a.journal_name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    ISSN: {a.issn_number} | IF: {a.impact_factor}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <IconButton color="primary" onClick={() => handleEditOpen(a)}>
+                    <Edit />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => confirmDelete(a.id)}>
+                    <Delete />
+                  </IconButton>
+                  {a.document_link && (
+                    <Button
+                      size="small"
+                      onClick={() => window.open(a.document_link, "_blank")}
+                    >
+                      View
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        /* Desktop Table View */
+        <Box sx={{ overflowX: "auto" }}>
+          <TableContainer component={Paper}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  {[
+                    "Title",
+                    "Journal",
+                    "ISSN",
+                    "Impact",
+                    "Internal",
+                    "External",
+                    "Indexing",
+                    "Quarter",
+                    "Year",
+                    "Document",
+                    "Actions",
+                  ].map((h) => (
+                    <TableCell
+                      key={h}
+                      sx={{
+                        fontWeight: 600,
+                        background: theme.palette.background.default,
                       }}
                     >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => confirmDelete(article.id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
+                      {h}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filtered.map((a) => (
+                  <TableRow hover key={a.id}>
+                    <TableCell>{a.title}</TableCell>
+                    <TableCell>{a.journal_name}</TableCell>
+                    <TableCell>{a.issn_number}</TableCell>
+                    <TableCell>{a.impact_factor}</TableCell>
+                    <TableCell>{a.internal_authors}</TableCell>
+                    <TableCell>{a.external_authors}</TableCell>
+                    <TableCell>
+                      {[
+                        a.indexing_wos && "WOS",
+                        a.indexing_scopus && "Scopus",
+                        a.indexing_ugc && "UGC",
+                        a.indexing_other,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </TableCell>
+                    <TableCell>{a.quarter}</TableCell>
+                    <TableCell>{a.year}</TableCell>
+                    <TableCell>
+                      {a.document_link ? (
+                        <Button
+                          size="small"
+                          onClick={() => window.open(a.document_link, "_blank")}
+                        >
+                          View
+                        </Button>
+                      ) : (
+                        "—"
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleEditOpen(a)}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        color="error"
+                        onClick={() => confirmDelete(a.id)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this research article?
+            Are you sure you want to delete this submission? This cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)} color="inherit">
-            Cancel
-          </Button>
+          <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
           <Button onClick={handleDelete} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
+
       {/* Edit Dialog */}
       <Dialog
         open={editOpen}
@@ -442,212 +499,161 @@ const handleExportToExcel = () => {
         maxWidth="sm"
       >
         <DialogTitle>Edit Research Article</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           {editData && (
-            <>
+            <Box component="form">
               <TextField
+                margin="dense"
                 fullWidth
                 label="Title"
                 name="title"
                 value={editData.title}
-                onChange={(e) =>
-                  setEditData({ ...editData, title: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
                 required
               />
               <TextField
+                margin="dense"
                 fullWidth
                 label="Journal Name"
                 name="journal_name"
                 value={editData.journal_name}
-                onChange={(e) =>
-                  setEditData({ ...editData, journal_name: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
               <TextField
+                margin="dense"
                 fullWidth
                 label="ISSN Number"
                 name="issn_number"
                 value={editData.issn_number}
-                onChange={(e) =>
-                  setEditData({ ...editData, issn_number: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
 
-              {/* ✅ Indexing checkboxes */}
-              <Typography variant="subtitle1" sx={{ mt: 2 }}>
-                Indexing
-              </Typography>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 1 }}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={editData.indexing_wos || false}
-                    onChange={(e) =>
-                      setEditData({
-                        ...editData,
-                        indexing_wos: e.target.checked,
-                      })
-                    }
-                  />{" "}
-                  Web of Science
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={editData.indexing_scopus || false}
-                    onChange={(e) =>
-                      setEditData({
-                        ...editData,
-                        indexing_scopus: e.target.checked,
-                      })
-                    }
-                  />{" "}
-                  Scopus
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={editData.indexing_ugc || false}
-                    onChange={(e) =>
-                      setEditData({
-                        ...editData,
-                        indexing_ugc: e.target.checked,
-                      })
-                    }
-                  />{" "}
-                  UGC-CARE
-                </label>
-              </Box>
+              {/* Indexing */}
+              <FormControl component="fieldset" sx={{ mt: 2 }}>
+                <FormLabel component="legend">Indexing</FormLabel>
+                <FormGroup row>
+                  {[
+                    { name: "indexing_wos", label: "Web of Science" },
+                    { name: "indexing_scopus", label: "Scopus" },
+                    { name: "indexing_ugc", label: "UGC-CARE" },
+                  ].map((opt) => (
+                    <FormControlLabel
+                      key={opt.name}
+                      control={
+                        <Checkbox
+                          name={opt.name}
+                          checked={editData[opt.name] || false}
+                          onChange={handleEditChange}
+                        />
+                      }
+                      label={opt.label}
+                    />
+                  ))}
+                </FormGroup>
+              </FormControl>
 
               <TextField
+                margin="dense"
                 fullWidth
                 label="Other Indexing"
                 name="indexing_other"
                 value={editData.indexing_other || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, indexing_other: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
 
-              {/* ✅ Authors */}
               <TextField
-                fullWidth
-                label="Internal Authors (BIT)"
-                name="internal_authors"
-                value={editData.internal_authors || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, internal_authors: e.target.value })
-                }
                 margin="dense"
+                fullWidth
+                label="Internal Authors"
+                name="internal_authors"
+                value={editData.internal_authors}
+                onChange={handleEditChange}
               />
               <TextField
+                margin="dense"
                 fullWidth
                 label="External Authors"
                 name="external_authors"
-                value={editData.external_authors || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, external_authors: e.target.value })
-                }
-                margin="dense"
+                value={editData.external_authors}
+                onChange={handleEditChange}
               />
-
               <TextField
+                margin="dense"
                 fullWidth
                 label="Impact Factor"
                 name="impact_factor"
                 value={editData.impact_factor}
-                onChange={(e) =>
-                  setEditData({ ...editData, impact_factor: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
               <TextField
+                margin="dense"
                 fullWidth
                 label="Document Link"
                 name="document_link"
                 value={editData.document_link}
-                onChange={(e) =>
-                  setEditData({ ...editData, document_link: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
               <TextField
-                select
+                margin="dense"
                 fullWidth
+                select
                 label="Quarter"
                 name="quarter"
                 value={editData.quarter}
-                onChange={(e) =>
-                  setEditData({ ...editData, quarter: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               >
-                <MenuItem value="Q1">Q1</MenuItem>
-                <MenuItem value="Q2">Q2</MenuItem>
-                <MenuItem value="Q3">Q3</MenuItem>
-                <MenuItem value="Q4">Q4</MenuItem>
-              </TextField>
-              <TextField
-                select
-                fullWidth
-                label="Department"
-                name="department"
-                value={editData.department}
-                onChange={(e) =>
-                  setEditData({ ...editData, department: e.target.value })
-                }
-                margin="dense"
-              >
-                {departments.map((dept) => (
-                  <MenuItem key={dept.id} value={dept.id}>
-                    {dept.name}
+                {["Q1", "Q2", "Q3", "Q4"].map((q) => (
+                  <MenuItem key={q} value={q}>
+                    {q}
                   </MenuItem>
                 ))}
               </TextField>
               <TextField
+                margin="dense"
                 fullWidth
+                select
+                label="Department"
+                name="department"
+                value={editData.department || ""}
+                onChange={handleEditChange}
+              >
+                {departments.map((d) => (
+                  <MenuItem key={d.id} value={d.id}>
+                    {d.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                margin="dense"
+                fullWidth
+                type="number"
                 label="Year"
                 name="year"
-                type="number"
                 value={editData.year}
-                onChange={(e) =>
-                  setEditData({ ...editData, year: e.target.value })
-                }
-                margin="dense"
+                onChange={handleEditChange}
               />
-            </>
+            </Box>
           )}
         </DialogContent>
-
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSave} variant="contained" color="primary">
-            Save Changes
+          <Button onClick={() => setEditOpen(false)}>Cancel</Button>
+          <Button onClick={handleEditSave} variant="contained">
+            Save
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
       >
-        <Alert
-          severity={snackbar.severity}
-          variant="filled"
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-        >
+        <Alert severity={snackbar.severity} variant="filled">
           {snackbar.message}
         </Alert>
       </Snackbar>
     </Container>
+    // </MainLayout>
   );
-};
-
-export default T1ResearchList;
+}

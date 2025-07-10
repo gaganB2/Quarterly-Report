@@ -1,3 +1,6 @@
+// src/components/Topbar.jsx
+// Netflix-inspired AppBar with drawer toggle and theme switch
+
 import React, { useContext } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,7 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { ColorModeContext } from '../ThemeContext';
+import ColorModeContext from '../ThemeContext';
 
 export default function Topbar({ onDrawerToggle, drawerWidth }) {
   const theme = useTheme();
@@ -22,26 +25,20 @@ export default function Topbar({ onDrawerToggle, drawerWidth }) {
         zIndex: theme.zIndex.drawer + 1,
         width: { sm: `calc(100% - ${drawerWidth}px)` },
         ml: { sm: `${drawerWidth}px` },
-        background: 'linear-gradient(90deg, #5e35b1 0%, #ff7043 100%)',
-        boxShadow: 'none',
+        backgroundColor: 'background.paper',
       }}
     >
       <Toolbar>
         {!isSmUp && (
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={onDrawerToggle}
-            sx={{ mr: 2 }}
-          >
+          <IconButton color="inherit" edge="start" onClick={onDrawerToggle} sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: 'primary.main' }}>
           Quarterly Report
         </Typography>
         <IconButton color="inherit" onClick={colorMode.toggleColorMode}>
-          {theme.palette.mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Toolbar>
     </AppBar>
