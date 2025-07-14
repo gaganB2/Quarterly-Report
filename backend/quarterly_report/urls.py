@@ -10,6 +10,7 @@ router = DefaultRouter()
 router.register(r'departments', DepartmentViewSet, basename='department')
 router.register(r't1research', T1ResearchViewSet, basename='t1research')
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     

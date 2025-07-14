@@ -57,49 +57,48 @@ class T1ResearchViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='metrics')
     def metrics(self, request):
-        qs = self.get_queryset()
+        """
+        Returns:
+        {
+        "by_quarter": [{"quarter":"Q1","count":5}, ...],
+        "by_year": [{"year":2025,"count":12}, ...],
+        "by_department": [{"department":"CSE","count":8}, ...]
+        }
+        """
+        user = request.user
+        profile = Profile.objects.get(user=user)
 
-        # Submissions per quarter
-        by_quarter = (
-            qs
-            .values('quarter')
+        qs = T1_ResearchArticle.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # Grouped counts
+        by_quarter = list(
+            qs.values('quarter')
             .annotate(count=Count('id'))
             .order_by('quarter')
         )
-
-        # Submissions per department (pull department__name)
-        dept_qs = (
-            qs
-            .values('department__name')
-            .annotate(count=Count('id'))
-            .order_by('department__name')
-        )
-        # Rename key to 'department'
-        by_department = [
-            {'department': item['department__name'], 'count': item['count']}
-            for item in dept_qs
-        ]
-
-        # Submissions per year
-        by_year = (
-            qs
-            .values('year')
+        by_year = list(
+            qs.values('year')
             .annotate(count=Count('id'))
             .order_by('year')
         )
+        by_department = list(
+            qs.values(department=F('department__name'))
+            .annotate(count=Count('id'))
+            .order_by('department')
+        )
 
         return Response({
-            'by_quarter': list(by_quarter),
+            'by_quarter': by_quarter,
+            'by_year': by_year,
             'by_department': by_department,
-            'by_year': list(by_year),
         })
 
 
-
 class DepartmentViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Simple read-only viewset for departments.
-    """
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [permissions.IsAuthenticated]

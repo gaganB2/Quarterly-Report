@@ -1,60 +1,37 @@
+// src/App.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import Login from "./pages/Login";
-// import Dashboard from "./pages/Dashboard";
-import Dashboard from './pages/Dashboard'; // <-- Use this one!
 
-import T1ResearchForm from "./pages/T1ResearchForm";
-import T1ResearchList from "./pages/T1ResearchList";
+// Pages
+import LoginLanding from "./pages/LoginLanding";
+import FacultyLogin from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
+import HomePage from "./pages/HomePage";
+
+// Route protection and layout
 import PrivateRoute from "./routes/PrivateRoute";
 import MainLayout from "./layout/MainLayout";
-
 
 export default function App() {
   return (
     <Routes>
-      {/* Public Homepage */}
-      <Route path="/" element={<HomePage />} />
+      {/* Default route → login landing */}
+      <Route path="/" element={<Navigate to="/start" replace />} />
+      <Route path="/start" element={<LoginLanding />} />
+      <Route path="/login/faculty" element={<FacultyLogin />} />
+      <Route path="/login/admin" element={<AdminLogin />} />
 
-      {/* Authentication */}
-      <Route path="/login" element={<Login />} />
-
-      {/* Protected Routes */}
+      {/* Post-login dynamic homepage */}
       <Route
-        path="/dashboard"
+        path="/home"
         element={
           <PrivateRoute>
             <MainLayout>
-              <Dashboard />
+              <HomePage />
             </MainLayout>
           </PrivateRoute>
         }
       />
-      
-      <Route
-        path="/submit-t1"
-        element={
-          <PrivateRoute>
-            <MainLayout>
-              <T1ResearchForm />
-            </MainLayout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/my-submissions"
-        element={
-          <PrivateRoute>
-            <MainLayout>
-              <T1ResearchList />
-            </MainLayout>
-          </PrivateRoute>
-        }
-      />
-
-      {/* Redirect any unknown paths to Home */}
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

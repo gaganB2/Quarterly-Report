@@ -1,10 +1,19 @@
+// src/routes/PrivateRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const PrivateRoute = ({ children }) => {
+export default function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role"); // Faculty or HOD
 
-  return token ? children : <Navigate to="/login" />;
-};
+  if (!token) {
+    return <Navigate to="/start" replace />;
+  }
 
-export default PrivateRoute;
+  // You can optionally redirect based on role:
+  // if (window.location.pathname === '/login/admin' && role !== 'Admin') {
+  //   return <Navigate to="/start" replace />;
+  // }
+
+  return children;
+}
