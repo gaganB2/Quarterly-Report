@@ -1,49 +1,54 @@
+// src/pages/HomePage.jsx
 import React, { useState } from "react";
-import { Box, Container, Typography, Divider, Paper } from "@mui/material";
-import SessionSelector from "../components/SessionSelector";
+import { Container, Box, Typography, Divider } from "@mui/material";
+import FilterPanel from "../components/FilterPanel";
 import FormTable from "../components/FormTable";
 
+const getCurrentQuarter = () => {
+  const m = new Date().getMonth() + 1;
+  if (m <= 3) return "Q3";
+  if (m <= 6) return "Q4";
+  if (m <= 9) return "Q1";
+  return "Q2";
+};
+const getCurrentAcademicYear = () => {
+  const now = new Date();
+  return now.getMonth() + 1 >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+};
+
 export default function HomePage() {
-  const [selectedQuarter, setSelectedQuarter] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const defaultSession = getCurrentQuarter();
+  const defaultYear = getCurrentAcademicYear();
+  const [filters, setFilters] = useState({
+    form: "",
+    session: defaultSession,
+    year: defaultYear,
+    title: "",
+    journal: "",
+  });
 
   return (
-    <Box sx={{ py: 4 }}>
-      <Container maxWidth="lg">
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-          <Typography variant="h4" fontWeight={600} gutterBottom>
-            Quarterly Report Submissions
-          </Typography>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Box
+        sx={{
+          backgroundColor: "background.paper",
+          borderRadius: 2,
+          p: 4,
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          Quarterly Report Submissions
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 3 }}>
+          Manage your form submissions
+        </Typography>
+        <Divider sx={{ mb: 3 }} />
 
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-            Select session and year to view and manage your form submissions.
-          </Typography>
+        <FilterPanel onApply={setFilters} initial={filters} />
 
-          <Divider sx={{ my: 2 }} />
-
-          {/* Session Selector */}
-          <SessionSelector
-            selectedQuarter={selectedQuarter}
-            setSelectedQuarter={setSelectedQuarter}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-          />
-
-          {/* Conditionally show table */}
-          {selectedQuarter && selectedYear ? (
-            // <FormTable quarter={selectedQuarter} year={selectedYear} />
-            <FormTable session={selectedQuarter} year={selectedYear} />
-          ) : (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 4, textAlign: "center" }}
-            >
-              Please select a session and year to proceed.
-            </Typography>
-          )}
-        </Paper>
-      </Container>
-    </Box>
+        {/* Pass filters into FormTable */}
+        <FormTable filters={filters} />
+      </Box>
+    </Container>
   );
 }

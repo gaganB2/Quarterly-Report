@@ -1,75 +1,78 @@
-import { createTheme } from "@mui/material/styles";
+// src/theme.js
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
-const base = {
-  typography: {
-    fontFamily: `"Roboto","Helvetica","Arial",sans-serif`,
-    h1: { fontFamily: `"Inter",sans-serif`, fontWeight: 700 },
-    h2: { fontFamily: `"Inter",sans-serif`, fontWeight: 700 },
-    h3: { fontFamily: `"Inter",sans-serif`, fontWeight: 600 },
-    button: { textTransform: "none", fontWeight: 600 },
-  },
-  shape: { borderRadius: 8 },
-  spacing: 8,
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: { backgroundColor: "#F5F7FA", margin: 0, padding: 0 },
+// Your brand colors from the logo
+const BIT_BLUE = '#005BBB';
+const BIT_YELLOW = '#FFC20E';
+const BIT_RED = '#D71920';
+
+// Common “glass panel” background
+const PANEL_BG = 'rgba(255,255,255,0.2)';
+const PANEL_BG_DARK = 'rgba(0,0,0,0.4)';
+
+function makeTheme(mode, highContrast = false) {
+  const isDark = mode === 'dark';
+  const base = createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: BIT_BLUE,
+        contrastText: '#fff',
+      },
+      secondary: {
+        main: BIT_YELLOW,
+        contrastText: '#000',
+      },
+      error: {
+        main: BIT_RED,
+      },
+      background: {
+        default: isDark ? '#121212' : '#f0f2f5',
+        paper: highContrast ? PANEL_BG_DARK : PANEL_BG,
+      },
+      text: {
+        primary: highContrast
+          ? '#fff'
+          : isDark
+          ? 'rgba(255,255,255,0.87)'
+          : 'rgba(0,0,0,0.87)',
+        secondary: highContrast
+          ? 'rgba(255,255,255,0.7)'
+          : isDark
+          ? 'rgba(255,255,255,0.6)'
+          : 'rgba(0,0,0,0.6)',
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          padding: "16px",
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+    shape: {
+      borderRadius: 16,
+    },
+    shadows: [
+      'none',
+      '0px 2px 8px rgba(0,0,0,0.1)', // use this as your “card” shadow
+      /* ...rest of default shadows */
+    ],
+    components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backdropFilter: 'blur(12px)',
+            border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+          },
         },
       },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 6,
-          transition: "transform 0.2s, box-shadow 0.2s",
-          "&:hover": {
-            transform: "translateY(-2px)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            transition: 'background-color 0.3s, color 0.3s',
           },
         },
       },
     },
-    MuiTextField: {
-      defaultProps: { variant: "outlined", size: "small" },
-      styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 6,
-            transition: "border-color 0.3s",
-            "&:hover fieldset": { borderColor: "#4285F4" },
-            "&.Mui-focused fieldset": { borderColor: "#4285F4" },
-          },
-        },
-      },
-    },
-  },
-};
+  });
 
-export const lightTheme = createTheme({
-  ...base,
-  palette: {
-    mode: "light",
-    primary: { main: "#4285F4", contrastText: "#fff" },
-    secondary: { main: "#34A853", contrastText: "#fff" },
-    error: { main: "#EA4335" },
-    warning: { main: "#FBBC05" },
-    background: { default: "#F5F7FA", paper: "#fff" },
-  },
-});
+  return responsiveFontSizes(base);
+}
 
-export const darkTheme = createTheme({
-  ...base,
-  palette: {
-    mode: "dark",
-    primary: { main: "#8AB4F8", contrastText: "#000" },
-    secondary: { main: "#AECBFA", contrastText: "#000" },
-    background: { default: "#121212", paper: "#1E1E1E" },
-  },
-});
+export const lightTheme = makeTheme('light', false);
+export const darkTheme = makeTheme('dark', false);
+export const highContrastTheme = makeTheme('dark', true);

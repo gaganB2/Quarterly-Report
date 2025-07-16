@@ -1,11 +1,12 @@
 // src/config/formConfig.jsx
 import React from "react";
 import T1_1Form from "../components/T1_1Form";
-// import other form components as you build them, e.g.
-// import T1_2Form from "../components/T1_2Form";
+import T1_2Form from "../components/T1_2Form";
+
 
 export const formSections = [
-  { code: "T1.1", title: "Published Research Articles in Journals" },
+  // { code: "T1.1", title: "Published Research Articles in Journals" },
+  { code: "T1.1", title: "T1.1: Details of the Published Research Articles/Papers in Journals/Periodicals" },
   { code: "T1.2", title: "Published Research Papers in Conferences" },
   { code: "T2.1", title: "Books / Book Chapters / Edited Volumes" },
   { code: "T2.2", title: "Patents / IP Rights Filed/Granted" },
@@ -44,46 +45,38 @@ export const formSections = [
 
 export const formConfig = {
   "T1.1": {
-    endpoint: "/api/faculty/t1research/",
-    FormComponent: T1_1Form,
-    listFields: [
-      { label: "Title", key: "title" },
-      { label: "Journal", key: "journal_name" },
-      {
-        label: "Authors",
-        render: (item) => {
-          const parts = [];
-          if (item.internal_authors) parts.push(item.internal_authors);
-          if (item.external_authors) parts.push(item.external_authors);
-          return parts.join(" | ");
-        },
-      },
-      { label: "Impact Factor", key: "impact_factor" },
-      {
-        label: "Indexing",
-        render: (item) =>
-          [
-            item.indexing_wos && "WOS",
-            item.indexing_scopus && "Scopus",
-            item.indexing_ugc && "UGC",
-            item.indexing_other,
-          ]
-            .filter(Boolean)
-            .join(", "),
-      },
-      {
-        label: "Document",
-        render: (item) =>
-          item.document_link ? (
-            <a href={item.document_link} target="_blank" rel="noreferrer">
-              View
-            </a>
-          ) : (
-            ""
-          ),
-      },
-    ],
-  },
+  endpoint: "/api/faculty/t1research/",
+  FormComponent: T1_1Form,
+  listFields: [
+    { label: "Name of Faculty", key: "faculty_name" },
+    { label: "Title", key: "title" },
+    { label: "Author Type", key: "author_type" },         // Sole/First/Corresponding/Other
+    { label: "Internal Authors", key: "internal_authors" },
+    { label: "External Authors", key: "external_authors" },
+    { label: "Journal Name", key: "journal_name" },
+    { label: "Volume", key: "volume" },
+    { label: "Issue", key: "issue" },
+    { label: "Page No", key: "page_no" },
+    { label: "Month & Year", key: "publication_month_year" },
+    { label: "ISSN Number", key: "issn_number" },
+    { label: "Impact Factor", key: "impact_factor" },
+    { label: "Publisher", key: "publisher" },
+    { label: "WOS (ESCI, SCIE…)", key: "indexing_wos", render: i => i.indexing_wos ? "✔︎" : "" },
+    { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
+    { label: "UGC Care 1", key: "indexing_ugc", render: i => i.indexing_ugc ? "✔︎" : "" },
+    { label: "Other (Referred Journal)", key: "indexing_other" },
+    { label: "DOI", key: "doi" },
+    {
+      label: "Google Drive Link",
+      key: "google_drive_link",
+      render: i => i.google_drive_link
+        ? <a href={i.google_drive_link} target="_blank" rel="noreferrer">View</a>
+        : ""
+    },
+    { label: "Department", key: "department" },
+  ],
+},
+
 
   // Stub entries for the other sections (until you create their FormComponents)
   "T1.2": {
@@ -107,5 +100,6 @@ export const formConfig = {
       },
     ],
   },
-  // Repeat for T2.1, T2.2, …, S5.4 with FormComponent: null until implemented
+
+  
 };
