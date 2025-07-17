@@ -1,5 +1,5 @@
 // src/pages/LoginLanding.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -9,44 +9,30 @@ import {
   Tab,
   TextField,
   Button,
-  IconButton,
   Collapse,
   Stack,
   CircularProgress,
-  useMediaQuery,
-  useTheme,
   FormControlLabel,
   Checkbox,
   FormGroup,
-  CssBaseline
+  CssBaseline,
 } from '@mui/material';
-import { DarkMode, LightMode, Settings, Contrast } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { Settings } from '@mui/icons-material';
 import Joyride, { STATUS } from 'react-joyride';
+import { motion } from 'framer-motion';
+import Tilt from 'react-parallax-tilt';
+import logo from '/assets/logo.png';
 
-// Motion-enhanced Paper
 const MotionPaper = motion(Paper);
 
 export default function LoginLanding() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [darkMode, setDarkMode] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
+  const [role, setRole] = useState('faculty');
+  const [creds, setCreds] = useState({ id: '', password: '' });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showGuidelines, setShowGuidelines] = useState(false);
 
-  // derive our colors from the theme plus contrast toggle
-  const bgGradient = darkMode
-    ? 'linear-gradient(135deg,#0f2027,#203a43,#2c5364)'
-    : 'linear-gradient(135deg,#e0f7fa,#e8f5e9)';
-  const palette = {
-    primary: theme.palette.primary.main,
-    secondary: theme.palette.secondary.main,
-    text: highContrast ? '#FFF' : theme.palette.text.primary,
-    panelBg: highContrast
-      ? 'rgba(0,0,0,0.4)'
-      : 'rgba(255,255,255,0.2)',
-  };
-
-  // Onboarding tour
   const [runTour, setRunTour] = useState(true);
   const steps = [
     { target: '#toggle-tabs', content: 'Toggle between Faculty and Admin here.' },
@@ -55,26 +41,13 @@ export default function LoginLanding() {
     { target: '#advanced-button', content: 'Reveal extra options.' },
     { target: '#login-button', content: 'Press to log in.' },
   ];
-  const onTourCallback = (data) => {
+
+  const handleTourCallback = (data) => {
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(data.status)) {
       setRunTour(false);
     }
   };
 
-  // Storage toggles
-  useEffect(() => {
-    document.body.setAttribute('data-theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
-
-  // Form state
-  const [role, setRole] = useState('faculty');
-  const [creds, setCreds] = useState({ id: '', password: '' });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showGuidelines, setShowGuidelines] = useState(false);
-
-  // Validation
   const validate = () => {
     const e = {};
     if (!creds.id.trim()) e.id = 'ID cannot be blank';
@@ -83,24 +56,37 @@ export default function LoginLanding() {
     return Object.keys(e).length === 0;
   };
 
-  // Login click
   const handleLogin = () => {
     if (!validate()) return;
     setLoading(true);
-    setTimeout(() => (window.location.href = '/home'), 800);
+    setTimeout(() => (window.location.href = '/home'), 1000);
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: bgGradient }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(-45deg, #74ebd5, #ACB6E5, #fbc2eb, #a6c1ee)',
+        backgroundSize: '400% 400%',
+        animation: 'gradientBG 20s ease infinite',
+      }}
+    >
       <CssBaseline />
 
-      {/* Joyride Tour */}
+      <style>{`
+        @keyframes gradientBG {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
+
       <Joyride
         steps={steps}
         run={runTour}
         continuous
         showSkipButton
-        callback={onTourCallback}
+        callback={handleTourCallback}
         styles={{ options: { zIndex: 2000 } }}
       />
 
@@ -109,200 +95,170 @@ export default function LoginLanding() {
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            alignItems: 'flex-start',
+            alignItems: 'stretch',
+            justifyContent: 'center',
             gap: 4,
           }}
         >
-          {/* Hero */}
-          <MotionPaper
-            elevation={4}
-            whileHover={{ scale: 1.02, rotateX: 3, rotateY: -3 }}
-            transition={{ duration: 0.3 }}
-            sx={{
-              flex: 7,
-              p: isMobile ? 3 : 6,
-              borderRadius: 3,
-              backdropFilter: 'blur(12px)',
-              bgcolor: palette.panelBg,
-            }}
-          >
-            <Typography variant="h4" fontWeight={700} color={palette.primary} gutterBottom>
-              BHILAI INSTITUTE OF TECHNOLOGY, DURG
-            </Typography>
-            <Typography variant="subtitle1" color={palette.text} sx={{ lineHeight: 1.6 }}>
-              Quarterly Academic Activity Reporting System
-            </Typography>
-          </MotionPaper>
-
-          {/* Login */}
-          <MotionPaper
-            elevation={4}
-            whileHover={{ scale: 1.02, rotateX: -3, rotateY: 3 }}
-            transition={{ duration: 0.3 }}
-            sx={{
-              flex: 5,
-              p: isMobile ? 3 : 5,
-              borderRadius: 3,
-              backdropFilter: 'blur(12px)',
-              bgcolor: palette.panelBg,
-              position: 'sticky',
-              top: theme.mixins.toolbar.minHeight + 16,
-              border: `2px solid ${palette.primary}`,
-            }}
-          >
-            {/* Toggles */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-              <IconButton onClick={() => setDarkMode(d => !d)} aria-label="Toggle theme">
-                {darkMode ? <LightMode /> : <DarkMode />}
-              </IconButton>
-              <IconButton onClick={() => setHighContrast(h => !h)} aria-label="Toggle contrast">
-                <Contrast />
-              </IconButton>
-            </Box>
-
-            <Typography variant="h5" fontWeight={700} align="center" gutterBottom color={palette.text}>
-              Login as
-            </Typography>
-
-            {/* Role Tabs (sliding indicator) */}
-            <Tabs
-              id="toggle-tabs"
-              value={role}
-              onChange={(_, v) => setRole(v)}
-              textColor="secondary"
-              indicatorColor="secondary"
-              variant="fullWidth"
+          <Tilt tiltMaxAngleX={6} tiltMaxAngleY={4} glareEnable glareMaxOpacity={0.1}>
+            <MotionPaper
+              elevation={6}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
               sx={{
-                mb: 3,
-                '& .MuiTabs-indicator': { height: 3, borderRadius: 3 },
-                '& .MuiTab-root': {
-                  color: palette.text,
-                  fontWeight: 600,
-                },
-                '& .Mui-selected': {
-                  color: '#fff',
-                },
+                flex: 1,
+                p: { xs: 3, md: 5 },
+                borderRadius: 4,
+                backdropFilter: 'blur(12px)',
+                backgroundColor: 'rgba(255,255,255,0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
               }}
             >
-              <Tab label="Faculty" value="faculty" />
-              <Tab label="Admin" value="admin" />
-            </Tabs>
-
-            {/* Inputs */}
-            <Stack spacing={2}>
-              <TextField
-                id="id-field"
-                label={role === 'faculty' ? 'Faculty ID' : 'Admin ID'}
-                variant="filled"
-                fullWidth
-                error={!!errors.id}
-                helperText={errors.id}
-                value={creds.id}
-                onChange={e => setCreds(c => ({ ...c, id: e.target.value }))}
-                InputProps={{
-                  sx: {
-                    backgroundColor: highContrast ? '#222' : '#fff',
-                  },
-                }}
-              />
-              <TextField
-                id="password-field"
-                label="Password"
-                type="password"
-                variant="filled"
-                fullWidth
-                error={!!errors.password}
-                helperText={errors.password}
-                value={creds.password}
-                onChange={e => setCreds(c => ({ ...c, password: e.target.value }))}
-                InputProps={{
-                  sx: {
-                    backgroundColor: highContrast ? '#222' : '#fff',
-                  },
-                }}
-              />
-
-              {/* Log In */}
-              <Button
-                id="login-button"
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={handleLogin}
-                disabled={loading}
+              <Box
+                component="img"
+                src={logo}
+                alt="BIT-DURG"
                 sx={{
-                  bgcolor: palette.primary,
-                  '&:hover': {
-                    bgcolor: palette.secondary,
-                  },
+                  height: 60,
+                  mb: 3,
+                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
                 }}
+              />
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: 700, fontFamily: 'Roboto Slab, serif', color: '#002f6c' }}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : 'Log In'}
-              </Button>
-            </Stack>
+                BHILAI INSTITUTE OF TECHNOLOGY, DURG
+              </Typography>
+              <Typography variant="subtitle1" sx={{ mt: 1, color: 'text.secondary' }}>
+                Quarterly Academic Activity Reporting System
+              </Typography>
+            </MotionPaper>
+          </Tilt>
 
-            {/* Advanced Options */}
-            <Box mt={2}>
-              <Button
-                id="advanced-button"
-                size="small"
-                onClick={() => setShowAdvanced(a => !a)}
-                sx={{ textTransform: 'none', color: palette.primary }}
-              >
-                {showAdvanced ? 'Hide' : 'Show'} Advanced Options
-              </Button>
-              <Collapse in={showAdvanced} sx={{ mt: 1 }}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Checkbox sx={{ color: palette.text }} />}
-                    label="Remember me"
-                    sx={{ color: palette.text }}
-                  />
-                </FormGroup>
-                <Typography variant="body2" color={palette.text}>
-                  Forgot password?{' '}
-                  <Box
-                    component="a"
-                    href="#"
-                    sx={{ color: palette.primary, textDecoration: 'underline' }}
-                  >
-                    Reset here
-                  </Box>
-                  .
-                </Typography>
-              </Collapse>
-            </Box>
+          <Tilt tiltMaxAngleX={6} tiltMaxAngleY={4} glareEnable glareMaxOpacity={0.1}>
+            <MotionPaper
+              elevation={6}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+              sx={{
+                flex: 1,
+                p: { xs: 3, md: 5 },
+                borderRadius: 4,
+                backdropFilter: 'blur(12px)',
+                backgroundColor: 'rgba(255,255,255,0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography variant="h6" align="center" fontWeight={700} gutterBottom>
+                Login as
+              </Typography>
 
-            {/* Guidelines */}
-            <Box mt={3}>
-              <Button
-                startIcon={<Settings />}
-                size="small"
-                onClick={() => setShowGuidelines(g => !g)}
-                sx={{ textTransform: 'none', color: palette.primary }}
+              <Tabs
+                id="toggle-tabs"
+                value={role}
+                onChange={(_, v) => setRole(v)}
+                textColor="primary"
+                indicatorColor="primary"
+                centered
+                sx={{ mb: 3 }}
               >
-                {showGuidelines ? 'Hide' : 'Show'} Guidelines
-              </Button>
-              <Collapse in={showGuidelines} sx={{ mt: 1 }}>
-                <Typography variant="body2" color={palette.text} sx={{ lineHeight: 1.6 }}>
-                  • Do not fill data in the first Excel sheet.<br />
-                  • No cell should be left blank — use “Nil” or “NA”.<br />
-                  • Submit unique document links per row.<br />
-                  • Do not merge cells when entering data.<br />
-                  • Submission deadline: 10th of next month.<br />
-                  • Email to{' '}
-                  <Box
-                    component="a"
-                    href="mailto:enumerator@bitdurg.ac.in"
-                    sx={{ color: palette.primary, textDecoration: 'underline' }}
-                  >
-                    enumerator@bitdurg.ac.in
-                  </Box>
-                  .
-                </Typography>
-              </Collapse>
-            </Box>
-          </MotionPaper>
+                <Tab label="Faculty" value="faculty" />
+                <Tab label="Admin" value="admin" />
+              </Tabs>
+
+              <Stack spacing={2}>
+                <TextField
+                  id="id-field"
+                  label={role === 'faculty' ? 'Faculty ID' : 'Admin ID'}
+                  fullWidth
+                  variant="filled"
+                  value={creds.id}
+                  error={!!errors.id}
+                  helperText={errors.id}
+                  onChange={(e) => setCreds({ ...creds, id: e.target.value })}
+                />
+                <TextField
+                  id="password-field"
+                  label="Password"
+                  type="password"
+                  fullWidth
+                  variant="filled"
+                  value={creds.password}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                  onChange={(e) => setCreds({ ...creds, password: e.target.value })}
+                />
+
+                <Button
+                  id="login-button"
+                  variant="contained"
+                  fullWidth
+                  size="large"
+                  onClick={handleLogin}
+                  disabled={loading}
+                  sx={{ borderRadius: 9999 }}
+                >
+                  {loading ? <CircularProgress size={24} color="inherit" /> : 'Log In'}
+                </Button>
+              </Stack>
+
+              <Box mt={2} textAlign="center">
+                <Button
+                  id="advanced-button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  size="small"
+                  sx={{ textTransform: 'none' }}
+                >
+                  {showAdvanced ? 'Hide' : 'Show'} Advanced Options
+                </Button>
+                <Collapse in={showAdvanced}>
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox />} label="Remember me" />
+                  </FormGroup>
+                  <Typography variant="body2">
+                    Forgot password? <Box component="a" href="#" sx={{ color: 'primary.main' }}>Reset here</Box>
+                  </Typography>
+                </Collapse>
+              </Box>
+
+              <Box mt={3} textAlign="center">
+                <Button
+                  startIcon={<Settings />}
+                  onClick={() => setShowGuidelines(!showGuidelines)}
+                  size="small"
+                  sx={{ textTransform: 'none' }}
+                >
+                  {showGuidelines ? 'Hide' : 'Show'} Guidelines
+                </Button>
+                <Collapse in={showGuidelines}>
+                  <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+                    • Do not fill data in the first Excel sheet.<br />
+                    • No cell should be left blank — use “Nil” or “NA”.<br />
+                    • Submit unique document links per row.<br />
+                    • Do not merge cells when entering data.<br />
+                    • Submission deadline: 10th of next month.<br />
+                    • Email to{' '}
+                    <Box
+                      component="a"
+                      href="mailto:enumerator@bitdurg.ac.in"
+                      sx={{ color: 'primary.main', textDecoration: 'underline' }}
+                    >
+                      enumerator@bitdurg.ac.in
+                    </Box>
+                    .
+                  </Typography>
+                </Collapse>
+              </Box>
+            </MotionPaper>
+          </Tilt>
         </Box>
       </Container>
     </Box>
