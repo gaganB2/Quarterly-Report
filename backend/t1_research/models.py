@@ -66,3 +66,66 @@ class T1_ResearchArticle(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.quarter} {self.year})"
+
+class T1_2ResearchArticle(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    # — Core fields —
+    faculty_name           = models.CharField(max_length=200, blank=True, default="")
+    title                  = models.CharField(max_length=255)
+    author_type            = models.CharField(
+                                max_length=20,
+                                choices=[
+                                    ("Sole", "Sole"),
+                                    ("First", "First"),
+                                    ("Corresponding", "Corresponding"),
+                                    ("Other", "Other"),
+                                ],
+                                default="Sole",
+                            )
+    internal_authors       = models.TextField(blank=True)
+    external_authors       = models.TextField(blank=True)
+
+    # — Conference / Publication details —
+    conference_details     = models.TextField(
+                                blank=True,
+                                help_text="Organization/Institution name, Place, State"
+                            )
+    isbn_issn              = models.CharField(max_length=50, blank=True)
+    publisher              = models.CharField(max_length=200, blank=True)
+    page_no                = models.CharField(max_length=50, blank=True)
+    publication_month_year = models.CharField(max_length=20, blank=True)
+
+    # — Indexing —
+    indexing_scopus        = models.BooleanField(default=False)
+    indexing_other         = models.CharField(max_length=100, blank=True)
+
+    # — Conference metadata —
+    conference_status      = models.CharField(
+                                max_length=20,
+                                choices=[("National", "National"), ("International", "International")],
+                                default="National",
+                            )
+    conference_mode        = models.CharField(
+                                max_length=10,
+                                choices=[("Online", "Online"), ("Offline", "Offline")],
+                                default="Offline",
+                            )
+    registration_fee_reimbursed = models.BooleanField(
+                                default=False,
+                                help_text="Was registration fee reimbursed by the college?"
+                            )
+    special_leave_dates    = models.CharField(max_length=100, blank=True)
+    certificate_link       = models.URLField(blank=True, help_text="Google Drive link to certificate")
+
+    # — Quarter & Year —
+    quarter = models.CharField(max_length=10)
+    year    = models.PositiveIntegerField()
+
+    # — Audit trail —
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.quarter} {self.year})"

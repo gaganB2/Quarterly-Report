@@ -1,4 +1,3 @@
-// src/components/FormRow.jsx
 import React, { useState, useEffect } from "react";
 import { TableRow, TableCell, Button, Collapse, Box } from "@mui/material";
 import apiClient from "../api/axios";
@@ -10,11 +9,11 @@ export default function FormRow({
   form,
   idx,
   filters,
-  autoViewGen, // generation counter for auto-view
+  autoViewGen,
 }) {
   const { session, year, title, journal } = filters;
   const [expanded, setExpanded] = useState(false);
-  const [mode, setMode] = useState("add"); // "add" | "view" | "edit" | "delete"
+  const [mode, setMode] = useState("add");  
   const [data, setData] = useState([]);
   const [editData, setEditData] = useState(null);
   const [lastGen, setLastGen] = useState(0);
@@ -22,7 +21,6 @@ export default function FormRow({
   const cfg = formConfig[form.code];
   if (!cfg || !cfg.endpoint) return null;
 
-  // load and client-filter data
   const loadData = async () => {
     const res = await apiClient.get(cfg.endpoint);
     let items = res.data;
@@ -31,24 +29,23 @@ export default function FormRow({
         i.title.toLowerCase().includes(title.toLowerCase())
       );
     }
-    if (journal) {
+    if (journal && i.journal_name) {
       items = items.filter((i) =>
-        (i.journal_name || "").toLowerCase().includes(journal.toLowerCase())
+        i.journal_name.toLowerCase().includes(journal.toLowerCase())
       );
     }
     setData(items);
     return items;
   };
 
-  // auto-expand in "view" when filters change
   useEffect(() => {
-    async function tryAutoView() {
+    async function autoView() {
       if (
         (filters.form === "" || filters.form === form.code) &&
         autoViewGen !== lastGen
       ) {
         const items = await loadData();
-        if (items.length > 0) {
+        if (items.length) {
           setMode("view");
           setExpanded(true);
         } else {
@@ -57,7 +54,7 @@ export default function FormRow({
         setLastGen(autoViewGen);
       }
     }
-    tryAutoView();
+    autoView();
   }, [
     autoViewGen,
     filters.form,
@@ -67,13 +64,10 @@ export default function FormRow({
     filters.journal,
   ]);
 
-  // manual Add/View/Edit/Delete
   const handleOpen = async (newMode) => {
     setMode(newMode);
     setEditData(null);
-    if (newMode !== "add") {
-      await loadData();
-    }
+    if (newMode !== "add") await loadData();
     setExpanded((prev) => !(prev && mode === newMode));
   };
 
@@ -83,7 +77,6 @@ export default function FormRow({
   };
 
   const handleDeleteItem = async (item) => {
-    if (!window.confirm(`Delete "${item.title}"?`)) return;
     await apiClient.delete(`${cfg.endpoint}${item.id}/`);
     await loadData();
   };
@@ -96,16 +89,32 @@ export default function FormRow({
           <strong>{form.code}</strong> — {form.title}
         </TableCell>
         <TableCell align="right">
-          <Button size="small" onClick={() => handleOpen("add")} sx={{ mr: 1 }}>
+          <Button
+            size="small"
+            onClick={() => handleOpen("add")}
+            sx={{ mr: 1 }}
+          >
             {expanded && mode === "add" ? "Close" : "Add"}
           </Button>
-          <Button size="small" onClick={() => handleOpen("view")} sx={{ mr: 1 }}>
+          <Button
+            size="small"
+            onClick={() => handleOpen("view")}
+            sx={{ mr: 1 }}
+          >
             View
           </Button>
-          <Button size="small" onClick={() => handleOpen("edit")} sx={{ mr: 1 }}>
+          <Button
+            size="small"
+            onClick={() => handleOpen("edit")}
+            sx={{ mr: 1 }}
+          >
             Edit
           </Button>
-          <Button size="small" color="error" onClick={() => handleOpen("delete")}>
+          <Button
+            size="small"
+            color="error"
+            onClick={() => handleOpen("delete")}
+          >
             Delete
           </Button>
         </TableCell>
@@ -127,7 +136,7 @@ export default function FormRow({
               {["view", "edit", "delete"].includes(mode) && (
                 <GenericList
                   data={data}
-                  fields={cfg.listFields || []}
+                  fields={cfg.listFields}
                   mode={mode}
                   onEdit={handleEditItem}
                   onDelete={handleDeleteItem}

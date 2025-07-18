@@ -3,11 +3,9 @@ import React from "react";
 import T1_1Form from "../components/T1_1Form";
 import T1_2Form from "../components/T1_2Form";
 
-
 export const formSections = [
-  // { code: "T1.1", title: "Published Research Articles in Journals" },
   { code: "T1.1", title: "T1.1: Details of the Published Research Articles/Papers in Journals/Periodicals" },
-  { code: "T1.2", title: "Published Research Papers in Conferences" },
+  { code: "T1.2", title: "T1.2: Details of the Paper Publication in Conferences" },
   { code: "T2.1", title: "Books / Book Chapters / Edited Volumes" },
   { code: "T2.2", title: "Patents / IP Rights Filed/Granted" },
   { code: "T3.1", title: "Consultancy Projects" },
@@ -45,61 +43,80 @@ export const formSections = [
 
 export const formConfig = {
   "T1.1": {
-  endpoint: "/api/faculty/t1research/",
-  FormComponent: T1_1Form,
-  listFields: [
-    { label: "Name of Faculty", key: "faculty_name" },
-    { label: "Title", key: "title" },
-    { label: "Author Type", key: "author_type" },         // Sole/First/Corresponding/Other
-    { label: "Internal Authors", key: "internal_authors" },
-    { label: "External Authors", key: "external_authors" },
-    { label: "Journal Name", key: "journal_name" },
-    { label: "Volume", key: "volume" },
-    { label: "Issue", key: "issue" },
-    { label: "Page No", key: "page_no" },
-    { label: "Month & Year", key: "publication_month_year" },
-    { label: "ISSN Number", key: "issn_number" },
-    { label: "Impact Factor", key: "impact_factor" },
-    { label: "Publisher", key: "publisher" },
-    { label: "WOS (ESCI, SCIE…)", key: "indexing_wos", render: i => i.indexing_wos ? "✔︎" : "" },
-    { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
-    { label: "UGC Care 1", key: "indexing_ugc", render: i => i.indexing_ugc ? "✔︎" : "" },
-    { label: "Other (Referred Journal)", key: "indexing_other" },
-    { label: "DOI", key: "doi" },
-    {
-      label: "Google Drive Link",
-      key: "google_drive_link",
-      render: i => i.google_drive_link
-        ? <a href={i.google_drive_link} target="_blank" rel="noreferrer">View</a>
-        : ""
-    },
-    { label: "Department", key: "department" },
-  ],
-},
-
-
-  // Stub entries for the other sections (until you create their FormComponents)
-  "T1.2": {
-    endpoint: "/api/faculty/t1conferencepapers/",
-    FormComponent: null,
+    endpoint: "/api/faculty/t1research/",
+    FormComponent: T1_1Form,
     listFields: [
+      { label: "Name of Faculty", key: "faculty_name" },
       { label: "Title", key: "title" },
-      { label: "Conference", key: "conference_name" },
-      { label: "Authors", key: "authors" },
-      { label: "Year", key: "year" },
+      { label: "Author Type", key: "author_type" },
+      { label: "Internal Authors", key: "internal_authors" },
+      { label: "External Authors", key: "external_authors" },
+      { label: "Journal Name", key: "journal_name" },
+      { label: "Volume", key: "volume" },
+      { label: "Issue", key: "issue" },
+      { label: "Page No", key: "page_no" },
+      { label: "Month & Year", key: "publication_month_year" },
+      { label: "ISSN Number", key: "issn_number" },
+      { label: "Impact Factor", key: "impact_factor" },
+      { label: "Publisher", key: "publisher" },
+      { label: "WOS (ESCI, SCIE…)", key: "indexing_wos", render: i => i.indexing_wos ? "✔︎" : "" },
+      { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
+      { label: "UGC Care 1", key: "indexing_ugc", render: i => i.indexing_ugc ? "✔︎" : "" },
+      { label: "Other (Referred Journal)", key: "indexing_other" },
+      { label: "DOI", key: "doi" },
       {
-        label: "Document",
-        render: (item) =>
-          item.document_link ? (
-            <a href={item.document_link} target="_blank" rel="noreferrer">
+        label: "Google Drive Link",
+        key: "google_drive_link",
+        render: i =>
+          i.google_drive_link ? (
+            <a href={i.google_drive_link} target="_blank" rel="noreferrer">
               View
             </a>
           ) : (
             ""
           ),
       },
+      { label: "Department", key: "department" },
     ],
   },
 
-  
+  "T1.2": {
+    endpoint: "/api/faculty/t1_2research/",
+    FormComponent: T1_2Form,
+    listFields: [
+      { label: "Name of Faculty", key: "faculty_name" },
+      { label: "Title", key: "title" },
+      { label: "Author Type", key: "author_type" },
+      { label: "Internal Authors", key: "internal_authors" },
+      { label: "External Authors", key: "external_authors" },
+      { label: "Conference / Publication Details", key: "conference_details" },
+      { label: "ISBN/ISSN", key: "isbn_issn" },
+      { label: "Publisher", key: "publisher" },
+      { label: "Page No", key: "page_no" },
+      { label: "Month & Year", key: "publication_month_year" },
+      { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
+      { label: "Other Indexing", key: "indexing_other" },
+      { label: "Conference Status", key: "conference_status" },
+      { label: "Conference Mode", key: "conference_mode" },
+      { label: "Registration Fee Reimbursed", key: "registration_fee_reimbursed", render: i => i.registration_fee_reimbursed ? "✔︎" : "" },
+      { label: "Special Leave Dates", key: "special_leave_dates" },
+      {
+        label: "Certificate Link",
+        key: "certificate_link",
+        render: i =>
+          i.certificate_link ? (
+            <a href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+      { label: "Department", key: "department" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+    ],
+  },
+
+  // …other configs remain unchanged
 };
