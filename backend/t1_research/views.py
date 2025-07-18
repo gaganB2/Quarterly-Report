@@ -7,7 +7,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from .models import T1_2ResearchArticle
 from .serializers import T1_2ResearchArticleSerializer
+from .models import T2_1WorkshopAttendance
+from .serializers import T2_1WorkshopAttendanceSerializer
 
+from .models import T2_2WorkshopOrganized
+from .serializers import T2_2WorkshopOrganizedSerializer
 
 from .models import T1_ResearchArticle, Department
 from .serializers import T1ResearchArticleSerializer, DepartmentSerializer
@@ -154,3 +158,67 @@ class T1_2ResearchViewSet(viewsets.ModelViewSet):
         if profile.role == 'Faculty' and instance.user != self.request.user:
             raise PermissionDenied("You can only delete your own submissions.")
         instance.delete()
+
+
+class T2_1WorkshopAttendanceViewSet(viewsets.ModelViewSet):
+    serializer_class = T2_1WorkshopAttendanceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T2_1WorkshopAttendance.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter/year if provided
+        year = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class T2_2WorkshopOrganizedViewSet(viewsets.ModelViewSet):
+    serializer_class = T2_2WorkshopOrganizedSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T2_2WorkshopOrganized.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        year = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+    def perform_update(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        if profile.role == "Faculty" and serializer.instance.user != self.request.user:
+            raise PermissionDenied("You can only edit your own records.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        profile = Profile.objects.get(user=self.request.user)
+        if profile.role == "Faculty" and instance.user != self.request.user:
+            raise PermissionDenied("You can only delete your own records.")
+        instance.delete()
+
+

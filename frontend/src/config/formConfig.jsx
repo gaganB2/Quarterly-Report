@@ -2,12 +2,28 @@
 import React from "react";
 import T1_1Form from "../components/T1_1Form";
 import T1_2Form from "../components/T1_2Form";
+import T2_1Form from "../components/T2_1Form";
+import T2_2Form from "../components/T2_2Form";
 
 export const formSections = [
-  { code: "T1.1", title: "T1.1: Details of the Published Research Articles/Papers in Journals/Periodicals" },
-  { code: "T1.2", title: "T1.2: Details of the Paper Publication in Conferences" },
-  { code: "T2.1", title: "Books / Book Chapters / Edited Volumes" },
-  { code: "T2.2", title: "Patents / IP Rights Filed/Granted" },
+  {
+    code: "T1.1",
+    title:
+      "T1.1: Details of the Published Research Articles/Papers in Journals/Periodicals",
+  },
+  {
+    code: "T1.2",
+    title: "T1.2: Details of the Paper Publication in Conferences",
+  },
+  {
+    code: "T2.1",
+    title:
+      "Details of the FDP/Short Term Training Program/Workshop etc. Attended By Faculty Members",
+  },
+  {
+    code: "T2.2",
+    title: "Details of FDP/STTP/Workshop/Skill Development Organized",
+  },
   { code: "T3.1", title: "Consultancy Projects" },
   { code: "T3.2", title: "Revenue Generated Through Consultancy" },
   { code: "T4.1", title: "Funded Research Projects (New)" },
@@ -59,15 +75,27 @@ export const formConfig = {
       { label: "ISSN Number", key: "issn_number" },
       { label: "Impact Factor", key: "impact_factor" },
       { label: "Publisher", key: "publisher" },
-      { label: "WOS (ESCI, SCIE…)", key: "indexing_wos", render: i => i.indexing_wos ? "✔︎" : "" },
-      { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
-      { label: "UGC Care 1", key: "indexing_ugc", render: i => i.indexing_ugc ? "✔︎" : "" },
+      {
+        label: "WOS (ESCI, SCIE…)",
+        key: "indexing_wos",
+        render: (i) => (i.indexing_wos ? "✔︎" : ""),
+      },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (i) => (i.indexing_scopus ? "✔︎" : ""),
+      },
+      {
+        label: "UGC Care 1",
+        key: "indexing_ugc",
+        render: (i) => (i.indexing_ugc ? "✔︎" : ""),
+      },
       { label: "Other (Referred Journal)", key: "indexing_other" },
       { label: "DOI", key: "doi" },
       {
         label: "Google Drive Link",
         key: "google_drive_link",
-        render: i =>
+        render: (i) =>
           i.google_drive_link ? (
             <a href={i.google_drive_link} target="_blank" rel="noreferrer">
               View
@@ -94,18 +122,96 @@ export const formConfig = {
       { label: "Publisher", key: "publisher" },
       { label: "Page No", key: "page_no" },
       { label: "Month & Year", key: "publication_month_year" },
-      { label: "Scopus", key: "indexing_scopus", render: i => i.indexing_scopus ? "✔︎" : "" },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (i) => (i.indexing_scopus ? "✔︎" : ""),
+      },
       { label: "Other Indexing", key: "indexing_other" },
       { label: "Conference Status", key: "conference_status" },
       { label: "Conference Mode", key: "conference_mode" },
-      { label: "Registration Fee Reimbursed", key: "registration_fee_reimbursed", render: i => i.registration_fee_reimbursed ? "✔︎" : "" },
+      {
+        label: "Registration Fee Reimbursed",
+        key: "registration_fee_reimbursed",
+        render: (i) => (i.registration_fee_reimbursed ? "✔︎" : ""),
+      },
       { label: "Special Leave Dates", key: "special_leave_dates" },
       {
         label: "Certificate Link",
         key: "certificate_link",
-        render: i =>
+        render: (i) =>
           i.certificate_link ? (
             <a href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+      { label: "Department", key: "department" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+    ],
+  },
+
+  "T2.1": {
+    endpoint: "/api/faculty/t2_1workshops/",
+    FormComponent: T2_1Form,
+    listFields: [
+      { label: "Name of Faculty", key: "faculty_name" },
+      { label: "Program Name", key: "program_name" },
+      { label: "Organizer", key: "organizer" },
+      { label: "Place", key: "place" },
+      { label: "Start Date", key: "start_date" },
+      { label: "End Date", key: "end_date" },
+      { label: "Number of Days", key: "num_days" },
+      { label: "Mode", key: "mode" },
+      {
+        label: "Registration Fee Reimbursed",
+        key: "registration_fee_reimbursed",
+        render: (i) => (i.registration_fee_reimbursed ? "✔︎" : ""),
+      },
+      { label: "Special Leave Dates", key: "special_leave_dates" },
+      {
+        label: "Certificate Link",
+        key: "certificate_link",
+        render: (i) =>
+          i.certificate_link ? (
+            <a href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+      { label: "Department", key: "department" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+    ],
+  },
+
+  "T2.2": {
+    endpoint: "/api/faculty/t2_2organized/",
+    FormComponent: T2_2Form,
+    listFields: [
+      { label: "Name of Faculty", key: "faculty_name" },
+      { label: "Role", key: "role" },
+      { label: "Activity Type", key: "activity_type" },
+      { label: "Program Name", key: "program_name" },
+      { label: "Organized By (Dept)", key: "organized_by_dept" },
+      { label: "Place", key: "place" },
+      { label: "Start Date", key: "start_date" },
+      { label: "End Date", key: "end_date" },
+      { label: "Number of Days", key: "num_days" },
+      { label: "Mode", key: "mode" },
+      { label: "Participants", key: "num_participants" },
+      { label: "Collaborator", key: "collaborator" },
+      {
+        label: "Report Link",
+        key: "report_link",
+        render: (i) =>
+          i.report_link ? (
+            <a href={i.report_link} target="_blank" rel="noreferrer">
               View
             </a>
           ) : (

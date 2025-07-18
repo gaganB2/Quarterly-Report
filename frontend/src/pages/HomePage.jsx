@@ -1,7 +1,6 @@
 // src/pages/HomePage.jsx
 import React, { useState } from "react";
 import { Container, Box, Typography, Divider } from "@mui/material";
-import FilterPanel from "../components/FilterPanel";
 import FormTable from "../components/FormTable";
 
 const getCurrentQuarter = () => {
@@ -19,12 +18,9 @@ const getCurrentAcademicYear = () => {
 export default function HomePage() {
   const defaultSession = getCurrentQuarter();
   const defaultYear = getCurrentAcademicYear();
-  const [filters, setFilters] = useState({
-    form: "",
+  const [filters] = useState({
     session: defaultSession,
     year: defaultYear,
-    title: "",
-    journal: "",
   });
 
   return (
@@ -44,9 +40,7 @@ export default function HomePage() {
         </Typography>
         <Divider sx={{ mb: 3 }} />
 
-        <FilterPanel onApply={setFilters} initial={filters} />
-
-        {/* Pass filters into FormTable */}
+        {/* Only the submission sections, no filters */}
         <FormTable filters={filters} />
       </Box>
     </Container>
