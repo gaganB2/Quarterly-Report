@@ -6,6 +6,7 @@ from .models import T1_ResearchArticle, Department
 from .models import T2_1WorkshopAttendance
 from .models import T2_2WorkshopOrganized
 from .models import T3_1BookPublication
+from .models import T3_2ChapterPublication
 class T1ResearchArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = T1_ResearchArticle
@@ -145,6 +146,29 @@ class T3_1BookPublicationSerializer(serializers.ModelSerializer):
             "indexing",
             "publication_year",
             "print_mode",
+            "book_type",
+            "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["user", "department", "created_at", "updated_at"]
+
+class T3_2ChapterPublicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T3_2ChapterPublication
+        fields = [
+            "id",
+            "user",
+            "faculty_name",
+            "chapter_title",
+            "author_type",
+            "publisher_details",
+            "isbn_number",
+            "indexing",
+            "publication_year",
             "book_type",
             "proof_link",
             "department",

@@ -9,6 +9,8 @@ from .models import T1_2ResearchArticle
 from .serializers import T1_2ResearchArticleSerializer
 from .models import T2_1WorkshopAttendance
 from .serializers import T2_1WorkshopAttendanceSerializer
+from .models import T3_2ChapterPublication
+from .serializers import T3_2ChapterPublicationSerializer
 
 from .models import T2_2WorkshopOrganized
 from .serializers import T2_2WorkshopOrganizedSerializer
@@ -230,6 +232,43 @@ class T3_1BookPublicationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         profile = Profile.objects.get(user=self.request.user)
         qs = T3_1BookPublication.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        year = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+    def perform_update(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        if profile.role == "Faculty" and serializer.instance.user != self.request.user:
+            raise PermissionDenied("You can only edit your own entries.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        profile = Profile.objects.get(user=self.request.user)
+        if profile.role == "Faculty" and instance.user != self.request.user:
+            raise PermissionDenied("You can only delete your own entries.")
+        instance.delete()
+
+
+class T3_2ChapterPublicationViewSet(viewsets.ModelViewSet):
+    serializer_class = T3_2ChapterPublicationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T3_2ChapterPublication.objects.all()
         if profile.role == "Faculty":
             qs = qs.filter(user=self.request.user)
         elif profile.role == "HOD":

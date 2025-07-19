@@ -53,3 +53,28 @@ class T3_1BookPublicationAdmin(admin.ModelAdmin):
         "book_type",
         "created_at",
     ]
+
+from .models import T3_2ChapterPublication
+
+@admin.register(T3_2ChapterPublication)
+class T3_2ChapterPublicationAdmin(admin.ModelAdmin):
+    list_display = [
+        "chapter_title",
+        "faculty_name",
+        "author_type",
+        "publication_year",
+        "book_type",
+        "department",
+        "created_at",
+    ]
+    list_filter = [
+        "publication_year",
+        "book_type",
+        "author_type",
+        "department",
+    ]
+    search_fields = [
+        "chapter_title",
+        "faculty_name",
+    ]
+    ordering = ["-publication_year", "faculty_name"]

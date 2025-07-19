@@ -8,6 +8,8 @@ from t1_research.views import T2_2WorkshopOrganizedViewSet
 from t1_research.views import T3_1BookPublicationViewSet
 from t1_research.views import DepartmentViewSet, T1ResearchViewSet,T1_2ResearchViewSet, T2_1WorkshopAttendanceViewSet
 from users.views import RegisterUserView, GetUserProfileView
+from t1_research.views import T3_2ChapterPublicationViewSet
+
 
 router = DefaultRouter()
 router.register(r'departments', DepartmentViewSet, basename='department')
@@ -16,6 +18,8 @@ router.register(r't1_2research', T1_2ResearchViewSet, basename='t1_2research')
 router.register(r't2_1workshops', T2_1WorkshopAttendanceViewSet, basename='t2_1workshops')
 router.register(r't2_2organized', T2_2WorkshopOrganizedViewSet, basename='t2_2organized')
 router.register(r't3_1books', T3_1BookPublicationViewSet, basename='t3_1books')
+router.register(r't3_2chapters', T3_2ChapterPublicationViewSet, basename='t3_2chapters')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     

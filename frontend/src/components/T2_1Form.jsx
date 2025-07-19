@@ -28,10 +28,15 @@ const QUARTER_OPTIONS = [
 ];
 
 // Year options (last 6 years)
-const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
-  const y = new Date().getFullYear() - 2 + i;
-  return { label: `${y} – ${y + 1}`, value: y };
+// Show every academic cycle from 2000–2001 up to 2099–2100
+const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => {
+  const start = 2000 + i;
+  return {
+    value: start,
+    label: `${start} – ${start + 1}`
+  };
 });
+
 
 export default function T2_1Form({ session, year, editData, onSuccess }) {
   const isEdit = Boolean(editData?.id);

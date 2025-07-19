@@ -1,4 +1,4 @@
-// src/components/T3_1Form.jsx
+// src/components/T3_2Form.jsx
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -17,14 +17,25 @@ import {
 import { motion } from "framer-motion";
 import apiClient from "../api/axios";
 
+// Helper to pick current quarter and academic year
+const getCurrentQuarter = () => {
+  const m = new Date().getMonth() + 1;
+  if (m <= 3) return "Q3";
+  if (m <= 6) return "Q4";
+  if (m <= 9) return "Q1";
+  return "Q2";
+};
+const getCurrentAcademicYear = () => {
+  const now = new Date();
+  return now.getMonth() + 1 >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+};
+
 const QUARTER_OPTIONS = [
   { value: "Q1", label: "Q1 (July – September)" },
   { value: "Q2", label: "Q2 (October – December)" },
   { value: "Q3", label: "Q3 (January – March)" },
   { value: "Q4", label: "Q4 (April – June)" },
 ];
-
-// Show every academic cycle from 2000–2001 up to 2099–2100
 const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => {
   const start = 2000 + i;
   return {
@@ -33,20 +44,18 @@ const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => {
   };
 });
 
-
-export default function T3_1Form({ session, year, editData, onSuccess }) {
+export default function T3_2Form({ session, year, editData, onSuccess }) {
   const isEdit = Boolean(editData?.id);
-  const [quarter, setQuarter] = useState(session);
-  const [acadYear, setAcadYear] = useState(year);
+  const [quarter, setQuarter] = useState(session || getCurrentQuarter());
+  const [acadYear, setAcadYear] = useState(year || getCurrentAcademicYear());
   const [formData, setFormData] = useState({
     faculty_name: "",
-    book_title: "",
+    chapter_title: "",
     author_type: "Sole",
     publisher_details: "",
     isbn_number: "",
     indexing: "",
     publication_year: new Date().getFullYear(),
-    print_mode: "Hardcopy",
     book_type: "National",
     proof_link: "",
   });
@@ -73,18 +82,16 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
     const payload = { ...formData, quarter, year: acadYear };
     try {
       if (isEdit) {
-        await apiClient.put(`/api/faculty/t3_1books/${editData.id}/`, payload);
+        await apiClient.put(`/api/faculty/t3_2chapters/${editData.id}/`, payload);
         setSnack({ open: true, message: "Updated successfully", severity: "success" });
       } else {
-        await apiClient.post("/api/faculty/t3_1books/", payload);
+        await apiClient.post("/api/faculty/t3_2chapters/", payload);
         setSnack({ open: true, message: "Submitted successfully", severity: "success" });
       }
       onSuccess();
     } catch (err) {
       console.error(err.response?.data || err);
-      const msg = err.response?.data
-        ? JSON.stringify(err.response.data)
-        : "A submission error occurred";
+      const msg = err.response?.data ? JSON.stringify(err.response.data) : "Submission error";
       setSnack({ open: true, message: msg, severity: "error" });
     } finally {
       setLoading(false);
@@ -98,9 +105,10 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
       exit={{ opacity: 0, y: 16 }}
       transition={{ duration: 0.2 }}
     >
+      {/* USE outlined variant, NO elevation prop anywhere */}
       <Paper variant="outlined" sx={{ p: 4, borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom>
-          {isEdit ? "Edit Book Publication (T3.1)" : "Add Book Publication (T3.1)"}
+          {isEdit ? "Edit Chapter Publication (T3.2)" : "Add Chapter Publication (T3.2)"}
         </Typography>
 
         <Box
@@ -115,20 +123,28 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
           {/* Quarter & Year */}
           <FormControl size="small">
             <InputLabel>Quarter</InputLabel>
-            <Select value={quarter} label="Quarter" onChange={(e) => setQuarter(e.target.value)}>
-              {QUARTER_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
+            <Select
+              value={quarter}
+              label="Quarter"
+              onChange={(e) => setQuarter(e.target.value)}
+            >
+              {QUARTER_OPTIONS.map((o) => (
+                <MenuItem key={o.value} value={o.value}>
+                  {o.label}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
           <FormControl size="small">
             <InputLabel>Year</InputLabel>
-            <Select value={acadYear} label="Year" onChange={(e) => setAcadYear(e.target.value)}>
-              {YEAR_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
+            <Select
+              value={acadYear}
+              label="Year"
+              onChange={(e) => setAcadYear(e.target.value)}
+            >
+              {YEAR_OPTIONS.map((o) => (
+                <MenuItem key={o.value} value={o.value}>
+                  {o.label}
                 </MenuItem>
               ))}
             </Select>
@@ -144,16 +160,21 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
             fullWidth
           />
           <TextField
-            name="book_title"
-            label="Book Title"
-            value={formData.book_title}
+            name="chapter_title"
+            label="Chapter Title"
+            value={formData.chapter_title}
             onChange={handleChange}
             size="small"
             fullWidth
           />
           <FormControl size="small">
             <InputLabel>Author Type</InputLabel>
-            <Select name="author_type" value={formData.author_type} label="Author Type" onChange={handleChange}>
+            <Select
+              name="author_type"
+              value={formData.author_type}
+              label="Author Type"
+              onChange={handleChange}
+            >
               <MenuItem value="Sole">Sole</MenuItem>
               <MenuItem value="Co-Author">Co-Author</MenuItem>
             </Select>
@@ -192,16 +213,13 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
             inputProps={{ min: 1900, max: new Date().getFullYear() }}
           />
           <FormControl size="small">
-            <InputLabel>Print Mode</InputLabel>
-            <Select name="print_mode" value={formData.print_mode} label="Print Mode" onChange={handleChange}>
-              <MenuItem value="Hardcopy">Hardcopy</MenuItem>
-              <MenuItem value="E-print">E-print</MenuItem>
-              <MenuItem value="Both">Both</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl size="small">
             <InputLabel>Book Type</InputLabel>
-            <Select name="book_type" value={formData.book_type} label="Book Type" onChange={handleChange}>
+            <Select
+              name="book_type"
+              value={formData.book_type}
+              label="Book Type"
+              onChange={handleChange}
+            >
               <MenuItem value="National">National</MenuItem>
               <MenuItem value="International">International</MenuItem>
             </Select>
@@ -210,7 +228,7 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
             name="proof_link"
             label="Proof Link"
             type="url"
-            placeholder="https://..."
+            placeholder="https://"
             helperText="Full URL to proof document"
             value={formData.proof_link}
             onChange={handleChange}
@@ -218,9 +236,14 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
             fullWidth
           />
 
-          {/* Submit Button */}
+          {/* Submit */}
           <Box sx={{ gridColumn: "1 / -1", textAlign: "right", mt: 2 }}>
-            <Button type="submit" variant="contained" disabled={loading} sx={{ minWidth: 120 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={loading}
+              sx={{ minWidth: 120 }}
+            >
               {loading ? <CircularProgress size={20} /> : isEdit ? "Update" : "Submit"}
             </Button>
           </Box>
@@ -232,7 +255,11 @@ export default function T3_1Form({ session, year, editData, onSuccess }) {
           autoHideDuration={4000}
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
         >
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} sx={{ width: "100%" }}>
+          <Alert
+            onClose={() => setSnack((s) => ({ ...s, open: false }))}
+            severity={snack.severity}
+            sx={{ width: "100%" }}
+          >
             {snack.message}
           </Alert>
         </Snackbar>

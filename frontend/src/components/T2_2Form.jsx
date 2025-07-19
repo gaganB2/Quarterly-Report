@@ -26,10 +26,15 @@ const QUARTER_OPTIONS = [
   { value: "Q4", label: "Q4 (April – June)" },
 ];
 
-const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => {
-  const base = new Date().getFullYear() - 2 + i;
-  return { label: `${base} – ${base + 1}`, value: base };
+// Show every academic cycle from 2000–2001 up to 2099–2100
+const YEAR_OPTIONS = Array.from({ length: 100 }, (_, i) => {
+  const start = 2000 + i;
+  return {
+    value: start,
+    label: `${start} – ${start + 1}`
+  };
 });
+
 
 export default function T2_2Form({ session, year, editData, onSuccess }) {
   const isEdit = Boolean(editData?.id);
