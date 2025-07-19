@@ -4,6 +4,7 @@ import T1_1Form from "../components/T1_1Form";
 import T1_2Form from "../components/T1_2Form";
 import T2_1Form from "../components/T2_1Form";
 import T2_2Form from "../components/T2_2Form";
+import T3_1Form from "../components/T3_1Form";
 
 export const formSections = [
   {
@@ -24,7 +25,7 @@ export const formSections = [
     code: "T2.2",
     title: "Details of FDP/STTP/Workshop/Skill Development Organized",
   },
-  { code: "T3.1", title: "Consultancy Projects" },
+  { code: "T3.1", title: "Consultancy Details of Books/Monographs Published" },
   { code: "T3.2", title: "Revenue Generated Through Consultancy" },
   { code: "T4.1", title: "Funded Research Projects (New)" },
   { code: "T4.2", title: "Funded Research Projects (Ongoing)" },
@@ -224,5 +225,35 @@ export const formConfig = {
     ],
   },
 
+  "T3.1": {
+    endpoint: "/api/faculty/t3_1books/",
+    FormComponent: T3_1Form,
+    listFields: [
+      { label: "Name of Faculty", key: "faculty_name" },
+      { label: "Book Title", key: "book_title" },
+      { label: "Author Type", key: "author_type" },
+      { label: "Publisher Details", key: "publisher_details" },
+      { label: "ISBN/ISSN", key: "isbn_number" },
+      { label: "Indexing", key: "indexing" },
+      { label: "Year of Publication", key: "publication_year" },
+      { label: "Print Mode", key: "print_mode" },
+      { label: "Book Type", key: "book_type" },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <a href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+      { label: "Department", key: "department" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+    ],
+  },
   // …other configs remain unchanged
 };

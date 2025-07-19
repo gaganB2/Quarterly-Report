@@ -1,4 +1,3 @@
-// src/components/FormRow.jsx
 import React, { useState } from "react";
 import { TableRow, TableCell, Button, Collapse, Box } from "@mui/material";
 import apiClient from "../api/axios";
@@ -6,12 +5,7 @@ import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
 
-export default function FormRow({
-  form,
-  idx,
-  filters,
-}) {
-  const { session, year } = filters;
+export default function FormRow({ form, idx, autoViewGen }) {
   const [expanded, setExpanded] = useState(false);
   const [mode, setMode] = useState("add"); // "add" | "view" | "edit" | "delete"
   const [data, setData] = useState([]);
@@ -20,15 +14,12 @@ export default function FormRow({
   const cfg = formConfig[form.code];
   if (!cfg || !cfg.endpoint) return null;
 
-  // load data when needed
+  // Fetch all entries for this section
   const loadData = async () => {
-    const res = await apiClient.get(cfg.endpoint, {
-      params: { quarter: session, year },
-    });
+    const res = await apiClient.get(cfg.endpoint);
     setData(res.data);
   };
 
-  // manual Add/View/Edit/Delete
   const handleOpen = async (newMode) => {
     setMode(newMode);
     setEditData(null);
@@ -38,7 +29,6 @@ export default function FormRow({
     setExpanded((prev) => !(prev && mode === newMode));
   };
 
-  // invoked when clicking edit icon in list
   const handleEditItem = (item) => {
     setEditData(item);
     setMode("edit");
@@ -81,8 +71,6 @@ export default function FormRow({
                 {mode === "add" && (
                   <GenericForm
                     FormComponent={cfg.FormComponent}
-                    session={session}
-                    year={year}
                     onSuccess={() => setExpanded(false)}
                   />
                 )}
@@ -101,8 +89,6 @@ export default function FormRow({
                   <Box mt={2}>
                     <GenericForm
                       FormComponent={cfg.FormComponent}
-                      session={session}
-                      year={year}
                       editData={editData}
                       onSuccess={() => setExpanded(false)}
                     />

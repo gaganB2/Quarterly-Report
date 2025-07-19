@@ -1,13 +1,11 @@
-// src/components/FormTable.jsx
 import React, { useState, useEffect } from "react";
-
 import {
   Box,
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableRow,
+  TableCell,
   TableContainer,
   Paper,
   Typography,
@@ -17,17 +15,15 @@ import {
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
 
-export default function FormTable({ filters }) {
-  // Show all sections if no form filter, otherwise only the one chosen
-  const visibleSections = formSections.filter(
-    (s) => !filters.form || s.code === filters.form
-  );
+export default function FormTable() {
+  // Always show all sections
+  const visibleSections = formSections;
 
+  // Trigger one initial load-per-section on mount
   const [gen, setGen] = useState(0);
   useEffect(() => {
-    // bump whenever filters change
     setGen((g) => g + 1);
-  }, [filters]);
+  }, []);
 
   return (
     <Box mt={4}>
@@ -51,7 +47,6 @@ export default function FormTable({ filters }) {
                 key={f.code}
                 form={f}
                 idx={i}
-                filters={filters}
                 autoViewGen={gen}
               />
             ))}

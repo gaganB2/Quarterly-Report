@@ -195,3 +195,39 @@ class T2_2WorkshopOrganized(models.Model):
 
     def __str__(self):
         return f"{self.program_name} ({self.quarter} {self.year})"
+    
+class T3_1BookPublication(models.Model):
+    user                   = models.ForeignKey(User, on_delete=models.CASCADE)
+    department             = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name           = models.CharField(max_length=200)
+    book_title             = models.CharField(max_length=255, help_text="Title of the Book/Monograph")
+    author_type            = models.CharField(
+                                max_length=20,
+                                choices=[("Sole","Sole"),("Co-Author","Co-Author")],
+                                default="Sole"
+                            )
+    publisher_details      = models.TextField(help_text="Publisher with complete address")
+    isbn_number            = models.CharField(max_length=50, help_text="ISSN/ISBN No.")
+    indexing                = models.CharField(max_length=100, blank=True, help_text="Scopus/Others")
+    publication_year       = models.PositiveIntegerField()
+    print_mode             = models.CharField(
+                                max_length=10,
+                                choices=[("Hardcopy","Hardcopy"),("E-print","E-print"),("Both","Both")],
+                                default="Hardcopy"
+                            )
+    book_type              = models.CharField(
+                                max_length=15,
+                                choices=[("National","National"),("International","International")],
+                                default="National"
+                            )
+    proof_link             = models.URLField(blank=True, help_text="Google Drive link to proof")
+
+    quarter                = models.CharField(max_length=10)
+    year                   = models.PositiveIntegerField()
+
+    created_at             = models.DateTimeField(auto_now_add=True)
+    updated_at             = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.book_title} by {self.faculty_name} ({self.quarter} {self.year})'

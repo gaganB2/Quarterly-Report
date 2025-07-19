@@ -5,6 +5,7 @@ from .models import T1_ResearchArticle, Department
 from .models import T1_2ResearchArticle
 from .models import T2_1WorkshopAttendance
 from .models import T2_2WorkshopOrganized
+from .models import T3_1BookPublication
 @admin.register(T1_ResearchArticle)
 class T1ResearchAdmin(admin.ModelAdmin):
     list_display = ['title', 'user', 'quarter', 'year', 'created_at']
@@ -39,5 +40,16 @@ class T2_2WorkshopOrganizedAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
         "num_participants",
+        "created_at",
+    ]
+
+@admin.register(T3_1BookPublication)
+class T3_1BookPublicationAdmin(admin.ModelAdmin):
+    list_display = [
+        "book_title",
+        "faculty_name",
+        "publication_year",
+        "print_mode",
+        "book_type",
         "created_at",
     ]
