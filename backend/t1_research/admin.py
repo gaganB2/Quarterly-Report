@@ -6,6 +6,17 @@ from .models import T1_2ResearchArticle
 from .models import T2_1WorkshopAttendance
 from .models import T2_2WorkshopOrganized
 from .models import T3_1BookPublication
+from .models import T4_1EditorialBoard
+from .models import T4_2ReviewerDetails
+from .models import T4_3CommitteeMembership
+from .models import T5_1PatentDetails
+from .models import T5_2SponsoredProject
+from .models import T5_3ConsultancyProject
+from .models import T5_4CourseDevelopment
+from .models import T5_5LabEquipmentDevelopment
+from .models import T5_6ResearchGuidance
+from .models import T6_1CertificationCourse
+from .models import T6_2ProfessionalBodyMembership
 @admin.register(T1_ResearchArticle)
 class T1ResearchAdmin(admin.ModelAdmin):
     list_display = ['title', 'user', 'quarter', 'year', 'created_at']
@@ -78,3 +89,128 @@ class T3_2ChapterPublicationAdmin(admin.ModelAdmin):
         "faculty_name",
     ]
     ordering = ["-publication_year", "faculty_name"]
+
+@admin.register(T4_1EditorialBoard)
+class T4_1EditorialBoardAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "title",
+        "role",
+        "publisher",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T4_2ReviewerDetails)
+class T4_2ReviewerDetailsAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "publication_type",
+        "title",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T4_3CommitteeMembership)
+class T4_3CommitteeMembershipAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "body_details",
+        "responsibility",
+        "level",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_1PatentDetails)
+class T5_1PatentDetailsAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "title",
+        "ipr_type",
+        "status",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_2SponsoredProject)
+class T5_2SponsoredProjectAdmin(admin.ModelAdmin):
+    list_display = [
+        "project_title",
+        "principal_investigator",
+        "funding_agency",
+        "status",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_3ConsultancyProject)
+class T5_3ConsultancyProjectAdmin(admin.ModelAdmin):
+    list_display = [
+        "title",
+        "client_name",
+        "status",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_4CourseDevelopment)
+class T5_4CourseDevelopmentAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "course_module_name",
+        "platform",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_5LabEquipmentDevelopment)
+class T5_5LabEquipmentDevelopmentAdmin(admin.ModelAdmin):
+    list_display = [
+        "lab_name",
+        "major_equipment",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T5_6ResearchGuidance)
+class T5_6ResearchGuidanceAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "candidate_name",
+        "role",
+        "status",
+        "research_center",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T6_1CertificationCourse)
+class T6_1CertificationCourseAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "certification_course",
+        "certification_type",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+@admin.register(T6_2ProfessionalBodyMembership)
+class T6_2ProfessionalBodyMembershipAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "institution_name",
+        "membership_grade",
+        "membership_number",
+        "year_of_election",
+        "quarter",
+        "year",
+        "created_at",
+    ]

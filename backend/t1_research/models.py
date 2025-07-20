@@ -262,3 +262,444 @@ class T3_2ChapterPublication(models.Model):
 
     def __str__(self):
         return f'{self.chapter_title} by {self.faculty_name} ({self.quarter} {self.year})'
+
+# ── Add this at the bottom of backend/t1_research/models.py ──
+
+class T4_1EditorialBoard(models.Model):
+    ROLE_CHOICES = [
+        ("Editor", "Editor"),
+        ("Co-editor", "Co-editor"),
+        ("Member", "Member"),
+    ]
+    INDEXING_CHOICES = [
+        ("WoS", "WoS"),
+        ("Scopus", "Scopus"),
+        ("UGC CARE", "UGC CARE"),
+        ("Others", "Others"),
+    ]
+    TYPE_CHOICES = [
+        ("National", "National"),
+        ("International", "International"),
+    ]
+
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
+    department      = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name    = models.CharField(max_length=200)
+    title           = models.CharField(max_length=255, help_text="Title of the Book or Journal")
+    role            = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    publisher       = models.CharField(max_length=255, help_text="Publisher with complete address")
+    issn_isbn       = models.CharField("ISSN/ISBN No.", max_length=50)
+    indexing        = models.CharField(max_length=20, choices=INDEXING_CHOICES)
+    year            = models.PositiveIntegerField("Year (w.e.f.)")
+    type            = models.CharField("Type of Book/Journal", max_length=20, choices=TYPE_CHOICES)
+    proof_link      = models.URLField("Google Drive Link (Upload Proof)", blank=True)
+
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.title} ({self.year})"
+
+class T4_2ReviewerDetails(models.Model):
+    PUB_TYPE_CHOICES = [
+        ("Journal",    "Journal"),
+        ("Conference", "Conference"),
+        ("Book",       "Book"),
+        ("Other",      "Other"),
+    ]
+    INDEXING_CHOICES = [
+        ("SCI",       "SCI"),
+        ("Scopus",    "Scopus"),
+        ("UGC CARE",  "UGC CARE"),
+        ("Others",    "Others"),
+    ]
+
+    user              = models.ForeignKey(User, on_delete=models.CASCADE)
+    department        = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name      = models.CharField(max_length=200)
+    publication_type  = models.CharField(
+                            "Journal/Conference/Book etc.",
+                            max_length=20,
+                            choices=PUB_TYPE_CHOICES
+                        )
+    title             = models.CharField(max_length=255, help_text="Title of the Journal/Conference/Book")
+    indexing          = models.CharField(max_length=20, choices=INDEXING_CHOICES)
+    issn_isbn         = models.CharField("ISSN/ISBN No.", max_length=50)
+    publisher         = models.CharField(max_length=255)
+    year              = models.PositiveIntegerField()
+    type              = models.CharField(
+                            "Type (National/International)",
+                            max_length=20,
+                            choices=[("National","National"),("International","International")]
+                        )
+    proof_link        = models.URLField("Google Drive Link (Upload Proof)", blank=True)
+
+    created_at        = models.DateTimeField(auto_now_add=True)
+    updated_at        = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.title} ({self.year})"
+
+class T4_3CommitteeMembership(models.Model):
+    RESPONSIBILITY_CHOICES = [
+        ("Chairperson",  "Chairperson"),
+        ("Member",       "Member"),
+    ]
+    LEVEL_CHOICES = [
+        ("University",   "University"),
+        ("State",        "State"),
+        ("National",     "National"),
+        ("International","International"),
+    ]
+
+    user              = models.ForeignKey(User, on_delete=models.CASCADE)
+    department        = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name      = models.CharField(max_length=200)
+    body_details      = models.CharField(max_length=255, help_text="Details of the body/committee")
+    responsibility    = models.CharField(max_length=20, choices=RESPONSIBILITY_CHOICES)
+    level             = models.CharField(max_length=20, choices=LEVEL_CHOICES)
+    other_details     = models.TextField(blank=True, help_text="Any other details")
+    proof_link        = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter           = models.CharField(max_length=10)
+    year              = models.PositiveIntegerField()
+
+    created_at        = models.DateTimeField(auto_now_add=True)
+    updated_at        = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.body_details} ({self.quarter} {self.year})"
+
+class T5_1PatentDetails(models.Model):
+    IPR_TYPE_CHOICES = [
+        ("Utility",   "Utility"),
+        ("Process",   "Process"),
+        ("Design",    "Design"),
+        ("Copyright", "Copyright"),
+        ("Trademark", "Trademark"),
+        ("Other",     "Other"),
+    ]
+    STATUS_CHOICES = [
+        ("Filed",     "Filed"),
+        ("Published", "Published"),
+        ("Granted",   "Granted"),
+    ]
+
+    user                     = models.ForeignKey(User, on_delete=models.CASCADE)
+    department               = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name             = models.CharField(max_length=200)
+    title                    = models.CharField(max_length=255)
+    internal_co_inventors    = models.TextField(blank=True, help_text="Internal Co-Inventors")
+    external_co_inventors    = models.TextField(blank=True, help_text="External Co-Inventors")
+    ipr_type                 = models.CharField("Type of IPR", max_length=20, choices=IPR_TYPE_CHOICES)
+    application_number       = models.CharField(max_length=100, blank=True)
+    status                   = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    filled_date              = models.DateField(null=True, blank=True)
+    published_granted_date   = models.DateField(null=True, blank=True)
+    publication_number       = models.CharField(max_length=100, blank=True, help_text="Publication/Granted Number")
+    technology_transfer      = models.BooleanField(default=False, help_text="Technology Transfer Applicable")
+    country                  = models.CharField(max_length=100, blank=True, help_text="Country of Patent")
+    proof_link               = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter                  = models.CharField(max_length=10)
+    year                     = models.PositiveIntegerField()
+
+    created_at               = models.DateTimeField(auto_now_add=True)
+    updated_at               = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.title} ({self.quarter} {self.year})"
+
+class T5_2SponsoredProject(models.Model):
+    STATUS_CHOICES = [
+        ("Ongoing",   "Ongoing"),
+        ("Completed", "Completed"),
+    ]
+    DURATION_CHOICES = [
+        ("Short-Term",    "Short-Term"),
+        ("Medium-Term",   "Medium-Term"),
+        ("Long-Term",     "Long-Term"),
+        ("Other",         "Other"),
+    ]
+    REGIONALITY_CHOICES = [
+        ("Regional",      "Regional"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user                      = models.ForeignKey(User, on_delete=models.CASCADE)
+    department                = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    principal_investigator    = models.CharField(max_length=200, help_text="Name of PI")
+    co_principal_investigator = models.CharField(max_length=200, blank=True, help_text="Name of Co-PI")
+    members                   = models.TextField(blank=True, help_text="Other members (if any)")
+
+    funding_agency            = models.CharField(max_length=255)
+    project_title             = models.CharField(max_length=255)
+    sanctioned_order_no       = models.CharField(max_length=100, blank=True)
+    sanctioned_date           = models.DateField(null=True, blank=True)
+    status                    = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    completion_date           = models.DateField(null=True, blank=True, help_text="If completed")
+    sanctioned_amount_lakhs   = models.DecimalField(max_digits=12, decimal_places=2, help_text="In Lakhs")
+    amount_received_rupees    = models.DecimalField(max_digits=15, decimal_places=2, help_text="In Rupees")
+    duration                  = models.CharField(max_length=50, choices=DURATION_CHOICES)
+    regionality               = models.CharField(max_length=20, choices=REGIONALITY_CHOICES)
+    proof_link                = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter                   = models.CharField(max_length=10)
+    year                      = models.PositiveIntegerField()
+
+    created_at                = models.DateTimeField(auto_now_add=True)
+    updated_at                = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.project_title} ({self.principal_investigator}, {self.quarter} {self.year})"
+
+class T5_3ConsultancyProject(models.Model):
+    STATUS_CHOICES = [
+        ("Ongoing",   "Ongoing"),
+        ("Completed", "Completed"),
+    ]
+    DURATION_CHOICES = [
+        ("Short-Term",    "Short-Term"),
+        ("Medium-Term",   "Medium-Term"),
+        ("Long-Term",     "Long-Term"),
+        ("Other",         "Other"),
+    ]
+    REGIONALITY_CHOICES = [
+        ("Regional",      "Regional"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user                      = models.ForeignKey(User, on_delete=models.CASCADE)
+    department                = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    internal_faculty          = models.TextField(blank=True, help_text="Internal Faculty Details")
+    external_faculty          = models.TextField(blank=True, help_text="External Faculty Details")
+    client_name               = models.CharField(max_length=255, help_text="Name of Client")
+    title                     = models.CharField(max_length=255, help_text="Title of Consultancy")
+    sanctioned_order_no       = models.CharField(max_length=100, blank=True)
+    sanctioned_date           = models.DateField(null=True, blank=True)
+    sanctioned_amount_lakhs   = models.DecimalField(max_digits=12, decimal_places=2, help_text="In Lakhs")
+    amount_received_rupees    = models.DecimalField(max_digits=15, decimal_places=2, help_text="In Rupees")
+    status                    = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    duration                  = models.CharField(max_length=50, choices=DURATION_CHOICES)
+    regionality               = models.CharField(max_length=20, choices=REGIONALITY_CHOICES)
+    proof_link                = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter                   = models.CharField(max_length=10)
+    year                      = models.PositiveIntegerField()
+
+    created_at                = models.DateTimeField(auto_now_add=True)
+    updated_at                = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.internal_faculty or self.external_faculty})"
+
+class T5_4CourseDevelopment(models.Model):
+    user                   = models.ForeignKey(User, on_delete=models.CASCADE)
+    department             = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name           = models.CharField(max_length=200)
+    course_module_name     = models.CharField(
+                                max_length=255,
+                                help_text="Name of the Course/e-content/Laboratory Module Developed"
+                             )
+    platform               = models.CharField(
+                                max_length=255,
+                                help_text="Platform (Moodle, Gsuite, Media Centre, etc.)"
+                             )
+    contributory_institute = models.CharField(
+                                max_length=255,
+                                blank=True,
+                                help_text="Any other Contributory Institute/Industry"
+                             )
+    usage_citation         = models.TextField(
+                                blank=True,
+                                help_text="Usage and Citation etc."
+                             )
+    amount_spent           = models.DecimalField(
+                                max_digits=12,
+                                decimal_places=2,
+                                null=True, blank=True,
+                                help_text="Amount Spent (if any)"
+                             )
+    launch_date            = models.DateField(
+                                null=True, blank=True,
+                                help_text="Date of Launching Content"
+                             )
+    link                   = models.URLField(
+                                blank=True,
+                                help_text="Google Drive Link or Share Online Content Link"
+                             )
+
+    quarter                = models.CharField(max_length=10)
+    year                   = models.PositiveIntegerField()
+
+    created_at             = models.DateTimeField(auto_now_add=True)
+    updated_at             = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.course_module_name} ({self.quarter} {self.year})"
+
+# ── Add at the bottom of backend/t1_research/models.py ──
+
+class T5_5LabEquipmentDevelopment(models.Model):
+    user               = models.ForeignKey(User, on_delete=models.CASCADE)
+    department         = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    lab_name           = models.CharField(
+                            max_length=255,
+                            help_text="Name of the Laboratory"
+                        )
+    major_equipment    = models.CharField(
+                            max_length=255,
+                            help_text="Major Equipment"
+                        )
+    purpose            = models.TextField(
+                            help_text="Purpose of the Development of the Laboratory"
+                        )
+    equipment_cost     = models.DecimalField(
+                            max_digits=14,
+                            decimal_places=2,
+                            help_text="Approx. Cost of Equipment in Developing the Laboratory"
+                        )
+    proof_link         = models.URLField(
+                            blank=True,
+                            help_text="Google Drive Link (Upload Proof)"
+                        )
+
+    quarter            = models.CharField(max_length=10)
+    year               = models.PositiveIntegerField()
+
+    created_at         = models.DateTimeField(auto_now_add=True)
+    updated_at         = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.lab_name} ({self.quarter} {self.year})"
+
+class T5_6ResearchGuidance(models.Model):
+    ROLE_CHOICES = [
+        ("Supervisor",    "Supervisor"),
+        ("Co-Supervisor", "Co-Supervisor"),
+    ]
+    STATUS_CHOICES = [
+        ("Ongoing",   "Ongoing"),
+        ("Completed", "Completed"),
+    ]
+
+    user                       = models.ForeignKey(User, on_delete=models.CASCADE)
+    department                 = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name               = models.CharField(max_length=200)
+    role                       = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    candidate_name             = models.CharField(max_length=200, help_text="Name of Candidate")
+    enrollment_number          = models.CharField(max_length=100, help_text="Enrollment No.")
+    thesis_title               = models.CharField(max_length=255, help_text="Title of Thesis")
+    registration_date          = models.DateField(help_text="Date of Registration")
+    viva_voce_date             = models.DateField(help_text="Date of PhD Viva-Voce")
+    external_examiner_details  = models.TextField(help_text="Complete Details of External Examiner")
+    status                     = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    research_center            = models.CharField(max_length=255, help_text="Name of the Research Center")
+    conferring_university      = models.CharField(max_length=255, help_text="Name of the PhD Conferring University")
+    proof_link                 = models.URLField(
+                                      blank=True,
+                                      help_text=(
+                                        "Drive Link: For Ongoing → RDC Letter; "
+                                        "for Completed → Notification Letter"
+                                      )
+                                  )
+
+    quarter                    = models.CharField(max_length=10)
+    year                       = models.PositiveIntegerField()
+
+    created_at                 = models.DateTimeField(auto_now_add=True)
+    updated_at                 = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.candidate_name} ({self.quarter} {self.year})"
+
+class T6_1CertificationCourse(models.Model):
+    CERT_TYPE_CHOICES = [
+        ("Elite-Gold",   "Elite-Gold"),
+        ("Elite-Silver", "Elite-Silver"),
+        ("Passed",       "Passed"),
+        ("Other",        "Other"),
+    ]
+
+    user                     = models.ForeignKey(User, on_delete=models.CASCADE)
+    department               = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name             = models.CharField(max_length=200)
+    certification_course     = models.CharField(
+                                   max_length=255,
+                                   help_text="Name of the Certification Course"
+                               )
+    course_name              = models.CharField(max_length=255)
+    category                 = models.CharField(
+                                   max_length=255,
+                                   help_text="Category of the Course (e.g. CSE, ECE, etc.)"
+                               )
+    duration                 = models.CharField(
+                                   max_length=100,
+                                   help_text="Duration of the Course"
+                               )
+    credit_points            = models.CharField(
+                                   max_length=50,
+                                   help_text="Credit Points Earned"
+                               )
+    certification_type       = models.CharField(
+                                   max_length=20,
+                                   choices=CERT_TYPE_CHOICES,
+                                   help_text="Elite-Gold / Elite-Silver / Passed / Other"
+                               )
+    certificate_link         = models.URLField(
+                                   blank=True,
+                                   help_text="Google Drive Link (Upload Certificate)"
+                               )
+
+    quarter                  = models.CharField(max_length=10)
+    year                     = models.PositiveIntegerField()
+
+    created_at               = models.DateTimeField(auto_now_add=True)
+    updated_at               = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.certification_course} ({self.quarter} {self.year})"
+
+class T6_2ProfessionalBodyMembership(models.Model):
+    user               = models.ForeignKey(User, on_delete=models.CASCADE)
+    department         = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name       = models.CharField(max_length=200)
+    institution_name   = models.CharField(
+                            max_length=255,
+                            help_text="Name of Institution/Society"
+                        )
+    membership_grade   = models.CharField(
+                            max_length=100,
+                            help_text="Grade of Membership"
+                        )
+    membership_number  = models.CharField(
+                            max_length=100,
+                            help_text="Membership Number"
+                        )
+    year_of_election   = models.PositiveIntegerField()
+    proof_link         = models.URLField(
+                            blank=True,
+                            help_text="Google Drive Link (Upload Proof)"
+                        )
+
+    quarter            = models.CharField(max_length=10)
+    year               = models.PositiveIntegerField()
+
+    created_at         = models.DateTimeField(auto_now_add=True)
+    updated_at         = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.institution_name} ({self.quarter} {self.year})"
