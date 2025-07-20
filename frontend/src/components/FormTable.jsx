@@ -1,3 +1,5 @@
+// src/components/FormTable.jsx
+
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -16,12 +18,11 @@ import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
 
 export default function FormTable() {
-  // Always show all sections
   const visibleSections = formSections;
-
-  // Trigger one initial load-per-section on mount
   const [gen, setGen] = useState(0);
+
   useEffect(() => {
+    // trigger initial loads
     setGen((g) => g + 1);
   }, []);
 
@@ -32,27 +33,38 @@ export default function FormTable() {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-            <TableRow>
-              <TableCell>S. No.</TableCell>
-              <TableCell>Form</TableCell>
-              <TableCell align="right">Options</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {visibleSections.map((f, i) => (
-              <FormRow
-                key={f.code}
-                form={f}
-                idx={i}
-                autoViewGen={gen}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* Allow outer scrolling, not inner */}
+      <Box
+        sx={{
+          width: "100%",
+          overflowX: "visible",
+          overflowY: "visible",
+        }}
+      >
+        <TableContainer
+          component={Paper}
+          sx={{
+            // override MUI default auto‐scroll
+            overflowX: "visible !important",
+            overflowY: "visible !important",
+          }}
+        >
+          <Table>
+            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableRow>
+                <TableCell>S. No.</TableCell>
+                <TableCell>Form</TableCell>
+                <TableCell align="right">Options</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {visibleSections.map((f, i) => (
+                <FormRow key={f.code} form={f} idx={i} autoViewGen={gen} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </Box>
   );
 }

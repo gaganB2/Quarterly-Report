@@ -1,43 +1,116 @@
 import React, { useState } from "react";
-import { TableRow, TableCell, Button, Collapse, Box } from "@mui/material";
+import {
+  TableRow,
+  TableCell,
+  Button,
+  Collapse,
+  Box,
+  Divider,
+  Dialog,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
 
-export default function FormRow({ form, idx, autoViewGen }) {
+export default function FormRow({ form, idx }) {
   const [expanded, setExpanded] = useState(false);
   const [mode, setMode] = useState("add"); // "add" | "view" | "edit" | "delete"
   const [data, setData] = useState([]);
   const [editData, setEditData] = useState(null);
+  const [fullOpen, setFullOpen] = useState(false);
 
   const cfg = formConfig[form.code];
   if (!cfg || !cfg.endpoint) return null;
 
-  // Fetch all entries for this section
+  // Load all entries for this section
   const loadData = async () => {
     const res = await apiClient.get(cfg.endpoint);
     setData(res.data);
   };
 
+  // Toggle panel open/close for any mode
   const handleOpen = async (newMode) => {
+    if (expanded && mode === newMode) {
+      setExpanded(false);
+      return;
+    }
     setMode(newMode);
     setEditData(null);
     if (newMode !== "add") {
       await loadData();
     }
-    setExpanded((prev) => !(prev && mode === newMode));
+    setExpanded(true);
   };
 
+  // Edit icon clicked in list
   const handleEditItem = (item) => {
     setEditData(item);
     setMode("edit");
     setExpanded(true);
   };
 
+  // Delete icon clicked in list
   const handleDeleteItem = async (item) => {
     await apiClient.delete(`${cfg.endpoint}${item.id}/`);
     await loadData();
+  };
+
+  // Render the main panel
+  const renderPanel = () => {
+    if (mode === "add") {
+      return <GenericForm FormComponent={cfg.FormComponent} onSuccess={() => setExpanded(false)} />;
+    }
+    // view/edit/delete all show the list first
+    if (mode === "view" || mode === "edit" || mode === "delete") {
+      return (
+        <>
+          <Box display="flex" justifyContent="flex-end" mb={1}>
+            <Button variant="outlined" size="small" onClick={() => setFullOpen(true)}>
+              View Full Table
+            </Button>
+          </Box>
+          <GenericList
+            data={data}
+            fields={cfg.listFields || []}
+            mode={mode}
+            onEdit={handleEditItem}
+            onDelete={handleDeleteItem}
+          />
+          {mode === "edit" && editData && (
+            <Box mt={2}>
+              <GenericForm
+                FormComponent={cfg.FormComponent}
+                editData={editData}
+                onSuccess={() => setExpanded(false)}
+              />
+            </Box>
+          )}
+        </>
+      );
+    }
+    return null;
+  };
+
+  // Header buttons
+  const renderButton = (btnMode, label, color = "primary") => {
+    const active = mode === btnMode && expanded;
+    return (
+      <Button
+        size="small"
+        onClick={() => handleOpen(btnMode)}
+        sx={{ mr: 1, minWidth: 60 }}
+        variant={active ? "contained" : "text"}
+        color={active ? color : "inherit"}
+      >
+        {expanded && mode === btnMode ? "Close" : label}
+      </Button>
+    );
   };
 
   return (
@@ -48,57 +121,45 @@ export default function FormRow({ form, idx, autoViewGen }) {
           <strong>{form.code}</strong> — {form.title}
         </TableCell>
         <TableCell align="right">
-          <Button size="small" onClick={() => handleOpen("add")} sx={{ mr: 1 }}>
-            {expanded && mode === "add" ? "Close" : "Add"}
-          </Button>
-          <Button size="small" onClick={() => handleOpen("view")} sx={{ mr: 1 }}>
-            View
-          </Button>
-          <Button size="small" onClick={() => handleOpen("edit")} sx={{ mr: 1 }}>
-            Edit
-          </Button>
-          <Button size="small" color="error" onClick={() => handleOpen("delete")}>
-            Delete
-          </Button>
+          {renderButton("add", "Add", "success")}
+          {renderButton("view", "View")}
+          {renderButton("edit", "Edit", "warning")}
+          {renderButton("delete", "Delete", "error")}
         </TableCell>
       </TableRow>
 
-      {expanded && (
-        <TableRow>
-          <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
-            <Collapse in timeout="auto" unmountOnExit>
-              <Box m={2}>
-                {mode === "add" && (
-                  <GenericForm
-                    FormComponent={cfg.FormComponent}
-                    onSuccess={() => setExpanded(false)}
-                  />
-                )}
+      {/* Expandable panel */}
+      <TableRow>
+        <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <Box m={2}>{renderPanel()}</Box>
+            <Divider />
+          </Collapse>
+        </TableCell>
+      </TableRow>
 
-                {(mode === "view" || mode === "edit" || mode === "delete") && (
-                  <GenericList
-                    data={data}
-                    fields={cfg.listFields || []}
-                    mode={mode}
-                    onEdit={handleEditItem}
-                    onDelete={handleDeleteItem}
-                  />
-                )}
-
-                {mode === "edit" && editData && (
-                  <Box mt={2}>
-                    <GenericForm
-                      FormComponent={cfg.FormComponent}
-                      editData={editData}
-                      onSuccess={() => setExpanded(false)}
-                    />
-                  </Box>
-                )}
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      )}
+      {/* Full-screen dialog for “View Full Table” */}
+      <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={() => setFullOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ ml: 2 }}>
+              {form.code} — Full Table
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Box p={2}>
+          <GenericList
+            data={data}
+            fields={cfg.listFields || []}
+            mode="view"
+            onEdit={handleEditItem}
+            onDelete={handleDeleteItem}
+          />
+        </Box>
+      </Dialog>
     </>
   );
 }
