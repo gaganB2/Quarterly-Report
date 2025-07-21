@@ -20,7 +20,10 @@ from t1_research.views import T5_5LabEquipmentDevelopmentViewSet
 from t1_research.views import T5_6ResearchGuidanceViewSet
 from t1_research.views import T6_1CertificationCourseViewSet
 from t1_research.views import T6_2ProfessionalBodyMembershipViewSet
-
+from t1_research.views import T6_3AwardViewSet
+from t1_research.views import T6_4ResourcePersonViewSet
+from t1_research.views import T6_5AICTEInitiativeViewSet
+from t1_research.views import T7_1ProgramOrganizedViewSet
 
 router = DefaultRouter()
 router.register(r'departments', DepartmentViewSet, basename='department')
@@ -41,6 +44,11 @@ router.register(r't5_5labequipment', T5_5LabEquipmentDevelopmentViewSet, basenam
 router.register(r't5_6research',   T5_6ResearchGuidanceViewSet,   basename='t5_6research')
 router.register(r't6_1certcourses', T6_1CertificationCourseViewSet,   basename='t6_1certcourses')
 router.register(r't6_2professmb',  T6_2ProfessionalBodyMembershipViewSet, basename='t6_2professmb')
+router.register(r't6_3awards',     T6_3AwardViewSet, basename='t6_3awards')
+router.register(r't6_4resource',   T6_4ResourcePersonViewSet,         basename='t6_4resource')
+router.register(r't6_5aicte',      T6_5AICTEInitiativeViewSet,     basename='t6_5aicte')
+router.register(r't7_1programs',   T7_1ProgramOrganizedViewSet,    basename='t7_1programs')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -39,7 +39,12 @@ from .models import T6_1CertificationCourse
 from .serializers import T6_1CertificationCourseSerializer
 from .models import T6_2ProfessionalBodyMembership
 from .serializers import T6_2ProfessionalBodyMembershipSerializer
-
+from .models import T6_4ResourcePerson
+from .serializers import T6_4ResourcePersonSerializer
+from .models import T6_5AICTEInitiative
+from .serializers import T6_5AICTEInitiativeSerializer
+from .models import T7_1ProgramOrganized
+from .serializers import T7_1ProgramOrganizedSerializer
 
 from users.models import Profile
 class T1ResearchViewSet(viewsets.ModelViewSet):
@@ -578,6 +583,112 @@ class T6_2ProfessionalBodyMembershipViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         profile = Profile.objects.get(user=self.request.user)
         qs = T6_2ProfessionalBodyMembership.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+from .models import T6_3Award
+from .serializers import T6_3AwardSerializer
+
+class T6_3AwardViewSet(viewsets.ModelViewSet):
+    serializer_class = T6_3AwardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T6_3Award.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+
+class T6_4ResourcePersonViewSet(viewsets.ModelViewSet):
+    serializer_class   = T6_4ResourcePersonSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T6_4ResourcePerson.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class T6_5AICTEInitiativeViewSet(viewsets.ModelViewSet):
+    serializer_class   = T6_5AICTEInitiativeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T6_5AICTEInitiative.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class T7_1ProgramOrganizedViewSet(viewsets.ModelViewSet):
+    serializer_class   = T7_1ProgramOrganizedSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = T7_1ProgramOrganized.objects.all()
         if profile.role == "Faculty":
             qs = qs.filter(user=self.request.user)
         elif profile.role == "HOD":

@@ -17,6 +17,11 @@ from .models import T5_5LabEquipmentDevelopment
 from .models import T5_6ResearchGuidance
 from .models import T6_1CertificationCourse
 from .models import T6_2ProfessionalBodyMembership
+from .models import T6_3Award
+from .models import T6_4ResourcePerson
+from .models import T6_5AICTEInitiative
+from .models import T7_1ProgramOrganized
+
 @admin.register(T1_ResearchArticle)
 class T1ResearchAdmin(admin.ModelAdmin):
     list_display = ['title', 'user', 'quarter', 'year', 'created_at']
@@ -210,6 +215,58 @@ class T6_2ProfessionalBodyMembershipAdmin(admin.ModelAdmin):
         "membership_grade",
         "membership_number",
         "year_of_election",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T6_3Award)
+class T6_3AwardAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "award_name",
+        "award_date",
+        "award_type",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T6_4ResourcePerson)
+class T6_4ResourcePersonAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "invited_by",
+        "lecture_title",
+        "date",
+        "duration_hours",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T6_5AICTEInitiative)
+class T6_5AICTEInitiativeAdmin(admin.ModelAdmin):
+    list_display = [
+        "faculty_name",
+        "initiative_name",
+        "date",
+        "role",
+        "organizing_institute",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(T7_1ProgramOrganized)
+class T7_1ProgramOrganizedAdmin(admin.ModelAdmin):
+    list_display = [
+        "organizer_name",
+        "event_name",
+        "start_date",
+        "end_date",
+        "mode",
+        "participants_count",
         "quarter",
         "year",
         "created_at",

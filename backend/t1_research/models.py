@@ -703,3 +703,142 @@ class T6_2ProfessionalBodyMembership(models.Model):
 
     def __str__(self):
         return f"{self.faculty_name} – {self.institution_name} ({self.quarter} {self.year})"
+
+# ── at bottom of backend/t1_research/models.py ──
+
+class T6_3Award(models.Model):
+    AWARD_TYPE_CHOICES = [
+        ("Regional",      "Regional"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user         = models.ForeignKey(User, on_delete=models.CASCADE)
+    department   = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name = models.CharField(max_length=200)
+    award_name   = models.CharField(max_length=255, help_text="Name of Award")
+    conferred_by = models.CharField(max_length=255, help_text="Award Conferred by")
+    award_date   = models.DateField(help_text="Award Date")
+    award_type   = models.CharField(max_length=20, choices=AWARD_TYPE_CHOICES)
+    proof_link   = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter      = models.CharField(max_length=10)
+    year         = models.PositiveIntegerField()
+
+    created_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.award_name} ({self.quarter} {self.year})"
+
+class T6_4ResourcePerson(models.Model):
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
+    department      = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name    = models.CharField(max_length=200, help_text="Name of Faculty")
+    invited_by      = models.CharField(max_length=255, help_text="Invited By")
+    lecture_title   = models.CharField(max_length=255, help_text="Title/Subject of Lecture Delivered")
+    date            = models.DateField(help_text="Date of Lecture")
+    duration_hours  = models.DecimalField(
+                         max_digits=5,
+                         decimal_places=2,
+                         help_text="Duration in hours"
+                      )
+    proof_link      = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    quarter         = models.CharField(max_length=10)
+    year            = models.PositiveIntegerField()
+
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.lecture_title} ({self.quarter} {self.year})"
+
+class T6_5AICTEInitiative(models.Model):
+    ROLE_CHOICES = [
+        ("Coordinator", "Coordinator"),
+        ("Member",      "Member"),
+        ("Participant", "Participant"),
+        ("Other",       "Other"),
+    ]
+
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    department           = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    faculty_name         = models.CharField(
+                              max_length=200,
+                              help_text="Name of Faculty"
+                          )
+    initiative_name      = models.CharField(
+                              max_length=500,
+                              help_text=(
+                                  "Name of the AICTE Initiative Taken "
+                                  "(e.g. Clean & Smart Campus, Smart India Hackathon, "
+                                  "Unnat Bharat Abhiyan, Blood Donation, etc.)"
+                              )
+                          )
+    date                 = models.DateField(help_text="Date of Initiative (DD/MMM/YYYY)")
+    role                 = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    organizing_institute = models.CharField(
+                              max_length=255,
+                              help_text="Name of the Organizing Institute"
+                          )
+    proof_link           = models.URLField(
+                              blank=True,
+                              help_text="Google Drive Link (Upload Proof)"
+                          )
+
+    quarter              = models.CharField(max_length=10)
+    year                 = models.PositiveIntegerField()
+
+    created_at           = models.DateTimeField(auto_now_add=True)
+    updated_at           = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.faculty_name} – {self.initiative_name[:30]}… ({self.quarter} {self.year})"
+
+class T7_1ProgramOrganized(models.Model):
+    MODE_CHOICES = [
+        ("Online",  "Online"),
+        ("Offline", "Offline"),
+    ]
+
+    user                = models.ForeignKey(User, on_delete=models.CASCADE)
+    department          = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    organizer_name      = models.CharField(
+                             max_length=255,
+                             help_text="Name of the Organizer (Club/Professional Body)"
+                         )
+    event_name          = models.CharField(
+                             max_length=255,
+                             help_text="Name of the Event/Competition"
+                         )
+    event_type          = models.CharField(
+                             max_length=255,
+                             help_text="Type of Event/Competition"
+                         )
+    start_date          = models.DateField(help_text="Program Start Date (DD/MMM/YYYY)")
+    end_date            = models.DateField(help_text="Program End Date (DD/MMM/YYYY)")
+    num_days            = models.PositiveIntegerField(help_text="Number of Days")
+    mode                = models.CharField(max_length=10, choices=MODE_CHOICES)
+    participants_count  = models.PositiveIntegerField(help_text="Number of Participants Attended")
+    collaborator_details= models.TextField(
+                             blank=True,
+                             help_text="Collaborator (if any) with contact details"
+                         )
+    report_link         = models.URLField(
+                             blank=True,
+                             help_text="Google Drive Link (Upload Report)"
+                         )
+
+    quarter             = models.CharField(max_length=10)
+    year                = models.PositiveIntegerField()
+
+    created_at          = models.DateTimeField(auto_now_add=True)
+    updated_at          = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.organizer_name} – {self.event_name} ({self.quarter} {self.year})"

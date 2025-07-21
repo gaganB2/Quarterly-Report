@@ -18,6 +18,9 @@ from .models import T5_5LabEquipmentDevelopment
 from .models import T5_6ResearchGuidance
 from .models import T6_1CertificationCourse
 from .models import T6_2ProfessionalBodyMembership
+from .models import T6_4ResourcePerson
+from .models import T6_5AICTEInitiative
+from .models import T7_1ProgramOrganized
 
 class T1ResearchArticleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -496,6 +499,140 @@ class T6_2ProfessionalBodyMembershipSerializer(serializers.ModelSerializer):
             "membership_number",
             "year_of_election",
             "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+from .models import T6_3Award
+
+class T6_3AwardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T6_3Award
+        fields = [
+            "id",
+            "user",
+            "faculty_name",
+            "award_name",
+            "conferred_by",
+            "award_date",
+            "award_type",
+            "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+
+
+class T6_4ResourcePersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T6_4ResourcePerson
+        fields = [
+            "id",
+            "user",
+            "faculty_name",
+            "invited_by",
+            "lecture_title",
+            "date",
+            "duration_hours",
+            "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+from .models import T6_5AICTEInitiative
+
+class T6_5AICTEInitiativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T6_5AICTEInitiative
+        fields = [
+            "id",
+            "user",
+            "faculty_name",
+            "initiative_name",
+            "date",
+            "role",
+            "organizing_institute",
+            "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class T6_5AICTEInitiativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T6_5AICTEInitiative
+        fields = [
+            "id",
+            "user",
+            "faculty_name",
+            "initiative_name",
+            "date",
+            "role",
+            "organizing_institute",
+            "proof_link",
+            "department",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+class T7_1ProgramOrganizedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = T7_1ProgramOrganized
+        fields = [
+            "id",
+            "user",
+            "organizer_name",
+            "event_name",
+            "event_type",
+            "start_date",
+            "end_date",
+            "num_days",
+            "mode",
+            "participants_count",
+            "collaborator_details",
+            "report_link",
             "department",
             "quarter",
             "year",
