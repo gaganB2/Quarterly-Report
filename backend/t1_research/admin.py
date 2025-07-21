@@ -21,7 +21,20 @@ from .models import T6_3Award
 from .models import T6_4ResourcePerson
 from .models import T6_5AICTEInitiative
 from .models import T7_1ProgramOrganized
-
+from .models import S1_1TheorySubjectData
+from .models import S2_1StudentArticle
+from .models import S2_2StudentConferencePaper
+from .models import S2_3StudentSponsoredProject
+from .models import S3_1CompetitionParticipation
+from .models import S3_2DeptProgram
+from .models import S4_1StudentExamQualification
+from .models import S4_2CampusRecruitment
+from .models import S4_3GovtPSUSelection
+from .models import S4_4PlacementHigherStudies
+from .models import S5_1StudentCertificationCourse
+from .models import S5_2VocationalTraining
+from .models import S5_3SpecialMentionAchievement
+from .models import S5_4StudentEntrepreneurship
 @admin.register(T1_ResearchArticle)
 class T1ResearchAdmin(admin.ModelAdmin):
     list_display = ['title', 'user', 'quarter', 'year', 'created_at']
@@ -269,5 +282,169 @@ class T7_1ProgramOrganizedAdmin(admin.ModelAdmin):
         "participants_count",
         "quarter",
         "year",
+        "created_at",
+    ]
+
+@admin.register(S1_1TheorySubjectData)
+class S1_1TheorySubjectDataAdmin(admin.ModelAdmin):
+    list_display = [
+        "semester",
+        "subject_code",
+        "name_of_subject",
+        "faculty_name",
+        "num_classes",
+        "num_students_appeared",
+        "num_students_passed",
+        "pass_percent",
+        "pass_percent_rv",
+        "prev_year_pass_percent",
+        "created_at",
+    ]
+
+@admin.register(S2_1StudentArticle)
+class S2_1StudentArticleAdmin(admin.ModelAdmin):
+    list_display = [
+        "title",
+        "journal_name",
+        "month_year",
+        "is_wos",
+        "is_scopus",
+        "is_ugc_care",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(S2_2StudentConferencePaper)
+class S2_2StudentConferencePaperAdmin(admin.ModelAdmin):
+    list_display = [
+        "title",
+        "conference_details",
+        "month_year",
+        "is_scopus",
+        "conference_status",
+        "mode",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(S2_3StudentSponsoredProject)
+class S2_3StudentSponsoredProjectAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "semester",
+        "project_title",
+        "sponsored_by",
+        "guide_name",
+        "created_at",
+    ]
+
+@admin.register(S3_1CompetitionParticipation)
+class S3_1CompetitionParticipationAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "semester",
+        "activity_type",
+        "organized_by",
+        "date",
+        "level",
+        "awards",
+        "created_at",
+    ]
+
+@admin.register(S3_2DeptProgram)
+class S3_2DeptProgramAdmin(admin.ModelAdmin):
+    list_display = [
+        "program_name",
+        "date",
+        "level",
+        "participants_count",
+        "quarter",
+        "year",
+        "created_at",
+    ]
+
+@admin.register(S4_1StudentExamQualification)
+class S4_1StudentExamQualificationAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "batch",
+        "exam_name",
+        "score_detail",
+        "pg_programme",
+        "admission_year",
+        "institution_name",
+        "created_at",
+    ]
+
+@admin.register(S4_2CampusRecruitment)
+class S4_2CampusRecruitmentAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "batch",
+        "company_name",
+        "package_offered",
+        "offer_ref_number",
+        "created_at",
+    ]
+
+@admin.register(S4_3GovtPSUSelection)
+class S4_3GovtPSUSelectionAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "batch",
+        "exam_name",
+        "psv_name",
+        "package_offered",
+        "joining_year",
+        "created_at",
+    ]
+@admin.register(S4_4PlacementHigherStudies)
+class S4_4PlacementHigherStudiesAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_roll_no",
+        "student_name",
+        "placement_type",
+        "organization_name",
+        "program_name",
+        "institution_joined",
+        "entrepreneurship",
+        "created_at",
+    ]
+@admin.register(S5_1StudentCertificationCourse)
+class S5_1StudentCertificationCourseAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "certification_course",
+        "certification_type",
+        "created_at",
+    ]
+
+@admin.register(S5_2VocationalTraining)
+class S5_2VocationalTrainingAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "company_name",
+        "duration",
+        "created_at",
+    ]
+
+@admin.register(S5_3SpecialMentionAchievement)
+class S5_3SpecialMentionAchievementAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "award_name",
+        "date_received",
+        "award_level",
+        "created_at",
+    ]
+
+@admin.register(S5_4StudentEntrepreneurship)
+class S5_4StudentEntrepreneurshipAdmin(admin.ModelAdmin):
+    list_display = [
+        "student_name",
+        "establishment_year",
+        "sector",
         "created_at",
     ]

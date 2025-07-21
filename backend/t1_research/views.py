@@ -45,6 +45,34 @@ from .models import T6_5AICTEInitiative
 from .serializers import T6_5AICTEInitiativeSerializer
 from .models import T7_1ProgramOrganized
 from .serializers import T7_1ProgramOrganizedSerializer
+from .models import S1_1TheorySubjectData
+from .serializers import S1_1TheorySubjectDataSerializer
+from .models import S2_1StudentArticle
+from .serializers import S2_1StudentArticleSerializer
+from .models import S2_2StudentConferencePaper
+from .serializers import S2_2StudentConferencePaperSerializer
+from .models import S2_3StudentSponsoredProject
+from .serializers import S2_3StudentSponsoredProjectSerializer
+from .models import S3_1CompetitionParticipation
+from .serializers import S3_1CompetitionParticipationSerializer
+from .models import S3_2DeptProgram
+from .serializers import S3_2DeptProgramSerializer
+from .models import S4_2CampusRecruitment
+from .serializers import S4_2CampusRecruitmentSerializer
+from .models import S4_3GovtPSUSelection
+from .serializers import S4_3GovtPSUSelectionSerializer
+from .models import S4_4PlacementHigherStudies
+from .serializers import S4_4PlacementHigherStudiesSerializer
+from .models import S5_1StudentCertificationCourse
+from .serializers import S5_1StudentCertificationCourseSerializer
+from .models import S5_2VocationalTraining
+from .serializers import S5_2VocationalTrainingSerializer
+from .models import S5_3SpecialMentionAchievement
+from .serializers import S5_3SpecialMentionAchievementSerializer
+from .models import S5_4StudentEntrepreneurship
+from .serializers import S5_4StudentEntrepreneurshipSerializer
+
+
 
 from users.models import Profile
 class T1ResearchViewSet(viewsets.ModelViewSet):
@@ -701,6 +729,314 @@ class T7_1ProgramOrganizedViewSet(viewsets.ModelViewSet):
             qs = qs.filter(year=year)
         if quarter:
             qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class S1_1TheorySubjectDataViewSet(viewsets.ModelViewSet):
+    serializer_class   = S1_1TheorySubjectDataSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S1_1TheorySubjectData.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by semester if provided
+        semester = self.request.query_params.get("semester")
+        if semester:
+            qs = qs.filter(semester=semester)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S2_1StudentArticleViewSet(viewsets.ModelViewSet):
+    serializer_class   = S2_1StudentArticleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S2_1StudentArticle.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S2_2StudentConferencePaperViewSet(viewsets.ModelViewSet):
+    serializer_class   = S2_2StudentConferencePaperSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S2_2StudentConferencePaper.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S2_3StudentSponsoredProjectViewSet(viewsets.ModelViewSet):
+    serializer_class   = S2_3StudentSponsoredProjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S2_3StudentSponsoredProject.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by semester if provided
+        semester = self.request.query_params.get("semester")
+        if semester:
+            qs = qs.filter(semester=semester)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S3_1CompetitionParticipationViewSet(viewsets.ModelViewSet):
+    serializer_class   = S3_1CompetitionParticipationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S3_1CompetitionParticipation.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        semester = self.request.query_params.get("semester")
+        if semester:
+            qs = qs.filter(semester=semester)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S3_2DeptProgramViewSet(viewsets.ModelViewSet):
+    serializer_class   = S3_2DeptProgramSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S3_2DeptProgram.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by quarter & year
+        year    = self.request.query_params.get("year")
+        quarter = self.request.query_params.get("quarter")
+        if year:
+            qs = qs.filter(year=year)
+        if quarter:
+            qs = qs.filter(quarter=quarter)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+from .models import S4_1StudentExamQualification
+from .serializers import S4_1StudentExamQualificationSerializer
+
+class S4_1StudentExamQualificationViewSet(viewsets.ModelViewSet):
+    serializer_class   = S4_1StudentExamQualificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S4_1StudentExamQualification.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by batch if provided
+        batch = self.request.query_params.get("batch")
+        if batch:
+            qs = qs.filter(batch=batch)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class S4_2CampusRecruitmentViewSet(viewsets.ModelViewSet):
+    serializer_class   = S4_2CampusRecruitmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S4_2CampusRecruitment.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # filter by batch if provided
+        batch = self.request.query_params.get("batch")
+        if batch:
+            qs = qs.filter(batch=batch)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S4_3GovtPSUSelectionViewSet(viewsets.ModelViewSet):
+    serializer_class   = S4_3GovtPSUSelectionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S4_3GovtPSUSelection.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        batch = self.request.query_params.get("batch")
+        if batch:
+            qs = qs.filter(batch=batch)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class S4_4PlacementHigherStudiesViewSet(viewsets.ModelViewSet):
+    serializer_class   = S4_4PlacementHigherStudiesSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S4_4PlacementHigherStudies.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # optional filters
+        batch = self.request.query_params.get("batch")
+        if batch:
+            qs = qs.filter(student_roll_no__startswith=batch)  # or adjust as needed
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S5_1StudentCertificationCourseViewSet(viewsets.ModelViewSet):
+    serializer_class   = S5_1StudentCertificationCourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S5_1StudentCertificationCourse.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class S5_2VocationalTrainingViewSet(viewsets.ModelViewSet):
+    serializer_class   = S5_2VocationalTrainingSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S5_2VocationalTraining.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+
+class S5_3SpecialMentionAchievementViewSet(viewsets.ModelViewSet):
+    serializer_class   = S5_3SpecialMentionAchievementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S5_3SpecialMentionAchievement.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
+
+        # optional filter by level
+        level = self.request.query_params.get("level")
+        if level:
+            qs = qs.filter(award_level=level)
+        return qs
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(user=self.request.user, department=profile.department)
+
+class S5_4StudentEntrepreneurshipViewSet(viewsets.ModelViewSet):
+    serializer_class   = S5_4StudentEntrepreneurshipSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(user=self.request.user)
+        qs = S5_4StudentEntrepreneurship.objects.all()
+        if profile.role == "Faculty":
+            qs = qs.filter(user=self.request.user)
+        elif profile.role == "HOD":
+            qs = qs.filter(department=profile.department)
         return qs
 
     def perform_create(self, serializer):

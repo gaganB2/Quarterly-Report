@@ -21,6 +21,20 @@ from .models import T6_2ProfessionalBodyMembership
 from .models import T6_4ResourcePerson
 from .models import T6_5AICTEInitiative
 from .models import T7_1ProgramOrganized
+from .models import S1_1TheorySubjectData
+from .models import S2_1StudentArticle
+from .models import S2_2StudentConferencePaper
+from .models import S2_3StudentSponsoredProject
+from .models import S3_1CompetitionParticipation
+from .models import S3_2DeptProgram
+from .models import S4_1StudentExamQualification
+from .models import S4_2CampusRecruitment
+from .models import S4_3GovtPSUSelection
+from .models import S4_4PlacementHigherStudies
+from .models import S5_1StudentCertificationCourse
+from .models import S5_2VocationalTraining
+from .models import S5_3SpecialMentionAchievement
+from .models import S5_4StudentEntrepreneurship
 
 class T1ResearchArticleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -636,6 +650,388 @@ class T7_1ProgramOrganizedSerializer(serializers.ModelSerializer):
             "department",
             "quarter",
             "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+
+
+class S1_1TheorySubjectDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S1_1TheorySubjectData
+        fields = [
+            "id",
+            "user",
+            "department",
+            "semester",
+            "name_of_subject",
+            "subject_code",
+            "faculty_name",
+            "num_classes",
+            "num_students_appeared",
+            "num_students_passed",
+            "pass_percent",
+            "pass_percent_rv",
+            "prev_year_pass_percent",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S2_1StudentArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S2_1StudentArticle
+        fields = [
+            "id",
+            "user",
+            "department",
+            "title",
+            "author_type",
+            "internal_authors",
+            "external_authors",
+            "journal_name",
+            "volume",
+            "issue",
+            "page_numbers",
+            "month_year",
+            "issn_number",
+            "impact_factor",
+            "publisher",
+            "is_wos",
+            "is_scopus",
+            "is_ugc_care",
+            "other_indexing",
+            "doi",
+            "proof_link",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+class S2_2StudentConferencePaperSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S2_2StudentConferencePaper
+        fields = [
+            "id",
+            "user",
+            "department",
+            "title",
+            "author_type",
+            "internal_authors",
+            "external_authors",
+            "conference_details",
+            "isbn_issn",
+            "publisher",
+            "page_numbers",
+            "month_year",
+            "is_scopus",
+            "other_indexing",
+            "conference_status",
+            "mode",
+            "proof_link",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S2_3StudentSponsoredProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S2_3StudentSponsoredProject
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "semester",
+            "project_title",
+            "sponsored_by",
+            "guide_name",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+class S3_1CompetitionParticipationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S3_1CompetitionParticipation
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "semester",
+            "activity_type",
+            "organized_by",
+            "date",
+            "level",
+            "awards",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S3_2DeptProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S3_2DeptProgram
+        fields = [
+            "id",
+            "user",
+            "department",
+            "program_name",
+            "participants_count",
+            "program_type",
+            "external_agency",
+            "date",
+            "level",
+            "proof_link",
+            "quarter",
+            "year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+class S4_1StudentExamQualificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S4_1StudentExamQualification
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "batch",
+            "exam_name",
+            "registration_number",
+            "score_detail",
+            "pg_programme",
+            "admission_year",
+            "institution_name",
+            "contact_details",
+            "email",
+            "mobile",
+            "social_profile_link",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+
+class S4_2CampusRecruitmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S4_2CampusRecruitment
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "batch",
+            "company_name",
+            "package_offered",
+            "offer_ref_number",
+            "contact_details",
+            "email",
+            "mobile",
+            "social_profile_link",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S4_3GovtPSUSelectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S4_3GovtPSUSelection
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "batch",
+            "exam_name",
+            "registration_number",
+            "psv_name",
+            "package_offered",
+            "joining_year",
+            "offer_ref_number",
+            "contact_details",
+            "email",
+            "mobile",
+            "social_profile_link",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+class S4_4PlacementHigherStudiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S4_4PlacementHigherStudies
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_roll_no",
+            "student_name",
+            "photo_link",
+            "placement_type",
+            "organization_name",
+            "package_offered",
+            "program_name",
+            "institution_joined",
+            "admission_year",
+            "entrepreneurship",
+            "email",
+            "contact_details",
+            "mobile",
+            "social_profile_link",
+            "offer_ref_number",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S5_1StudentCertificationCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S5_1StudentCertificationCourse
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "certification_course",
+            "category",
+            "duration",
+            "credit_points",
+            "certification_type",
+            "certificate_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S5_2VocationalTrainingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S5_2VocationalTraining
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "company_name",
+            "duration",
+            "certificate_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S5_3SpecialMentionAchievementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S5_3SpecialMentionAchievement
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "award_name",
+            "work_title",
+            "date_received",
+            "awarding_organization",
+            "award_amount",
+            "award_level",
+            "proof_link",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "user",
+            "department",
+            "created_at",
+            "updated_at",
+        ]
+
+class S5_4StudentEntrepreneurshipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = S5_4StudentEntrepreneurship
+        fields = [
+            "id",
+            "user",
+            "department",
+            "student_name",
+            "establishment_year",
+            "organization_details",
+            "sector",
+            "proof_link",
             "created_at",
             "updated_at",
         ]

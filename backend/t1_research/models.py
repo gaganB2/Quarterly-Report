@@ -842,3 +842,565 @@ class T7_1ProgramOrganized(models.Model):
 
     def __str__(self):
         return f"{self.organizer_name} – {self.event_name} ({self.quarter} {self.year})"
+class S1_1TheorySubjectData(models.Model):
+    user                     = models.ForeignKey(User, on_delete=models.CASCADE)
+    department               = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    semester                 = models.CharField(
+                                   max_length=10,
+                                   help_text="Semester (e.g. S1, S2…)"
+                               )
+    name_of_subject          = models.CharField(max_length=255)
+    subject_code             = models.CharField(max_length=50)
+    faculty_name             = models.CharField(max_length=200, help_text="Faculty who conducted the classes")
+    num_classes              = models.PositiveIntegerField(help_text="No. of Classes Conducted")
+    num_students_appeared    = models.PositiveIntegerField(help_text="No. of Students Appeared")
+    num_students_passed      = models.PositiveIntegerField(help_text="No. of Students Passed")
+    pass_percent             = models.DecimalField(
+                                   max_digits=5,
+                                   decimal_places=2,
+                                   help_text="% Pass in the Subject"
+                               )
+    pass_percent_rv          = models.DecimalField(
+                                   max_digits=5,
+                                   decimal_places=2,
+                                   help_text="% Pass after RV/RRV"
+                               )
+    prev_year_pass_percent   = models.DecimalField(
+                                   max_digits=5,
+                                   decimal_places=2,
+                                   help_text="Previous Year % Result"
+                               )
+
+    created_at               = models.DateTimeField(auto_now_add=True)
+    updated_at               = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.subject_code} – {self.name_of_subject} ({self.semester})"
+
+class S2_1StudentArticle(models.Model):
+    AUTHOR_TYPE_CHOICES = [
+        ("Sole",          "Sole"),
+        ("First",         "First"),
+        ("Corresponding", "Corresponding"),
+        ("Other",         "Other"),
+    ]
+
+    user               = models.ForeignKey(User, on_delete=models.CASCADE)
+    department         = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    title              = models.CharField(max_length=255)
+    author_type        = models.CharField(max_length=20, choices=AUTHOR_TYPE_CHOICES)
+    internal_authors   = models.TextField(help_text="Internal Authors")
+    external_authors   = models.TextField(help_text="External Authors")
+    journal_name       = models.CharField(max_length=255)
+    volume             = models.CharField(max_length=50, blank=True)
+    issue              = models.CharField(max_length=50, blank=True)
+    page_numbers       = models.CharField(max_length=100, blank=True)
+    month_year         = models.CharField(
+                            max_length=50,
+                            help_text="Month & Year of Publication"
+                        )
+    issn_number        = models.CharField("ISSN Number", max_length=50, blank=True)
+    impact_factor      = models.DecimalField(
+                            max_digits=5,
+                            decimal_places=2,
+                            null=True,
+                            blank=True,
+                            help_text="Impact Factor"
+                        )
+    publisher          = models.CharField(max_length=255, blank=True)
+
+    is_wos             = models.BooleanField(default=False, help_text="Web of Science")
+    is_scopus          = models.BooleanField(default=False)
+    is_ugc_care        = models.BooleanField(default=False, help_text="UGC CARE")
+    other_indexing     = models.CharField(
+                            max_length=255,
+                            blank=True,
+                            help_text="Other (Referred Journal)"
+                        )
+
+    doi                = models.CharField(max_length=255, blank=True)
+    proof_link         = models.URLField(blank=True, help_text="Google Drive Link (Proof)")
+
+    quarter            = models.CharField(max_length=10)
+    year               = models.PositiveIntegerField()
+
+    created_at         = models.DateTimeField(auto_now_add=True)
+    updated_at         = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.month_year})"
+
+class S2_2StudentConferencePaper(models.Model):
+    AUTHOR_TYPE_CHOICES = [
+        ("Sole",          "Sole"),
+        ("First",         "First"),
+        ("Corresponding", "Corresponding"),
+        ("Other",         "Other"),
+    ]
+    STATUS_CHOICES = [
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+    MODE_CHOICES = [
+        ("Online",  "Online"),
+        ("Offline", "Offline"),
+    ]
+
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    department           = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    title                = models.CharField(max_length=255)
+    author_type          = models.CharField(max_length=20, choices=AUTHOR_TYPE_CHOICES)
+    internal_authors     = models.TextField(help_text="Internal Authors")
+    external_authors     = models.TextField(help_text="External Authors")
+    conference_details   = models.CharField(
+                              max_length=255,
+                              help_text="Organization/Institution name, Place, State"
+                          )
+    isbn_issn            = models.CharField("ISBN/ISSN", max_length=50, blank=True)
+    publisher            = models.CharField(max_length=255, blank=True)
+    page_numbers         = models.CharField(max_length=100, blank=True, help_text="Page No")
+    month_year           = models.CharField(max_length=50, help_text="Month & Year")
+    is_scopus            = models.BooleanField(default=False, help_text="Scopus Indexed")
+    other_indexing       = models.CharField(
+                              max_length=255,
+                              blank=True,
+                              help_text="Other Indexing (Referred Journal)"
+                          )
+    conference_status    = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    mode                 = models.CharField(max_length=10, choices=MODE_CHOICES)
+    proof_link           = models.URLField(blank=True, help_text="Google Drive Link (Proof)")
+
+    quarter              = models.CharField(max_length=10)
+    year                 = models.PositiveIntegerField()
+
+    created_at           = models.DateTimeField(auto_now_add=True)
+    updated_at           = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.month_year})"
+class S2_3StudentSponsoredProject(models.Model):
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
+    department      = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name    = models.CharField(max_length=200, help_text="Name of the Student")
+    semester        = models.CharField(max_length=10, help_text="Semester (e.g. S1, S2…)")
+    project_title   = models.CharField(max_length=255, help_text="Title of the Project")
+    sponsored_by    = models.CharField(max_length=255, help_text="Sponsored By")
+    guide_name      = models.CharField(max_length=200, help_text="Name of the Guide")
+    proof_link      = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.project_title} ({self.semester})"
+
+class S3_1CompetitionParticipation(models.Model):
+    LEVEL_CHOICES = [
+        ("Regional",      "Regional"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user            = models.ForeignKey(User, on_delete=models.CASCADE)
+    department      = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name    = models.CharField(max_length=200, help_text="Name of the Student")
+    semester        = models.CharField(max_length=10, help_text="Semester (e.g. S1, S2…)")
+    activity_type   = models.CharField(
+                         max_length=255,
+                         help_text="Type of Activity (Sports/Cultural etc.)"
+                     )
+    organized_by    = models.CharField(max_length=255, help_text="Organized By")
+    date            = models.DateField(help_text="Date of Participation")
+    level           = models.CharField(max_length=20, choices=LEVEL_CHOICES)
+    awards          = models.CharField(max_length=255, blank=True, help_text="Awards (if any)")
+    proof_link      = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.activity_type} on {self.date}"
+
+class S3_2DeptProgram(models.Model):
+    LEVEL_CHOICES = [
+        ("Regional",      "Regional"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user                     = models.ForeignKey(User, on_delete=models.CASCADE)
+    department               = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    program_name             = models.CharField(
+                                   max_length=255,
+                                   help_text="Name of the Programme/Competition"
+                               )
+    participants_count       = models.PositiveIntegerField(
+                                   help_text="Number of Participants"
+                               )
+    program_type             = models.CharField(
+                                   max_length=255,
+                                   help_text="Type of Programme/Competition"
+                               )
+    external_agency          = models.CharField(
+                                   max_length=255,
+                                   blank=True,
+                                   help_text="In collaboration with external agency (if any)"
+                               )
+    date                     = models.DateField(help_text="Date of Programme")
+    level                    = models.CharField(max_length=20, choices=LEVEL_CHOICES)
+    proof_link               = models.URLField(
+                                   blank=True,
+                                   help_text="Google Drive Link (Upload Proof)"
+                               )
+
+    quarter                  = models.CharField(max_length=10)
+    year                     = models.PositiveIntegerField()
+
+    created_at               = models.DateTimeField(auto_now_add=True)
+    updated_at               = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.program_name} on {self.date} ({self.quarter} {self.year})"
+
+class S4_1StudentExamQualification(models.Model):
+    user                       = models.ForeignKey(User, on_delete=models.CASCADE)
+    department                 = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name               = models.CharField(max_length=200, help_text="Name of the Student")
+    batch                      = models.CharField(max_length=50, help_text="Batch (e.g. 2024)")
+    exam_name                  = models.CharField(max_length=255, help_text="Competitive Exam Qualified (GATE/CAT/GRE/GMAT etc.)")
+    registration_number        = models.CharField(max_length=100, help_text="Registration/Roll Number")
+    score_detail               = models.CharField(
+                                     max_length=100,
+                                     help_text="AIR/Percentile/Score"
+                                 )
+    pg_programme               = models.CharField(
+                                     max_length=100,
+                                     help_text="PG Programme Admitted (M.Tech/MS/MBA etc.)"
+                                 )
+    admission_year             = models.PositiveIntegerField(help_text="Year of Admission in Higher Studies")
+    institution_name           = models.CharField(max_length=255, help_text="Institution Joined")
+    contact_details            = models.CharField(max_length=255, help_text="Contact Details")
+    email                      = models.EmailField(help_text="E-mail ID")
+    mobile                     = models.CharField(max_length=15, help_text="Mobile No.")
+    social_profile_link        = models.URLField(
+                                     blank=True,
+                                     help_text="Profile in Social Sites (LinkedIn, Twitter etc.)"
+                                 )
+    proof_link                 = models.URLField(blank=True, help_text="Google Drive Link (Proof)")
+
+    created_at                 = models.DateTimeField(auto_now_add=True)
+    updated_at                 = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.exam_name} ({self.batch})"
+class S4_2CampusRecruitment(models.Model):
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    department           = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name         = models.CharField(max_length=200, help_text="Name of the Student")
+    batch                = models.CharField(max_length=50, help_text="Batch (e.g. 2024)")
+    company_name         = models.CharField(max_length=255, help_text="Name of the Company Joined")
+    package_offered      = models.DecimalField(
+                              max_digits=10,
+                              decimal_places=2,
+                              help_text="Package Offered"
+                          )
+    offer_ref_number     = models.CharField(
+                              max_length=100,
+                              help_text="Offer Letter Reference Number"
+                          )
+    contact_details      = models.CharField(
+                              max_length=255,
+                              help_text="Contact Details of Student"
+                          )
+    email                = models.EmailField(help_text="E-mail ID")
+    mobile               = models.CharField(
+                              max_length=15,
+                              help_text="Mobile No."
+                          )
+    social_profile_link  = models.URLField(
+                              blank=True,
+                              help_text="Profile in Social Sites (Facebook/LinkedIn/Twitter)"
+                          )
+    proof_link           = models.URLField(
+                              blank=True,
+                              help_text="Google Drive Link (Upload Proof)"
+                          )
+
+    created_at           = models.DateTimeField(auto_now_add=True)
+    updated_at           = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.company_name}"
+
+class S4_3GovtPSUSelection(models.Model):
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    department           = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name         = models.CharField(max_length=200, help_text="Name of the Student")
+    batch                = models.CharField(max_length=50, help_text="Batch (e.g. 2024)")
+    exam_name            = models.CharField(
+                              max_length=255,
+                              help_text="Competitive Exam Qualified (UPSC/CGPSC/SSC etc.)"
+                          )
+    registration_number  = models.CharField(max_length=100, help_text="Registration/Roll Number")
+    psv_name             = models.CharField(
+                              max_length=255,
+                              help_text="Name of the PSU"
+                          )
+    package_offered      = models.DecimalField(
+                              max_digits=10,
+                              decimal_places=2,
+                              help_text="Package Offered"
+                          )
+    joining_year         = models.PositiveIntegerField(help_text="Year of Joining")
+    offer_ref_number     = models.CharField(
+                              max_length=100,
+                              help_text="Reference Number of Joining Letter"
+                          )
+    contact_details      = models.CharField(max_length=255, help_text="Contact Details")
+    email                = models.EmailField(help_text="E-mail ID")
+    mobile               = models.CharField(max_length=15, help_text="Mobile No.")
+    social_profile_link  = models.URLField(
+                              blank=True,
+                              help_text="Profile in Social Sites (Facebook/LinkedIn/Twitter)"
+                          )
+    proof_link           = models.URLField(blank=True, help_text="Google Drive Link (Upload Proof)")
+
+    created_at           = models.DateTimeField(auto_now_add=True)
+    updated_at           = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.psv_name}"
+
+class S4_4PlacementHigherStudies(models.Model):
+    PLACEMENT_TYPE_CHOICES = [
+        ("Software", "Software"),
+        ("Core",     "Core"),
+        ("PSU",      "PSU"),
+        ("Other",    "Other"),
+    ]
+
+    user                 = models.ForeignKey(User, on_delete=models.CASCADE)
+    department           = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_roll_no      = models.CharField(max_length=50, help_text="Roll No.")
+    student_name         = models.CharField(max_length=200, help_text="Name of the Student")
+    photo_link           = models.URLField(blank=True, help_text="Photo URL")
+
+    placement_type       = models.CharField(
+                              max_length=20,
+                              choices=PLACEMENT_TYPE_CHOICES,
+                              help_text="Software/Core/PSU/Other"
+                          )
+    organization_name    = models.CharField(
+                              max_length=255,
+                              blank=True,
+                              help_text="Name of Organization (placement)"
+                          )
+    package_offered      = models.DecimalField(
+                              max_digits=10,
+                              decimal_places=2,
+                              null=True, blank=True,
+                              help_text="Package Offered"
+                          )
+
+    program_name         = models.CharField(
+                              max_length=255,
+                              blank=True,
+                              help_text="Name of the Programme (higher studies)"
+                          )
+    institution_joined   = models.CharField(
+                              max_length=255,
+                              blank=True,
+                              help_text="Name of the Institution Joined"
+                          )
+    admission_year       = models.PositiveIntegerField(
+                              null=True, blank=True,
+                              help_text="Year of Admission"
+                          )
+
+    entrepreneurship     = models.CharField(
+                              "Entrepreneurship (Company)",
+                              max_length=255,
+                              blank=True,
+                              help_text="Name of Company (if student became entrepreneur)"
+                          )
+
+    email                = models.EmailField(help_text="E-mail ID")
+    contact_details      = models.CharField(max_length=255, help_text="Contact Details")
+    mobile               = models.CharField(max_length=15, help_text="Mobile No.")
+    social_profile_link  = models.URLField(
+                              blank=True,
+                              help_text="Profile in Social Sites (LinkedIn, Twitter etc.)"
+                          )
+    offer_ref_number     = models.CharField(
+                              max_length=100,
+                              blank=True,
+                              help_text="Reference Number of Joining Letter"
+                          )
+    proof_link           = models.URLField(
+                              blank=True,
+                              help_text="Google Drive Link (Upload Proof)"
+                          )
+
+    created_at           = models.DateTimeField(auto_now_add=True)
+    updated_at           = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_roll_no} – {self.student_name}"
+class S5_1StudentCertificationCourse(models.Model):
+    CERT_TYPE_CHOICES = [
+        ("Elite-Gold",   "Elite-Gold"),
+        ("Elite-Silver", "Elite-Silver"),
+        ("Passed",       "Passed"),
+        ("Other",        "Other"),
+    ]
+
+    user                   = models.ForeignKey(User, on_delete=models.CASCADE)
+    department             = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name           = models.CharField(max_length=200, help_text="Name of the Student")
+    certification_course   = models.CharField(
+                                max_length=255,
+                                help_text="Name of the Certification Course"
+                             )
+    category               = models.CharField(
+                                max_length=255,
+                                help_text="Category of the Course (e.g. CSE, ECE, etc.)"
+                             )
+    duration               = models.CharField(
+                                max_length=100,
+                                help_text="Duration of the Course"
+                             )
+    credit_points          = models.CharField(
+                                max_length=50,
+                                help_text="Credit Points Earned"
+                             )
+    certification_type     = models.CharField(
+                                max_length=20,
+                                choices=CERT_TYPE_CHOICES,
+                                help_text="Elite-Gold / Elite-Silver / Passed / Other"
+                             )
+    certificate_link       = models.URLField(
+                                blank=True,
+                                help_text="Google Drive Link (Upload Certificate)"
+                             )
+
+    created_at             = models.DateTimeField(auto_now_add=True)
+    updated_at             = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.certification_course}"
+
+class S5_2VocationalTraining(models.Model):
+    user                  = models.ForeignKey(User, on_delete=models.CASCADE)
+    department            = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name          = models.CharField(
+                               max_length=200,
+                               help_text="Name of the Student"
+                           )
+    company_name          = models.CharField(
+                               max_length=255,
+                               help_text="Name of the Company"
+                           )
+    duration              = models.CharField(
+                               max_length=100,
+                               help_text="Duration of the Course Attended"
+                           )
+    certificate_link      = models.URLField(
+                               blank=True,
+                               help_text="Google Drive Link (Upload Certificate)"
+                           )
+
+    created_at            = models.DateTimeField(auto_now_add=True)
+    updated_at            = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.company_name}"
+class S5_3SpecialMentionAchievement(models.Model):
+    LEVEL_CHOICES = [
+        ("University",    "University"),
+        ("State",         "State"),
+        ("National",      "National"),
+        ("International", "International"),
+    ]
+
+    user                    = models.ForeignKey(User, on_delete=models.CASCADE)
+    department              = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name            = models.CharField(
+                                  max_length=200,
+                                  help_text="Name of the Student/Alumni"
+                              )
+    award_name              = models.CharField(
+                                  max_length=255,
+                                  help_text="Name of the Award"
+                              )
+    work_title              = models.CharField(
+                                  max_length=255,
+                                  help_text="Name of the Work for which Award is received"
+                              )
+    date_received           = models.DateField(help_text="Date of Award Received")
+    awarding_organization   = models.CharField(
+                                  max_length=255,
+                                  help_text="Name of Awarding Organization"
+                              )
+    award_amount            = models.DecimalField(
+                                  max_digits=12,
+                                  decimal_places=2,
+                                  null=True, blank=True,
+                                  help_text="Award Amount (INR), if any"
+                              )
+    award_level             = models.CharField(
+                                  max_length=20,
+                                  choices=LEVEL_CHOICES,
+                                  help_text="Level of Award"
+                              )
+    proof_link              = models.URLField(
+                                  blank=True,
+                                  help_text="Google Drive Link (Upload Proof)"
+                              )
+
+    created_at              = models.DateTimeField(auto_now_add=True)
+    updated_at              = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.award_name} ({self.award_level})"
+
+class S5_4StudentEntrepreneurship(models.Model):
+    user                   = models.ForeignKey(User, on_delete=models.CASCADE)
+    department             = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    student_name           = models.CharField(
+                                max_length=200,
+                                help_text="Name of the Student"
+                             )
+    establishment_year     = models.PositiveIntegerField(
+                                help_text="Year of Establishment"
+                             )
+    organization_details   = models.TextField(
+                                help_text="Name, Address & Website of Organization"
+                             )
+    sector                 = models.CharField(
+                                max_length=255,
+                                help_text="Sector"
+                             )
+    proof_link             = models.URLField(
+                                blank=True,
+                                help_text="Google Drive Link (Upload Proof)"
+                             )
+
+    created_at             = models.DateTimeField(auto_now_add=True)
+    updated_at             = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student_name} – {self.establishment_year}"

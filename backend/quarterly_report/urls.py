@@ -24,6 +24,20 @@ from t1_research.views import T6_3AwardViewSet
 from t1_research.views import T6_4ResourcePersonViewSet
 from t1_research.views import T6_5AICTEInitiativeViewSet
 from t1_research.views import T7_1ProgramOrganizedViewSet
+from t1_research.views import S1_1TheorySubjectDataViewSet
+from t1_research.views import S2_1StudentArticleViewSet
+from t1_research.views import S2_2StudentConferencePaperViewSet
+from t1_research.views import S2_3StudentSponsoredProjectViewSet
+from t1_research.views import S3_1CompetitionParticipationViewSet
+from t1_research.views import S3_2DeptProgramViewSet
+from t1_research.views import S4_1StudentExamQualificationViewSet
+from t1_research.views import S4_2CampusRecruitmentViewSet
+from t1_research.views import S4_3GovtPSUSelectionViewSet
+from t1_research.views import S4_4PlacementHigherStudiesViewSet
+from t1_research.views import S5_1StudentCertificationCourseViewSet
+from t1_research.views import S5_2VocationalTrainingViewSet
+from t1_research.views import S5_3SpecialMentionAchievementViewSet
+from t1_research.views import S5_4StudentEntrepreneurshipViewSet
 
 router = DefaultRouter()
 router.register(r'departments', DepartmentViewSet, basename='department')
@@ -48,7 +62,20 @@ router.register(r't6_3awards',     T6_3AwardViewSet, basename='t6_3awards')
 router.register(r't6_4resource',   T6_4ResourcePersonViewSet,         basename='t6_4resource')
 router.register(r't6_5aicte',      T6_5AICTEInitiativeViewSet,     basename='t6_5aicte')
 router.register(r't7_1programs',   T7_1ProgramOrganizedViewSet,    basename='t7_1programs')
-
+router.register(r's1_1subjects',   S1_1TheorySubjectDataViewSet,     basename='s1_1subjects')
+router.register(r's2_1articles',   S2_1StudentArticleViewSet,       basename='s2_1articles')
+router.register(r's2_2conferences', S2_2StudentConferencePaperViewSet,    basename='s2_2conferences')
+router.register(r's2_3sponsored',   S2_3StudentSponsoredProjectViewSet, basename='s2_3sponsored')
+router.register(r's3_1competitions', S3_1CompetitionParticipationViewSet, basename='s3_1competitions')
+router.register(r's3_2deptprograms', S3_2DeptProgramViewSet,              basename='s3_2deptprograms')
+router.register(r's4_1examqual',      S4_1StudentExamQualificationViewSet, basename='s4_1examqual')
+router.register(r's4_2campus',   S4_2CampusRecruitmentViewSet,       basename='s4_2campus')
+router.register(r's4_3psu',    S4_3GovtPSUSelectionViewSet,       basename='s4_3psu')
+router.register(r's4_4full', S4_4PlacementHigherStudiesViewSet,    basename='s4_4full')
+router.register(r's5_1certcourses', S5_1StudentCertificationCourseViewSet, basename='s5_1certcourses')
+router.register(r's5_2vocational',  S5_2VocationalTrainingViewSet,      basename='s5_2vocational')
+router.register(r's5_3special',     S5_3SpecialMentionAchievementViewSet, basename='s5_3special')
+router.register(r's5_4entrepreneurs', S5_4StudentEntrepreneurshipViewSet, basename='s5_4entrepreneurs')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
