@@ -12,6 +12,7 @@ import HomePage     from './pages/HomePage';
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
+import PublicRoute from './routes/PublicRoute'; // <-- 1. Import PublicRoute
 
 export default function App() {
   return (
@@ -25,10 +26,17 @@ export default function App() {
           {/* Redirect root to landing */}
           <Route path="/" element={<Navigate to="/start" replace />} />
 
-          {/* Combined Faculty/Admin login page */}
-          <Route path="/start" element={<LoginLanding />} />
+          {/* 2. Use PublicRoute for the login page */}
+          <Route
+            path="/start"
+            element={
+              <PublicRoute>
+                <LoginLanding />
+              </PublicRoute>
+            }
+          />
 
-          {/* Protected home page */}
+          {/* Protected home page (remains unchanged) */}
           <Route
             path="/home"
             element={

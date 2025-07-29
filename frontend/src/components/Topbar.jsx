@@ -1,5 +1,5 @@
 // src/components/Topbar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -7,116 +7,173 @@ import {
   Container,
   useTheme,
   useMediaQuery,
-  Typography, // Import Typography
-  Button,     // Import Button
+  Typography,
+  Button,
+  IconButton, // <-- Import IconButton
+  Avatar,     // <-- Import Avatar
+  Menu,       // <-- Import Menu
+  MenuItem,   // <-- Import MenuItem
+  ListItemIcon, // <-- Import ListItemIcon
+  Divider,    // <-- Import Divider
 } from '@mui/material';
+import { Logout, AccountCircle } from '@mui/icons-material'; // <-- Import Icons
 import { keyframes } from '@emotion/react';
 import topPanelImg from '../assets/bittoppanel.png';
-import { useAuth } from '../context/AuthContext'; // 1. Import useAuth
-import { useNavigate } from 'react-router-dom';   // 2. Import useNavigate for redirection
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-// ... (keyframes remain the same)
-const shimmer = keyframes`
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-`;
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-`;
+// --- Helper function to create a color from a string for the Avatar ---
+function stringToColor(string) {
+  let hash = 0;
+  for (let i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (let i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
 
 
 export default function Topbar() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Adjusted for better wrapping
-
-  // 3. Get user and logout function from AuthContext
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout(); // Clear user session from context and localStorage
-    navigate('/start'); // Redirect to the login page
+  // --- State for the user menu dropdown ---
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const logos = [
-    // ... (logos array remains the same)
-  ];
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    logout();
+    navigate('/start');
+  };
 
   return (
     <AppBar
       position="fixed"
-      elevation={0}
+      elevation={1} // Use a subtle shadow
       sx={{
-        // ... (AppBar styling remains the same)
+        backdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        zIndex: theme.zIndex.drawer + 1,
       }}
     >
-      <Container maxWidth="xl"> {/* Changed to xl for more space */}
-        <Toolbar
-          disableGutters
-          sx={{
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            position: 'relative',
-            zIndex: 2, // ensure above shimmer
-          }}
-        >
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
           {/* Left: BIT banner */}
           <Box
             component="img"
             src={topPanelImg}
-            alt="BIT-DURG Accreditation Banner"
+            alt="BIT-DURG Banner"
             sx={{
               height: 'auto',
-              maxHeight: { xs: 50, md: 70 }, // Slightly adjusted
+              maxHeight: { xs: 40, md: 50 },
               objectFit: 'contain',
               userSelect: 'none',
-              display: isMobile ? 'none' : 'block', // Hide banner on very small screens
             }}
           />
 
-          {/* 4. USER INFO AND LOGOUT BUTTON */}
+          {/* Spacer to push user menu to the right */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Right: User Menu */}
           {user && (
-            <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', md: 'left' }, ml: {md: 2} }}>
-              <Typography variant="body1" component="span" sx={{ fontWeight: 'bold' }}>
-                Welcome, {user.username}
-              </Typography>
-              <Typography variant="body2" component="span" sx={{ ml: 1, color: 'text.secondary' }}>
-                ({user.department} - {user.role})
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Button
+                onClick={handleClick}
+                sx={{
+                  textTransform: 'none',
+                  color: 'text.primary',
+                  borderRadius: '20px',
+                  p: '4px 8px',
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    mr: 1,
+                    bgcolor: stringToColor(user.username),
+                    fontSize: '0.875rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {user.username.charAt(0).toUpperCase()}
+                </Avatar>
+                {!isMobile && (
+                  <Box textAlign="left">
+                    <Typography variant="body2" fontWeight="bold" lineHeight={1.2}>
+                      {user.username}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" lineHeight={1.2}>
+                      {user.role}
+                    </Typography>
+                  </Box>
+                )}
+              </Button>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: 'background.paper',
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem>
+                  <ListItemIcon>
+                    <AccountCircle fontSize="small" />
+                  </ListItemIcon>
+                  Profile
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
+                  Logout
+                </MenuItem>
+              </Menu>
             </Box>
           )}
-
-          {/* Right: action buttons or logos */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: isMobile ? 1 : 2, ml: 'auto' }}>
-            {user ? (
-              <Button color="inherit" variant="outlined" size="small" onClick={handleLogout}>
-                Logout
-              </Button>
-            ) : (
-              // This part shows logos only when the user is NOT logged in (i.e., on the login page)
-              logos.map((src, i) => (
-                <Box
-                  key={i}
-                  component="img"
-                  src={src}
-                  alt=""
-                  sx={{
-                    height: isMobile ? 32 : 40,
-                    filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
-                    transition: 'transform 0.3s',
-                    '&:hover': { transform: 'scale(1.15)' },
-                    cursor: 'pointer',
-                    opacity: 0,
-                    animation: `${fadeIn} 0.6s forwards`,
-                    animationDelay: `${i * 0.15}s`,
-                  }}
-                />
-              ))
-            )}
-          </Box>
         </Toolbar>
       </Container>
     </AppBar>
