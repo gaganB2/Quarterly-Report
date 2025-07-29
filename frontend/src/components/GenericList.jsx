@@ -1,3 +1,4 @@
+// src/components/GenericList.jsx
 import React, { useState } from "react";
 import {
   Paper,
@@ -12,6 +13,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TableContainer, // <-- 1. Import TableContainer
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 
@@ -39,7 +41,8 @@ export default function GenericList({
 
   return (
     <>
-      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+      {/* 2. Wrap the Table in a TableContainer. This makes it scrollable on its own. */}
+      <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
         <Table size="small">
           <TableHead sx={{ backgroundColor: "background.paper" }}>
             <TableRow>
@@ -81,9 +84,9 @@ export default function GenericList({
             ))}
           </TableBody>
         </Table>
-      </Paper>
+      </TableContainer>
 
-      {/* Confirmation Dialog */}
+      {/* Confirmation Dialog (remains unchanged) */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -94,7 +97,7 @@ export default function GenericList({
           Confirm Deletion
         </DialogTitle>
         <DialogContent sx={{ pb: 2 }}>
-          Are you sure you want to delete <strong>“{target?.title}”</strong>?
+          Are you sure you want to delete this entry? This action cannot be undone.
         </DialogContent>
         <DialogActions>
           <Button variant="text" onClick={() => setOpen(false)}>

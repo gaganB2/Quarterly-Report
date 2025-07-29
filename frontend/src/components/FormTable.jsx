@@ -1,5 +1,4 @@
 // src/components/FormTable.jsx
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -33,38 +32,26 @@ export default function FormTable() {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      {/* Allow outer scrolling, not inner */}
-      <Box
-        sx={{
-          width: "100%",
-          overflowX: "visible",
-          overflowY: "visible",
-        }}
+      {/* <-- CHANGE: Removed the problematic outer Box wrapper */}
+      <TableContainer
+        component={Paper}
+        // <-- CHANGE: Removed the 'overflow' overrides to restore default container scrolling
       >
-        <TableContainer
-          component={Paper}
-          sx={{
-            // override MUI default auto‐scroll
-            overflowX: "visible !important",
-            overflowY: "visible !important",
-          }}
-        >
-          <Table>
-            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableRow>
-                <TableCell>S. No.</TableCell>
-                <TableCell>Form</TableCell>
-                <TableCell align="right">Options</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {visibleSections.map((f, i) => (
-                <FormRow key={f.code} form={f} idx={i} autoViewGen={gen} />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+        <Table>
+          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow>
+              <TableCell>S. No.</TableCell>
+              <TableCell>Form</TableCell>
+              <TableCell align="right">Options</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {visibleSections.map((f, i) => (
+              <FormRow key={f.code} form={f} idx={i} autoViewGen={gen} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 }

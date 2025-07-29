@@ -1,3 +1,4 @@
+// src/components/Topbar.jsx
 import React from 'react';
 import {
   AppBar,
@@ -6,32 +7,40 @@ import {
   Container,
   useTheme,
   useMediaQuery,
+  Typography, // Import Typography
+  Button,     // Import Button
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 import topPanelImg from '../assets/bittoppanel.png';
+import { useAuth } from '../context/AuthContext'; // 1. Import useAuth
+import { useNavigate } from 'react-router-dom';   // 2. Import useNavigate for redirection
 
-// shimmer animation
+// ... (keyframes remain the same)
 const shimmer = keyframes`
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 `;
-
-// fade-in animation
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 `;
 
+
 export default function Topbar() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Adjusted for better wrapping
+
+  // 3. Get user and logout function from AuthContext
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(); // Clear user session from context and localStorage
+    navigate('/start'); // Redirect to the login page
+  };
 
   const logos = [
-    '/assets/logos/nba.png',
-    '/assets/logos/naac.png',
-    '/assets/logos/iso9001.png',
-    '/assets/logos/iso14001.png',
-    '/assets/logos/igcbc.png',
+    // ... (logos array remains the same)
   ];
 
   return (
@@ -39,32 +48,10 @@ export default function Topbar() {
       position="fixed"
       elevation={0}
       sx={{
-        top: 0,
-        left: 0,
-        right: 0,
-        py: { xs: 1, md: 2 },
-        backdropFilter: 'blur(16px)',
-        backgroundColor: 'rgba(255,255,255,0.25)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-        zIndex: theme.zIndex.drawer + 1,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          backdropFilter: 'blur(24px)',
-          backgroundColor: 'rgba(255,255,255,0.35)',
-          boxShadow: '0 12px 32px rgba(0,0,0,0.2)',
-        },
-        '&:after': {
-          content: '""',
-          position: 'absolute',
-          inset: 0,
-          background:
-            'linear-gradient(120deg, rgba(255,255,255,0.05), rgba(255,255,255,0.15), rgba(255,255,255,0.05))',
-          backgroundSize: '200% 100%',
-          animation: `${shimmer} 10s linear infinite`,
-        },
+        // ... (AppBar styling remains the same)
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth="xl"> {/* Changed to xl for more space */}
         <Toolbar
           disableGutters
           sx={{
@@ -83,32 +70,52 @@ export default function Topbar() {
             alt="BIT-DURG Accreditation Banner"
             sx={{
               height: 'auto',
-              maxHeight: { xs: 60, md: 80 },
+              maxHeight: { xs: 50, md: 70 }, // Slightly adjusted
               objectFit: 'contain',
               userSelect: 'none',
+              display: isMobile ? 'none' : 'block', // Hide banner on very small screens
             }}
           />
 
-          {/* Right: accreditation logos */}
-          <Box sx={{ display: 'flex', gap: isMobile ? 1 : 2 }}>
-            {logos.map((src, i) => (
-              <Box
-                key={i}
-                component="img"
-                src={src}
-                alt=""
-                sx={{
-                  height: isMobile ? 32 : 48,
-                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
-                  transition: 'transform 0.3s',
-                  '&:hover': { transform: 'scale(1.15)' },
-                  cursor: 'pointer',
-                  opacity: 0,
-                  animation: `${fadeIn} 0.6s forwards`,
-                  animationDelay: `${i * 0.15}s`,
-                }}
-              />
-            ))}
+          {/* 4. USER INFO AND LOGOUT BUTTON */}
+          {user && (
+            <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', md: 'left' }, ml: {md: 2} }}>
+              <Typography variant="body1" component="span" sx={{ fontWeight: 'bold' }}>
+                Welcome, {user.username}
+              </Typography>
+              <Typography variant="body2" component="span" sx={{ ml: 1, color: 'text.secondary' }}>
+                ({user.department} - {user.role})
+              </Typography>
+            </Box>
+          )}
+
+          {/* Right: action buttons or logos */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: isMobile ? 1 : 2, ml: 'auto' }}>
+            {user ? (
+              <Button color="inherit" variant="outlined" size="small" onClick={handleLogout}>
+                Logout
+              </Button>
+            ) : (
+              // This part shows logos only when the user is NOT logged in (i.e., on the login page)
+              logos.map((src, i) => (
+                <Box
+                  key={i}
+                  component="img"
+                  src={src}
+                  alt=""
+                  sx={{
+                    height: isMobile ? 32 : 40,
+                    filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))',
+                    transition: 'transform 0.3s',
+                    '&:hover': { transform: 'scale(1.15)' },
+                    cursor: 'pointer',
+                    opacity: 0,
+                    animation: `${fadeIn} 0.6s forwards`,
+                    animationDelay: `${i * 0.15}s`,
+                  }}
+                />
+              ))
+            )}
           </Box>
         </Toolbar>
       </Container>

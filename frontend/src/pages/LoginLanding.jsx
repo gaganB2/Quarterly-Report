@@ -1,5 +1,8 @@
 // src/pages/LoginLanding.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '../api/axios';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 import {
   Box,
   Container,
@@ -16,6 +19,7 @@ import {
   Checkbox,
   FormGroup,
   CssBaseline,
+  Alert, // Import Alert for showing errors
 } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 import Joyride, { STATUS } from 'react-joyride';
@@ -30,15 +34,18 @@ export default function LoginLanding() {
   const [creds, setCreds] = useState({ id: '', password: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState(''); // State for API login errors
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
+
+  const navigate = useNavigate();
+  const { login } = useAuth(); // Initialize useAuth hook
 
   const [runTour, setRunTour] = useState(true);
   const steps = [
     { target: '#toggle-tabs', content: 'Toggle between Faculty and Admin here.' },
     { target: '#id-field', content: 'Type your ID here.' },
     { target: '#password-field', content: 'Type your password here.' },
-    { target: '#advanced-button', content: 'Reveal extra options.' },
     { target: '#login-button', content: 'Press to log in.' },
   ];
 
@@ -56,10 +63,41 @@ export default function LoginLanding() {
     return Object.keys(e).length === 0;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
-    setTimeout(() => (window.location.href = '/home'), 1000);
+    setLoginError(''); // Reset previous errors
+
+    try {
+      // Make the actual API call to the Django backend
+      const response = await apiClient.post('/api-token-auth/', {
+        username: creds.id,
+        password: creds.password,
+      });
+
+      // On success, the backend sends back a token
+      const { token } = response.data;
+
+      // Store the token in localStorage. The apiClient will now use it for all future requests.
+      localStorage.setItem('token', token);
+
+      // Call the login function from AuthContext to fetch the user's profile
+      await login();
+
+      // Now redirect to the home page
+      navigate('/home');
+
+    } catch (error) {
+      // If the API call fails (e.g., wrong credentials)
+      console.error("Login failed:", error.response?.data);
+      if (error.response && error.response.status === 400) {
+        setLoginError('Invalid username or password. Please try again.');
+      } else {
+        setLoginError('An unexpected error occurred. Please check your connection.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -175,6 +213,9 @@ export default function LoginLanding() {
               </Tabs>
 
               <Stack spacing={2}>
+                {/* Display API login errors here */}
+                {loginError && <Alert severity="error">{loginError}</Alert>}
+                
                 <TextField
                   id="id-field"
                   label={role === 'faculty' ? 'Faculty ID' : 'Admin ID'}

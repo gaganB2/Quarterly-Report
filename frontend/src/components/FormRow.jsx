@@ -1,3 +1,4 @@
+// src/components/FormRow.jsx
 import React, { useState } from "react";
 import {
   TableRow,
@@ -17,6 +18,9 @@ import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
+
+// Define how many columns to show in the preview
+const PREVIEW_COLUMN_LIMIT = 5;
 
 export default function FormRow({ form, idx }) {
   const [expanded, setExpanded] = useState(false);
@@ -68,6 +72,9 @@ export default function FormRow({ form, idx }) {
     }
     // view/edit/delete all show the list first
     if (mode === "view" || mode === "edit" || mode === "delete") {
+      // <-- CHANGE: Slice the fields array to only pass the first 5 columns to the preview list
+      const previewFields = (cfg.listFields || []).slice(0, PREVIEW_COLUMN_LIMIT);
+
       return (
         <>
           <Box display="flex" justifyContent="flex-end" mb={1}>
@@ -77,7 +84,7 @@ export default function FormRow({ form, idx }) {
           </Box>
           <GenericList
             data={data}
-            fields={cfg.listFields || []}
+            fields={previewFields} // <-- CHANGE: Use the sliced array
             mode={mode}
             onEdit={handleEditItem}
             onDelete={handleDeleteItem}
@@ -138,7 +145,7 @@ export default function FormRow({ form, idx }) {
         </TableCell>
       </TableRow>
 
-      {/* Full-screen dialog for “View Full Table” */}
+      {/* Full-screen dialog for “View Full Table” - This will still show ALL columns */}
       <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
         <AppBar position="static">
           <Toolbar>
@@ -153,7 +160,7 @@ export default function FormRow({ form, idx }) {
         <Box p={2}>
           <GenericList
             data={data}
-            fields={cfg.listFields || []}
+            fields={cfg.listFields || []} // <-- NOTE: This uses the full, unsliced array
             mode="view"
             onEdit={handleEditItem}
             onDelete={handleDeleteItem}
