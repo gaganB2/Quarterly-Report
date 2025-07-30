@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'corsheaders',
     't1_research',
     'users',
+    'import_export',
 ]
 
 MIDDLEWARE = [
