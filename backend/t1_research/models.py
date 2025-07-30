@@ -291,6 +291,7 @@ class T4_1EditorialBoard(models.Model):
     publisher       = models.CharField(max_length=255, help_text="Publisher with complete address")
     issn_isbn       = models.CharField("ISSN/ISBN No.", max_length=50)
     indexing        = models.CharField(max_length=20, choices=INDEXING_CHOICES)
+    quarter         = models.CharField(max_length=10, default='Q1')
     year            = models.PositiveIntegerField("Year (w.e.f.)")
     type            = models.CharField("Type of Book/Journal", max_length=20, choices=TYPE_CHOICES)
     proof_link      = models.URLField("Google Drive Link (Upload Proof)", blank=True)
@@ -328,6 +329,7 @@ class T4_2ReviewerDetails(models.Model):
     indexing          = models.CharField(max_length=20, choices=INDEXING_CHOICES)
     issn_isbn         = models.CharField("ISSN/ISBN No.", max_length=50)
     publisher         = models.CharField(max_length=255)
+    quarter = models.CharField(max_length=10, default='Q1')
     year              = models.PositiveIntegerField()
     type              = models.CharField(
                             "Type (National/International)",

@@ -6,6 +6,9 @@ import T2_1Form from "../components/T2_1Form";
 import T2_2Form from "../components/T2_2Form";
 import T3_1Form from "../components/T3_1Form";
 import T3_2Form from "../components/T3_2Form";
+import T4_1Form from "../components/T4_1Form";
+import T4_2Form from "../components/T4_2Form";
+import T4_3Form from "../components/T4_3Form";
 
 export const formSections = [
   {
@@ -288,6 +291,82 @@ export const formConfig = {
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
+    ],
+  },
+        "T4.1": {
+    endpoint: "/api/faculty/t4_1editorial/",
+    FormComponent: T4_1Form,
+    listFields: [
+      { label: "Faculty Name", key: "faculty_name" },
+      { label: "Title", key: "title" },
+      { label: "Role", key: "role" },
+      { label: "Publisher", key: "publisher" },
+      { label: "ISSN/ISBN", key: "issn_isbn" },
+      { label: "Indexing", key: "indexing" },
+      { label: "Quarter", key: "quarter" }, // Display quarter in the view table
+      { label: "Year", key: "year" },       // Display year in the view table
+      { label: "Type", key: "type" },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <a href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+    ],
+  },
+
+    "T4.2": {
+    endpoint: "/api/faculty/t4_2reviewers/",
+    FormComponent: T4_2Form,
+    listFields: [
+      { label: "Faculty Name", key: "faculty_name" },
+      { label: "Publication Type", key: "publication_type" },
+      { label: "Title", key: "title" },
+      { label: "Indexing", key: "indexing" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <a href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
+    ],
+  },
+    "T4.3": {
+    endpoint: "/api/faculty/t4_3committees/",
+    FormComponent: T4_3Form,
+    listFields: [
+      { label: "Faculty Name", key: "faculty_name" },
+      { label: "Committee", key: "body_details" },
+      { label: "Responsibility", key: "responsibility" },
+      { label: "Level", key: "level" },
+      { label: "Quarter", key: "quarter" },
+      { label: "Year", key: "year" },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <a href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </a>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   // …other configs remain unchanged
