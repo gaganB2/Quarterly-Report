@@ -782,7 +782,8 @@ class T6_5AICTEInitiative(models.Model):
                               )
                           )
     date                 = models.DateField(help_text="Date of Initiative (DD/MMM/YYYY)")
-    role                 = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    # role                 = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    role                 = models.CharField(max_length=100)
     organizing_institute = models.CharField(
                               max_length=255,
                               help_text="Name of the Organizing Institute"
