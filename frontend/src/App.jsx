@@ -8,25 +8,23 @@ import Topbar from './components/Topbar';
 
 // Pages
 import LoginLanding from './pages/LoginLanding';
-import HomePage     from './pages/HomePage';
+import HomePage from './pages/HomePage';
+import UserManagement from './pages/UserManagement';
+import DepartmentManagement from './pages/DepartmentManagement';
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
-import PublicRoute from './routes/PublicRoute'; // <-- 1. Import PublicRoute
+import PublicRoute from './routes/PublicRoute';
+import AdminRoute from './routes/AdminRoute';
 
 export default function App() {
   return (
     <Box>
-      {/* Global glass Topbar */}
       <Topbar />
-
-      {/* Push all pages below the Topbar */}
       <Box sx={{ pt: { xs: 10, md: 12 } }}>
         <Routes>
-          {/* Redirect root to landing */}
           <Route path="/" element={<Navigate to="/start" replace />} />
 
-          {/* 2. Use PublicRoute for the login page */}
           <Route
             path="/start"
             element={
@@ -36,7 +34,6 @@ export default function App() {
             }
           />
 
-          {/* Protected home page (remains unchanged) */}
           <Route
             path="/home"
             element={
@@ -46,7 +43,24 @@ export default function App() {
             }
           />
 
-          {/* Fallback to landing */}
+          {/* --- Admin Routes --- */}
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <UserManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/departments"
+            element={
+              <AdminRoute>
+                <DepartmentManagement />
+              </AdminRoute>
+            }
+          />
+
           <Route path="*" element={<Navigate to="/start" replace />} />
         </Routes>
       </Box>

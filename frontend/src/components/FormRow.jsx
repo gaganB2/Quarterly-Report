@@ -1,5 +1,5 @@
 // src/components/FormRow.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TableRow,
   TableCell,
@@ -19,12 +19,11 @@ import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
 
-// Define how many columns to show in the preview
 const PREVIEW_COLUMN_LIMIT = 5;
 
-export default function FormRow({ form, idx }) {
+export default function FormRow({ form, idx, filters }) {
   const [expanded, setExpanded] = useState(false);
-  const [mode, setMode] = useState("add"); // "add" | "view" | "edit" | "delete"
+  const [mode, setMode] = useState("add");
   const [data, setData] = useState([]);
   const [editData, setEditData] = useState(null);
   const [fullOpen, setFullOpen] = useState(false);
@@ -32,13 +31,29 @@ export default function FormRow({ form, idx }) {
   const cfg = formConfig[form.code];
   if (!cfg || !cfg.endpoint) return null;
 
-  // Load all entries for this section
   const loadData = async () => {
-    const res = await apiClient.get(cfg.endpoint);
-    setData(res.data);
+    // Convert the filters object into a URL query string.
+    // This will ignore any filter values that are empty.
+    const params = new URLSearchParams(filters).toString();
+    const url = `${cfg.endpoint}?${params}`;
+
+    try {
+      const res = await apiClient.get(url);
+      setData(res.data.results || []);
+    } catch (error) {
+      console.error(`Failed to load data for ${form.code}:`, error);
+      setData([]);
+    }
   };
 
-  // Toggle panel open/close for any mode
+  // This effect re-fetches data whenever the filters change,
+  // but only if the panel is already open in a view mode.
+  useEffect(() => {
+    if (expanded && (mode === 'view' || mode === 'edit' || mode === 'delete')) {
+      loadData();
+    }
+  }, [filters]); // The dependency array ensures this runs when filters change
+
   const handleOpen = async (newMode) => {
     if (expanded && mode === newMode) {
       setExpanded(false);
@@ -52,29 +67,29 @@ export default function FormRow({ form, idx }) {
     setExpanded(true);
   };
 
-  // Edit icon clicked in list
   const handleEditItem = (item) => {
     setEditData(item);
     setMode("edit");
     setExpanded(true);
   };
 
-  // Delete icon clicked in list
   const handleDeleteItem = async (item) => {
     await apiClient.delete(`${cfg.endpoint}${item.id}/`);
-    await loadData();
+    await loadData(); // Refresh data with current filters
   };
 
-  // Render the main panel
+  const handleSuccess = () => {
+    setExpanded(false);
+    // After adding/editing, reload the data with the current filters applied
+    loadData();
+  };
+
   const renderPanel = () => {
     if (mode === "add") {
-      return <GenericForm FormComponent={cfg.FormComponent} onSuccess={() => setExpanded(false)} />;
+      return <GenericForm FormComponent={cfg.FormComponent} onSuccess={handleSuccess} />;
     }
-    // view/edit/delete all show the list first
     if (mode === "view" || mode === "edit" || mode === "delete") {
-      // <-- CHANGE: Slice the fields array to only pass the first 5 columns to the preview list
       const previewFields = (cfg.listFields || []).slice(0, PREVIEW_COLUMN_LIMIT);
-
       return (
         <>
           <Box display="flex" justifyContent="flex-end" mb={1}>
@@ -84,7 +99,7 @@ export default function FormRow({ form, idx }) {
           </Box>
           <GenericList
             data={data}
-            fields={previewFields} // <-- CHANGE: Use the sliced array
+            fields={previewFields}
             mode={mode}
             onEdit={handleEditItem}
             onDelete={handleDeleteItem}
@@ -94,7 +109,7 @@ export default function FormRow({ form, idx }) {
               <GenericForm
                 FormComponent={cfg.FormComponent}
                 editData={editData}
-                onSuccess={() => setExpanded(false)}
+                onSuccess={handleSuccess}
               />
             </Box>
           )}
@@ -104,7 +119,6 @@ export default function FormRow({ form, idx }) {
     return null;
   };
 
-  // Header buttons
   const renderButton = (btnMode, label, color = "primary") => {
     const active = mode === btnMode && expanded;
     return (
@@ -135,7 +149,6 @@ export default function FormRow({ form, idx }) {
         </TableCell>
       </TableRow>
 
-      {/* Expandable panel */}
       <TableRow>
         <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -145,7 +158,6 @@ export default function FormRow({ form, idx }) {
         </TableCell>
       </TableRow>
 
-      {/* Full-screen dialog for “View Full Table” - This will still show ALL columns */}
       <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
         <AppBar position="static">
           <Toolbar>
@@ -160,7 +172,7 @@ export default function FormRow({ form, idx }) {
         <Box p={2}>
           <GenericList
             data={data}
-            fields={cfg.listFields || []} // <-- NOTE: This uses the full, unsliced array
+            fields={cfg.listFields || []}
             mode="view"
             onEdit={handleEditItem}
             onDelete={handleDeleteItem}

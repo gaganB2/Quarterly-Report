@@ -1,5 +1,5 @@
 // src/pages/HomePage.jsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Box,
@@ -7,12 +7,23 @@ import {
   Divider,
   Paper,
   useTheme,
+  Breadcrumbs,
+  Link,
 } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
 import FormTable from "../components/FormTable";
-import { Breadcrumbs, Link } from "@mui/material";
+import AdminFilterPanel from "../components/AdminFilterPanel";
 
 export default function HomePage() {
   const theme = useTheme();
+  const { user } = useAuth(); // Get the current user to check their role
+  const [filters, setFilters] = useState({});
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    // This console log is for testing; we will connect this to the FormTable next.
+    console.log("Applying filters to HomePage:", newFilters);
+  };
 
   return (
     <Box sx={{ backgroundColor: "#f9fafb", minHeight: "100vh", py: 4 }}>
@@ -38,10 +49,16 @@ export default function HomePage() {
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             Manage your form submissions
           </Typography>
+          
+          {/* Conditionally render the AdminFilterPanel only for Admin users */}
+          {user && user.role === 'Admin' && (
+            <AdminFilterPanel onFilterChange={handleFilterChange} />
+          )}
+
           <Divider sx={{ mb: 3 }} />
 
-          {/* Submission Sections Table */}
-          <FormTable />
+          {/* Pass the filters down to the FormTable */}
+          <FormTable filters={filters} />
         </Paper>
       </Container>
     </Box>

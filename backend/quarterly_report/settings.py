@@ -1,3 +1,5 @@
+# quarterly_report/settings.py
+
 import os
 from pathlib import Path
 
@@ -7,17 +9,7 @@ SECRET_KEY = 'your-secret-key'
 DEBUG = True
 ALLOWED_HOSTS = []
 
-# PostgreSQL Config
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'qr_db',
-        'USER': 'qr_user',
-        'PASSWORD': 'qr_pass',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,12 +18,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    't1_research',
+    'django_filters',
+
+    # Local apps
+    'reports',
     'users',
-    'import_export',
+    'analytics', # <-- ADD THIS NEW APP
 ]
 
 MIDDLEWARE = [
@@ -65,6 +62,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'quarterly_report.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'qr_db',
+        'USER': 'qr_user',
+        'PASSWORD': 'qr_pass',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
 AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'en-us'
@@ -84,4 +92,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 25
 }

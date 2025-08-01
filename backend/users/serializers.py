@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from .models import Profile
-from t1_research.models import Department
+from reports.models import Department
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """
@@ -79,3 +79,26 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('username', 'department', 'role')
+
+# In users/serializers.py
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    department = serializers.CharField(source='profile.department.name', read_only=True)
+    role = serializers.CharField(source='profile.role', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'department', 'role']
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing users in the admin management panel.
+    """
+    department = serializers.CharField(source='profile.department.name', read_only=True, allow_null=True)
+    role = serializers.CharField(source='profile.role', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'department', 'role']
+
+        

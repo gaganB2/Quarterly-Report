@@ -1,5 +1,5 @@
 // src/components/FormTable.jsx
-import React, { useState, useEffect } from "react";
+import React from "react"; // Removed unused useState and useEffect
 import {
   Box,
   Table,
@@ -16,14 +16,9 @@ import {
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
 
-export default function FormTable() {
+// Updated to accept and use the 'filters' prop
+export default function FormTable({ filters }) {
   const visibleSections = formSections;
-  const [gen, setGen] = useState(0);
-
-  useEffect(() => {
-    // trigger initial loads
-    setGen((g) => g + 1);
-  }, []);
 
   return (
     <Box mt={4}>
@@ -32,11 +27,7 @@ export default function FormTable() {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      {/* <-- CHANGE: Removed the problematic outer Box wrapper */}
-      <TableContainer
-        component={Paper}
-        // <-- CHANGE: Removed the 'overflow' overrides to restore default container scrolling
-      >
+      <TableContainer component={Paper} variant="outlined">
         <Table>
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
@@ -47,7 +38,8 @@ export default function FormTable() {
           </TableHead>
           <TableBody>
             {visibleSections.map((f, i) => (
-              <FormRow key={f.code} form={f} idx={i} autoViewGen={gen} />
+              // Pass the filters prop down to each FormRow
+              <FormRow key={f.code} form={f} idx={i} filters={filters} />
             ))}
           </TableBody>
         </Table>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../api/axios';
-import { useAuth } from '../context/AuthContext'; // Import useAuth
+import { useAuth } from '../context/AuthContext';
 import {
   Box,
   Container,
@@ -19,7 +19,7 @@ import {
   Checkbox,
   FormGroup,
   CssBaseline,
-  Alert, // Import Alert for showing errors
+  Alert,
 } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 import Joyride, { STATUS } from 'react-joyride';
@@ -34,12 +34,12 @@ export default function LoginLanding() {
   const [creds, setCreds] = useState({ id: '', password: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [loginError, setLoginError] = useState(''); // State for API login errors
+  const [loginError, setLoginError] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showGuidelines, setShowGuidelines] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth(); // Initialize useAuth hook
+  const { login } = useAuth();
 
   const [runTour, setRunTour] = useState(true);
   const steps = [
@@ -66,29 +66,29 @@ export default function LoginLanding() {
   const handleLogin = async () => {
     if (!validate()) return;
     setLoading(true);
-    setLoginError(''); // Reset previous errors
+    setLoginError('');
 
     try {
-      // Make the actual API call to the Django backend
       const response = await apiClient.post('/api-token-auth/', {
         username: creds.id,
         password: creds.password,
       });
 
-      // On success, the backend sends back a token
       const { token } = response.data;
-
-      // Store the token in localStorage. The apiClient will now use it for all future requests.
       localStorage.setItem('token', token);
 
-      // Call the login function from AuthContext to fetch the user's profile
-      await login();
+      // --- THIS IS THE UPDATED LOGIC ---
+      const userProfile = await login(); // This now returns the profile data
 
-      // Now redirect to the home page
-      navigate('/home');
+      // Redirect based on the user's role
+      if (userProfile.role === 'Admin') {
+        navigate('/admin/users');
+      } else {
+        navigate('/home');
+      }
+      // --- END OF UPDATED LOGIC ---
 
     } catch (error) {
-      // If the API call fails (e.g., wrong credentials)
       console.error("Login failed:", error.response?.data);
       if (error.response && error.response.status === 400) {
         setLoginError('Invalid username or password. Please try again.');
@@ -110,7 +110,6 @@ export default function LoginLanding() {
       }}
     >
       <CssBaseline />
-
       <style>{`
         @keyframes gradientBG {
           0% { background-position: 0% 50%; }
@@ -118,7 +117,6 @@ export default function LoginLanding() {
           100% { background-position: 0% 50%; }
         }
       `}</style>
-
       <Joyride
         steps={steps}
         run={runTour}
@@ -127,7 +125,6 @@ export default function LoginLanding() {
         callback={handleTourCallback}
         styles={{ options: { zIndex: 2000 } }}
       />
-
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
         <Box
           sx={{
@@ -145,16 +142,10 @@ export default function LoginLanding() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               sx={{
-                flex: 1,
-                p: { xs: 3, md: 5 },
-                borderRadius: 4,
-                backdropFilter: 'blur(12px)',
-                backgroundColor: 'rgba(255,255,255,0.25)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
+                flex: 1, p: { xs: 3, md: 5 }, borderRadius: 4,
+                backdropFilter: 'blur(12px)', backgroundColor: 'rgba(255,255,255,0.25)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center',
+                justifyContent: 'center', textAlign: 'center',
               }}
             >
               <Box
@@ -162,8 +153,7 @@ export default function LoginLanding() {
                 src={logo}
                 alt="BIT-DURG"
                 sx={{
-                  height: 60,
-                  mb: 3,
+                  height: 60, mb: 3,
                   filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
                 }}
               />
@@ -178,27 +168,20 @@ export default function LoginLanding() {
               </Typography>
             </MotionPaper>
           </Tilt>
-
           <Tilt tiltMaxAngleX={6} tiltMaxAngleY={4} glareEnable glareMaxOpacity={0.1}>
             <MotionPaper
               elevation={6}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
               sx={{
-                flex: 1,
-                p: { xs: 3, md: 5 },
-                borderRadius: 4,
-                backdropFilter: 'blur(12px)',
-                backgroundColor: 'rgba(255,255,255,0.25)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
+                flex: 1, p: { xs: 3, md: 5 }, borderRadius: 4,
+                backdropFilter: 'blur(12px)', backgroundColor: 'rgba(255,255,255,0.25)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
               }}
             >
               <Typography variant="h6" align="center" fontWeight={700} gutterBottom>
                 Login as
               </Typography>
-
               <Tabs
                 id="toggle-tabs"
                 value={role}
@@ -211,11 +194,8 @@ export default function LoginLanding() {
                 <Tab label="Faculty" value="faculty" />
                 <Tab label="Admin" value="admin" />
               </Tabs>
-
               <Stack spacing={2}>
-                {/* Display API login errors here */}
                 {loginError && <Alert severity="error">{loginError}</Alert>}
-                
                 <TextField
                   id="id-field"
                   label={role === 'faculty' ? 'Faculty ID' : 'Admin ID'}
@@ -237,7 +217,6 @@ export default function LoginLanding() {
                   helperText={errors.password}
                   onChange={(e) => setCreds({ ...creds, password: e.target.value })}
                 />
-
                 <Button
                   id="login-button"
                   variant="contained"
@@ -250,7 +229,6 @@ export default function LoginLanding() {
                   {loading ? <CircularProgress size={24} color="inherit" /> : 'Log In'}
                 </Button>
               </Stack>
-
               <Box mt={2} textAlign="center">
                 <Button
                   id="advanced-button"
@@ -269,7 +247,6 @@ export default function LoginLanding() {
                   </Typography>
                 </Collapse>
               </Box>
-
               <Box mt={3} textAlign="center">
                 <Button
                   startIcon={<Settings />}

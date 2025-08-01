@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from t1_research.models import Department  # Make sure this import exists
+from reports.models import Department  # Make sure this import exists
 
 class Profile(models.Model):
     ROLE_CHOICES = (

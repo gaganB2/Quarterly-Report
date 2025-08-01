@@ -13,18 +13,18 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TableContainer, // <-- 1. Import TableContainer
+  TableContainer,
+  Typography, // Import Typography for the empty state message
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 
 export default function GenericList({
   data,
-  fields,    // array of { label, key, render? }
-  mode,      // "view" | "edit" | "delete"
+  fields,
+  mode,
   onEdit,
   onDelete,
 }) {
-  // Dialog state
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState(null);
 
@@ -39,9 +39,19 @@ export default function GenericList({
     setTarget(null);
   };
 
+  // --- ADD THIS ROBUSTNESS CHECK ---
+  // If data is not an array, don't try to render the table.
+  if (!Array.isArray(data)) {
+    console.error("GenericList received non-array data:", data);
+    return (
+      <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+        <Typography color="error">Could not display data.</Typography>
+      </Paper>
+    );
+  }
+
   return (
     <>
-      {/* 2. Wrap the Table in a TableContainer. This makes it scrollable on its own. */}
       <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
         <Table size="small">
           <TableHead sx={{ backgroundColor: "background.paper" }}>
@@ -57,36 +67,43 @@ export default function GenericList({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.id} hover>
-                {fields.map((f, i) => (
-                  <TableCell key={i}>
-                    {f.render ? f.render(item) : item[f.key] || ""}
-                  </TableCell>
-                ))}
-                <TableCell align="right">
-                  {(mode === "view" || mode === "edit") && (
-                    <IconButton size="small" onClick={() => onEdit(item)}>
-                      <Edit fontSize="inherit" />
-                    </IconButton>
-                  )}
-                  {(mode === "view" || mode === "delete") && (
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDeleteClick(item)}
-                    >
-                      <Delete fontSize="inherit" />
-                    </IconButton>
-                  )}
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={fields.length + 1} align="center">
+                  <Typography sx={{ p: 2, color: 'text.secondary' }}>No entries found.</Typography>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              data.map((item) => (
+                <TableRow key={item.id} hover>
+                  {fields.map((f, i) => (
+                    <TableCell key={i}>
+                      {f.render ? f.render(item) : item[f.key] || ""}
+                    </TableCell>
+                  ))}
+                  <TableCell align="right">
+                    {(mode === "view" || mode === "edit") && (
+                      <IconButton size="small" onClick={() => onEdit(item)}>
+                        <Edit fontSize="inherit" />
+                      </IconButton>
+                    )}
+                    {(mode === "view" || mode === "delete") && (
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteClick(item)}
+                      >
+                        <Delete fontSize="inherit" />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Confirmation Dialog (remains unchanged) */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
