@@ -3,15 +3,19 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-# from rest_framework.authtoken.views import obtain_auth_token # <-- REMOVE THIS
 from reports.views import *
 from users.views import (
     RegisterUserView, 
     GetUserProfileView, 
     UserManagementViewSet,
-    CustomTokenObtainPairView # <-- IMPORT OUR NEW VIEW
+    CustomTokenObtainPairView
 )
-from rest_framework_simplejwt.views import TokenRefreshView # <-- IMPORT THIS
+from rest_framework_simplejwt.views import TokenRefreshView
+
+# --- V NEW: IMPORTS FOR API DOCUMENTATION ---
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+# --- ^ END NEW ---
+
 
 # --- Router for Faculty Data Submissions ---
 faculty_router = DefaultRouter()
@@ -66,14 +70,16 @@ urlpatterns = [
     path('api/admin/', include(admin_router.urls)),
     path('api/analytics/', include('analytics.urls')),
 
-    # --- V MODIFIED: Auth & Profile routes ---
+    # Auth & Profile routes
     path('api/register/', RegisterUserView.as_view(), name='register'),
     path('api/profile/', GetUserProfileView.as_view(), name='profile'),
-    
-    # --- NEW JWT AUTHENTICATION ENDPOINTS ---
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    # --- END NEW ---
-    
-    # path('api-token-auth/', obtain_auth_token), # <-- REMOVE THIS
+
+    # --- V NEW: API DOCUMENTATION URLS ---
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # --- ^ END NEW ---
 ]

@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 from decouple import config, Csv
-from datetime import timedelta # <-- IMPORT THIS
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,10 +23,10 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
-    # 'rest_framework.authtoken', # <-- REMOVE THIS
-    'rest_framework_simplejwt', # <-- ADD THIS
+    'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
+    'drf_spectacular',
 
     # Local apps
     'reports',
@@ -89,21 +89,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool) 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default=[])
 
-# --- V MODIFIED: REST_FRAMEWORK SETTINGS ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # Use JWT for authentication instead of TokenAuthentication
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-# --- ^ END MODIFIED ---
 
-# --- V NEW: SIMPLE_JWT SETTINGS ---
+# --- V MODIFIED: FULL SIMPLE_JWT SETTINGS ---
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -143,4 +141,11 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-# --- ^ END NEW ---
+# --- ^ END MODIFIED ---
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Quarterly Report API',
+    'DESCRIPTION': 'Official API documentation for the Quarterly Report Submission System.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
