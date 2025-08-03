@@ -3,15 +3,21 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken.views import obtain_auth_token
+# from rest_framework.authtoken.views import obtain_auth_token # <-- REMOVE THIS
 from reports.views import *
-from users.views import RegisterUserView, GetUserProfileView, UserManagementViewSet
+from users.views import (
+    RegisterUserView, 
+    GetUserProfileView, 
+    UserManagementViewSet,
+    CustomTokenObtainPairView # <-- IMPORT OUR NEW VIEW
+)
+from rest_framework_simplejwt.views import TokenRefreshView # <-- IMPORT THIS
 
 # --- Router for Faculty Data Submissions ---
 faculty_router = DefaultRouter()
+# (All your faculty router registrations remain unchanged)
 faculty_router.register(r't1research', T1ResearchViewSet, basename='t1research')
 faculty_router.register(r't1_2research', T1_2ResearchViewSet, basename='t1_2research')
-# (All other T* and S* form registrations remain here)
 faculty_router.register(r't2_1workshops', T2_1WorkshopAttendanceViewSet, basename='t2_1workshops')
 faculty_router.register(r't2_2organized', T2_2WorkshopOrganizedViewSet, basename='t2_2organized')
 faculty_router.register(r't3_1books', T3_1BookPublicationViewSet, basename='t3_1books')
@@ -46,6 +52,7 @@ faculty_router.register(r's5_2vocational',  S5_2VocationalTrainingViewSet,      
 faculty_router.register(r's5_3special',     S5_3SpecialMentionAchievementViewSet, basename='s5_3special')
 faculty_router.register(r's5_4entrepreneurs', S5_4StudentEntrepreneurshipViewSet, basename='s5_4entrepreneurs')
 
+
 # --- Router for Admin Management ---
 admin_router = DefaultRouter()
 admin_router.register(r'users', UserManagementViewSet, basename='user-management')
@@ -57,12 +64,16 @@ urlpatterns = [
     
     path('api/faculty/', include(faculty_router.urls)),
     path('api/admin/', include(admin_router.urls)),
-    
-    # --- ADD THIS NEW PATH FOR ANALYTICS ---
     path('api/analytics/', include('analytics.urls')),
 
-    # Auth & Profile routes
+    # --- V MODIFIED: Auth & Profile routes ---
     path('api/register/', RegisterUserView.as_view(), name='register'),
     path('api/profile/', GetUserProfileView.as_view(), name='profile'),
-    path('api-token-auth/', obtain_auth_token),
+    
+    # --- NEW JWT AUTHENTICATION ENDPOINTS ---
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # --- END NEW ---
+    
+    # path('api-token-auth/', obtain_auth_token), # <-- REMOVE THIS
 ]
