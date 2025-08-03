@@ -2,12 +2,15 @@
 
 import os
 from pathlib import Path
+from decouple import config, Csv  # <-- IMPORT THIS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key'
-DEBUG = True
-ALLOWED_HOSTS = []
+# --- V NEW: Load settings from .env file ---
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# --- ^ END NEW ---
 
 # Application definition
 
@@ -28,7 +31,7 @@ INSTALLED_APPS = [
     # Local apps
     'reports',
     'users',
-    'analytics', # <-- ADD THIS NEW APP
+    'analytics',
 ]
 
 MIDDLEWARE = [
@@ -62,16 +65,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'quarterly_report.wsgi.application'
 
+# --- V NEW: Load database config from .env ---
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'qr_db',
-        'USER': 'qr_user',
-        'PASSWORD': 'qr_pass',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT', cast=int),
     }
 }
+# --- ^ END NEW ---
 
 AUTH_PASSWORD_VALIDATORS = []
 
@@ -83,7 +88,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+# --- V NEW: Load CORS config from .env ---
+# Set this to False in your .env file for production
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool) 
+# For production, define specific origins instead of allowing all
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default=[])
+# --- ^ END NEW ---
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
