@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 from rest_framework.routers import DefaultRouter
 from reports.views import *
 from users.views import (
@@ -11,15 +12,11 @@ from users.views import (
     CustomTokenObtainPairView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
-
-# --- V NEW: IMPORTS FOR API DOCUMENTATION ---
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-# --- ^ END NEW ---
 
 
 # --- Router for Faculty Data Submissions ---
 faculty_router = DefaultRouter()
-# (All your faculty router registrations remain unchanged)
 faculty_router.register(r't1research', T1ResearchViewSet, basename='t1research')
 faculty_router.register(r't1_2research', T1_2ResearchViewSet, basename='t1_2research')
 faculty_router.register(r't2_1workshops', T2_1WorkshopAttendanceViewSet, basename='t2_1workshops')
@@ -64,6 +61,9 @@ admin_router.register(r'departments', DepartmentViewSet, basename='department')
 
 # --- Main URL Patterns ---
 urlpatterns = [
+    # Redirect the root URL to the Swagger UI API documentation
+    path('', RedirectView.as_view(url='/api/schema/swagger-ui/', permanent=False), name='index'),
+
     path('admin/', admin.site.urls),
     
     path('api/faculty/', include(faculty_router.urls)),
@@ -76,10 +76,8 @@ urlpatterns = [
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    # --- V NEW: API DOCUMENTATION URLS ---
+    # API DOCUMENTATION URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    # Optional UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    # --- ^ END NEW ---
 ]
