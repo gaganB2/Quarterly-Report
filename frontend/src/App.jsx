@@ -7,10 +7,12 @@ import { Box } from '@mui/material';
 import Topbar from './components/Topbar';
 
 // Pages
-import LoginLanding from './pages/LoginLanding';
+import WelcomePage from './pages/WelcomePage'; // <-- IMPORT NEW
+import LoginPage from './pages/LoginPage'; // <-- IMPORT RENAMED
 import HomePage from './pages/HomePage';
 import UserManagement from './pages/UserManagement';
 import DepartmentManagement from './pages/DepartmentManagement';
+import AnalyticsDashboard from './pages/AnalyticsDashboard'; // <-- IMPORT Analytics
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
@@ -21,15 +23,24 @@ export default function App() {
   return (
     <Box>
       <Topbar />
-      <Box sx={{ pt: { xs: 10, md: 12 } }}>
+      <Box sx={{ pt: { xs: 8, md: 10 } }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/start" replace />} />
-
-          <Route
-            path="/start"
+          {/* --- MODIFIED: Root now points to WelcomePage --- */}
+          <Route 
+            path="/" 
             element={
               <PublicRoute>
-                <LoginLanding />
+                <WelcomePage />
+              </PublicRoute>
+            } 
+          />
+
+          {/* --- MODIFIED: Login is now at /login --- */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
               </PublicRoute>
             }
           />
@@ -60,8 +71,17 @@ export default function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/analytics"
+            element={
+              <AdminRoute>
+                <AnalyticsDashboard />
+              </AdminRoute>
+            }
+          />
 
-          <Route path="*" element={<Navigate to="/start" replace />} />
+          {/* --- MODIFIED: Catch-all redirects to the new root --- */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>
     </Box>

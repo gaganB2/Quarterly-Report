@@ -14,6 +14,7 @@ import {
   CircularProgress,
   Alert,
   Stack,
+  Grid,
 } from '@mui/material';
 import apiClient from '../api/axios';
 
@@ -21,6 +22,9 @@ const initialFormState = {
   username: '',
   password: '',
   password2: '',
+  first_name: '',
+  last_name: '',
+  email: '',
   department: '',
   role: 'Faculty',
 };
@@ -33,16 +37,18 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
 
   useEffect(() => {
     if (open) {
-      apiClient.get('/api/admin/departments/')
-        .then(response => {
-          setDepartments(response.data.results || response.data);
-        })
-        .catch(err => {
-          console.error("Failed to fetch departments", err);
-          setError('Could not load department list.');
-        });
+      if (departments.length === 0) {
+        apiClient.get('/api/admin/departments/')
+          .then(response => {
+            setDepartments(response.data.results || response.data);
+          })
+          .catch(err => {
+            console.error("Failed to fetch departments", err);
+            setError('Could not load department list.');
+          });
+      }
     }
-  }, [open]);
+  }, [open, departments.length]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +70,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
       handleClose();
     } catch (err) {
       const errorData = err.response?.data;
-      const errorMessage = typeof errorData === 'object' ? JSON.stringify(errorData) : 'An unknown error occurred.';
+      const errorMessage = errorData ? Object.entries(errorData).map(([field, errors]) => `${field.replace("_", " ")}: ${Array.isArray(errors) ? errors.join(' ') : errors}`).join(' | ') : 'An unknown error occurred.';
       setError(`Failed to create user: ${errorMessage}`);
       console.error("Registration failed", err.response);
     } finally {
@@ -84,48 +90,34 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
       onClose={handleClose}
       fullWidth
       maxWidth="sm"
-      BackdropProps={{
-        style: {
-          backgroundColor: 'rgba(0, 0, 0, 0.1)', // Lighter backdrop
-          backdropFilter: 'blur(2px)',
-        },
-      }}
-      PaperProps={{
-        elevation: 8,
-        sx: { borderRadius: 3 }
-      }}
     >
       <DialogTitle>Create New User</DialogTitle>
       <DialogContent>
         <Stack component="form" spacing={2} sx={{ mt: 2 }} id="create-user-form" onSubmit={handleSubmit}>
           {error && <Alert severity="error">{error}</Alert>}
-          <TextField
-            name="username"
-            label="Username / Faculty ID"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <TextField
-            name="password"
-            label="Password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <TextField
-            name="password2"
-            label="Confirm Password"
-            type="password"
-            value={formData.password2}
-            onChange={handleChange}
-            required
-            fullWidth
-          />
-          <FormControl fullWidth required>
+          
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField name="first_name" label="First Name" value={formData.first_name} onChange={handleChange} required fullWidth variant="outlined" />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField name="last_name" label="Last Name" value={formData.last_name} onChange={handleChange} required fullWidth variant="outlined" />
+            </Grid>
+          </Grid>
+
+          <TextField name="email" label="Email Address" type="email" value={formData.email} onChange={handleChange} required fullWidth variant="outlined" />
+          <TextField name="username" label="Username / Faculty ID" value={formData.username} onChange={handleChange} required fullWidth variant="outlined" />
+          
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField name="password" label="Password" type="password" value={formData.password} onChange={handleChange} required fullWidth variant="outlined" />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField name="password2" label="Confirm Password" type="password" value={formData.password2} onChange={handleChange} required fullWidth variant="outlined" />
+            </Grid>
+          </Grid>
+          
+          <FormControl fullWidth required variant="outlined">
             <InputLabel id="department-select-label">Department</InputLabel>
             <Select
               labelId="department-select-label"
@@ -141,7 +133,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth required>
+          <FormControl fullWidth required variant="outlined">
             <InputLabel id="role-select-label">Role</InputLabel>
             <Select
               labelId="role-select-label"
@@ -157,7 +149,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
           </FormControl>
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ p: 3 }}>
+      <DialogActions sx={{ p: '16px 24px' }}>
         <Button onClick={handleClose} color="inherit">Cancel</Button>
         <Button
           type="submit"

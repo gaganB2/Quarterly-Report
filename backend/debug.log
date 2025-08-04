@@ -1,0 +1,401 @@
+ERROR 2025-08-04 11:15:38,753 log 20220 7216 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 11:15:38,760 basehttp 20220 7216 "POST /api/token/ HTTP/1.1" 500 121858
+ERROR 2025-08-04 12:50:50,075 log 3272 10648 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 12:50:50,079 basehttp 3272 10648 "POST /api/token/ HTTP/1.1" 500 121858
+ERROR 2025-08-04 12:51:01,510 log 3272 10648 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 12:51:01,514 basehttp 3272 10648 "POST /api/token/ HTTP/1.1" 500 121858
+ERROR 2025-08-04 13:03:07,142 log 21076 3012 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 13:03:07,148 basehttp 21076 3012 "POST /api/token/ HTTP/1.1" 500 121892
+ERROR 2025-08-04 13:03:16,433 log 21076 3012 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 13:03:16,437 basehttp 21076 3012 "POST /api/token/ HTTP/1.1" 500 121892
+ERROR 2025-08-04 13:03:20,587 log 21076 3012 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 13:03:20,590 basehttp 21076 3012 "POST /api/token/ HTTP/1.1" 500 121892
+ERROR 2025-08-04 13:04:24,620 log 9284 9716 Internal Server Error: /api/token/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework_simplejwt\views.py", line 44, in post
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 447, in run_validation
+    value = self.validate(value)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 28, in validate
+    serializer = UserProfileSerializer(self.user.profile)
+                                       ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\fields\related_descriptors.py", line 534, in __get__
+    raise self.RelatedObjectDoesNotExist(
+django.contrib.auth.models.User.profile.RelatedObjectDoesNotExist: User has no profile.
+ERROR 2025-08-04 13:04:24,623 basehttp 9284 9716 "POST /api/token/ HTTP/1.1" 500 121892
+ERROR 2025-08-04 13:26:46,542 log 13620 6056 Internal Server Error: /api/register/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\generics.py", line 194, in post
+    return self.create(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 44, in create
+    self.perform_create(serializer)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 24, in perform_create
+    serializer.save()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\serializers.py", line 58, in create
+    user = User.objects.create_user(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\models.py", line 175, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\models.py", line 163, in _create_user
+    user.save(using=self._db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\base_user.py", line 65, in save
+    super().save(*args, **kwargs)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1023, in save_base
+    post_save.send(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\dispatch\dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", line 68, in create_user_profile
+    Profile.objects.create(user=instance)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", line 56, in save
+    self.full_clean()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1679, in full_clean
+    raise ValidationError(errors)
+django.core.exceptions.ValidationError: {'department': ['A Department must be assigned for Faculty and HOD roles.']}
+ERROR 2025-08-04 13:26:46,548 basehttp 13620 6056 "POST /api/register/ HTTP/1.1" 500 178611
+ERROR 2025-08-04 13:43:33,150 log 21276 20396 Internal Server Error: /api/register/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\generics.py", line 194, in post
+    return self.create(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", line 44, in create
+    self.perform_create(serializer)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 24, in perform_create
+    serializer.save()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\serializers.py", line 53, in create
+    user = User.objects.create_user(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\models.py", line 175, in create_user
+    return self._create_user(username, email, password, **extra_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\models.py", line 163, in _create_user
+    user.save(using=self._db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\contrib\auth\base_user.py", line 65, in save
+    super().save(*args, **kwargs)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1023, in save_base
+    post_save.send(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\dispatch\dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", line 68, in create_user_profile
+    Profile.objects.create(user=instance)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", line 56, in save
+    self.full_clean()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1679, in full_clean
+    raise ValidationError(errors)
+django.core.exceptions.ValidationError: {'department': ['A Department must be assigned for Faculty and HOD roles.']}
+ERROR 2025-08-04 13:43:33,155 basehttp 21276 20396 "POST /api/register/ HTTP/1.1" 500 178720

@@ -1,7 +1,11 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import apiClient from "../api/axios";
 import { CircularProgress, Box } from "@mui/material";
+// --- V FIXED: Use a named import instead of a default import ---
+import { jwtDecode } from "jwt-decode";
+// --- ^ END FIXED ---
 
 export const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -10,40 +14,65 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserProfile = async () => {
-    try {
-      const response = await apiClient.get("/api/profile/");
-      setUser(response.data);
-      localStorage.setItem('role', response.data.role);
-      return response.data; // <-- ADD THIS LINE to return the user profile
-    } catch (error) {
-      console.error("Could not fetch user profile", error);
-      setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      throw error; // <-- ADD THIS LINE to let the caller know it failed
-    }
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchUserProfile().finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    delete apiClient.defaults.headers.common["Authorization"];
   }, []);
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (accessToken && refreshToken) {
+        try {
+          // --- V FIXED: Use the correctly imported function name ---
+          const decodedToken = jwtDecode(accessToken);
+          // --- ^ END FIXED ---
+          if (decodedToken.exp * 1000 < Date.now()) {
+            console.log("Access token expired, interceptor will refresh.");
+          }
+          
+          const response = await apiClient.get("/api/profile/");
+          setUser(response.data);
+
+        } catch (error) {
+          console.error("Failed to initialize auth, logging out.", error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+    initializeAuth();
+  }, [logout]);
+
+  const login = async (username, password) => {
+    try {
+      const response = await apiClient.post("/api/token/", {
+        username,
+        password,
+      });
+
+      const { access, refresh, user: userData } = response.data;
+
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+      setUser(userData);
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      
+      return userData;
+    } catch (error) {
+      logout();
+      throw error;
+    }
   };
 
   const value = {
     user,
-    loading, // <-- Expose the loading state
-    login: fetchUserProfile,
+    loading,
+    login,
     logout,
   };
   

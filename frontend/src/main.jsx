@@ -1,34 +1,47 @@
 // src/main.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, IconButton, Box } from '@mui/material';
-import { lightTheme, darkTheme, highContrastTheme } from './theme';
-import { Brightness4, Brightness7 } from '@mui/icons-material';
-import ContrastIcon from '@mui/icons-material/Contrast';
-import { AuthProvider } from './context/AuthContext'; // 
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import { lightTheme, darkTheme } from './theme';
+import { AuthProvider } from './context/AuthContext';
+import ColorModeContext from './ThemeContext';
+
 function Root() {
-  const [mode, setMode] = useState(localStorage.getItem('mode') || 'light');
-  const [contrast, setContrast] = useState(localStorage.getItem('contrast') === 'true');
+  const [mode, setMode] = useState(localStorage.getItem('themeMode') || 'light');
+
   useEffect(() => {
-    localStorage.setItem('mode', mode);
+    localStorage.setItem('themeMode', mode);
   }, [mode]);
-  useEffect(() => {
-    localStorage.setItem('contrast', contrast);
-  }, [contrast]);
-  let theme = lightTheme;
-  if (contrast) theme = highContrastTheme;
-  else if (mode === 'dark') theme = darkTheme;
+
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    [],
+  );
+
+  const theme = useMemo(() => (mode === 'light' ? lightTheme : darkTheme), [mode]);
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <AuthProvider> 
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
-ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Root />
+  </React.StrictMode>
+);

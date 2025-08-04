@@ -27,10 +27,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
+    'users.apps.UsersConfig',
 
     # Local apps
     'reports',
-    'users',
+    # 'users',
     'analytics',
 ]
 
