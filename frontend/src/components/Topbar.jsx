@@ -397,6 +397,12 @@ export default function Topbar() {
                 <Divider sx={{ my: 1, mx: 1.5 }} />
               </>
             )}
+            <MenuItem onClick={() => navigateTo('/home')}>
+                <ListItemIcon sx={{ color: '#f59e0b' }}>
+                  <Dashboard fontSize="small" />
+                </ListItemIcon>
+                Submissions View
+              </MenuItem>
 
             {/* Common menu items */}
             <MenuItem onClick={() => navigateTo('/settings')}>

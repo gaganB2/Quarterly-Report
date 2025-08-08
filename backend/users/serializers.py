@@ -20,10 +20,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
-
+    prefix = serializers.ChoiceField(
+        choices=Profile.Prefix.choices, 
+        source='profile.prefix', 
+        required=False, 
+        allow_blank=True
+    )
+    middle_name = serializers.CharField(source='profile.middle_name', required=False, allow_blank=True)
+    
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name', 'department', 'role')
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name', 'department', 'role', 'prefix', 'middle_name')
         extra_kwargs = {
             'username': {'required': True}
         }
@@ -57,14 +64,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name']
             )
-
-            # --- V MODIFIED LOGIC ---
-            # The signal has already created a basic profile.
-            # We now update it with the role and department from the form.
+            
+            profile_data = validated_data.get('profile', {})
             user.profile.role = validated_data['role']
             user.profile.department = validated_data.get('department')
+            user.profile.prefix = profile_data.get('prefix', '')
+            user.profile.middle_name = profile_data.get('middle_name', '')
             user.profile.save()
-            # --- ^ END MODIFIED LOGIC ---
             
             return user
 
@@ -72,7 +78,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     department = serializers.CharField(source='department.name', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
-    full_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    # --- MODIFIED: Removed the redundant 'source' argument ---
+    full_name = serializers.CharField(read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
@@ -80,15 +87,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('username', 'full_name', 'email', 'department', 'role')
 
 
+# backend/users/serializers.py
+
 class UserDetailSerializer(serializers.ModelSerializer):
     department = serializers.CharField(source='profile.department.name', read_only=True, allow_null=True)
     role = serializers.CharField(source='profile.role', read_only=True)
-    full_name = serializers.CharField(source='get_full_name', read_only=True)
+    full_name = serializers.CharField(source='profile.full_name', read_only=True)
     email = serializers.EmailField(read_only=True)
+    # --- VVV ADD THESE TWO FIELDS VVV ---
+    prefix = serializers.CharField(source='profile.prefix', read_only=True)
+    middle_name = serializers.CharField(source='profile.middle_name', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'full_name', 'email', 'department', 'role', 'is_active']
+        # --- VVV ADD THE FIELDS TO THE LIST VVV ---
+        fields = ['id', 'username', 'full_name', 'email', 'department', 'role', 'is_active', 'prefix', 'middle_name']
 
 
 class UserManagementSerializer(serializers.ModelSerializer):
@@ -101,12 +114,23 @@ class UserManagementSerializer(serializers.ModelSerializer):
         choices=Profile.Role.choices,
         source='profile.role'
     )
+    prefix = serializers.ChoiceField(
+        choices=Profile.Prefix.choices,
+        source='profile.prefix',
+        required=False, 
+        allow_blank=True
+    )
+    middle_name = serializers.CharField(
+        source='profile.middle_name',
+        required=False,
+        allow_blank=True
+    )
 
     class Meta:
         model = User
         fields = (
             'id', 'username', 'email', 'first_name', 'last_name', 
-            'department', 'role', 'is_active'
+            'department', 'role', 'is_active', 'prefix', 'middle_name'
         )
         read_only_fields = ('username',)
 
@@ -123,6 +147,8 @@ class UserManagementSerializer(serializers.ModelSerializer):
         if profile_data:
             profile.department = profile_data.get('department', profile.department)
             profile.role = profile_data.get('role', profile.role)
+            profile.prefix = profile_data.get('prefix', profile.prefix)
+            profile.middle_name = profile_data.get('middle_name', profile.middle_name)
             profile.save()
 
         return instance
