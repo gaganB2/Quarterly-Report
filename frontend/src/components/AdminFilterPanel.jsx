@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
-  Grid,
   TextField,
   FormControl,
   InputLabel,
@@ -12,6 +11,7 @@ import {
   Button,
   Typography,
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2'; // The corrected Grid import
 import apiClient from '../api/axios';
 import { QUARTER_OPTIONS, YEAR_OPTIONS } from '../config/formConstants';
 
@@ -69,10 +69,9 @@ const AdminFilterPanel = ({ onFilterChange }) => {
       <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
         Admin Search & Filter
       </Typography>
-      {/* This is the correct syntax for MUI Grid v2 */}
       <Grid container spacing={2} alignItems="center">
         
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="quarter-filter-label">Quarter</InputLabel>
             <Select
@@ -89,7 +88,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="year-filter-label">Year</InputLabel>
             <Select
@@ -106,7 +105,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="department-filter-label">Department</InputLabel>
             <Select
@@ -123,7 +122,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <FormControl fullWidth size="small">
             <InputLabel id="faculty-filter-label">Faculty</InputLabel>
             <Select
@@ -140,7 +139,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <TextField
             name="title"
             label="Title Contains"
@@ -150,7 +149,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
             size="small"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={2}>
+        <Grid xs={12} sm={6} md={4} lg={2}>
           <TextField
             name="journal_name"
             label="Journal/Conf. Contains"
@@ -161,7 +160,7 @@ const AdminFilterPanel = ({ onFilterChange }) => {
           />
         </Grid>
         
-        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: { xs: 1, md: 0 } }}>
+        <Grid xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: { xs: 1, md: 0 } }}>
           <Button onClick={handleResetFilters} variant="outlined">
             Reset
           </Button>

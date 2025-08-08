@@ -5,12 +5,16 @@ from rest_framework import status, permissions, generics, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from .models import Profile
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.decorators import action
+
+from rest_framework import status
 # --- V MODIFIED: IMPORT NEW SERIALIZER ---
 from .serializers import (
     RegistrationSerializer, 
     UserProfileSerializer, 
     UserDetailSerializer,
-    UserManagementSerializer # <-- IMPORT THIS
+    UserManagementSerializer 
 )
 # --- ^ END MODIFIED ---
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -78,6 +82,29 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         if self.action in ['update', 'partial_update']:
             return UserManagementSerializer
         return UserDetailSerializer
+    
+    @action(detail=True, methods=['post'], url_path='set-password')
+    def set_password(self, request, pk=None):
+        """A custom action for an admin to reset a user's password."""
+        user = self.get_object()
+        password = request.data.get("password")
+
+        if not password:
+            return Response(
+                {"error": "Password not provided."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Validate the new password against Django's validators
+            validate_password(password, user)
+        except Exception as e:
+            return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(password)
+        user.save()
+        return Response({"status": "password set successfully"}, status=status.HTTP_200_OK)
+
 
     def destroy(self, request, *args, **kwargs):
         """

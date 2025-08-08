@@ -8,28 +8,27 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^7.2.0",
-    "@mui/material": "^7.2.0",
-    "animejs": "^4.1.2",
-    "axios": "^1.10.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "animejs": "^3.2.2",
+    "axios": "^1.7.2",
     "file-saver": "^2.0.5",
-    "framer-motion": "^12.23.6",
+    "framer-motion": "^11.2.10",
     "jwt-decode": "^4.0.0",
-    "lottie-react": "^2.4.1",
+    "lottie-react": "^2.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-joyride": "^2.9.3",
-    "react-parallax-tilt": "^1.7.300",
-    "react-router-dom": "^6.30.1",
-    "react-tsparticles": "^2.12.2",
-    "recharts": "^3.1.0",
-    "tsparticles-slim": "^2.12.0",
-    "xlsx": "^0.18.5"
+    "react-joyride": "^2.8.2",
+    "react-parallax-tilt": "^1.7.225",
+    "react-router-dom": "^6.23.1",
+    "recharts": "^2.12.7",
+    "xlsx": "^0.18.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^7.0.4"
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.1"
   }
 }

@@ -1,4 +1,5 @@
 // src/components/CreateUserDialog.jsx
+
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -17,63 +18,126 @@ import {
   Grid,
 } from "@mui/material";
 import apiClient from "../api/axios";
+import * as yup from "yup"; // Import yup for validation
 
-// src/components/CreateUserDialog.jsx
-
-const initialFormState = {
-  username: "",
-  password: "",
-  password2: "",
-  prefix: "", // <-- Add this
-  first_name: "",
-  middle_name: "", // <-- Add this
-  last_name: "",
-  email: "",
-  department: "",
-  role: "Faculty",
-};
-
+/**
+ * A dialog component for creating a new user with client-side validation.
+ * @param {object} props
+ * @param {boolean} props.open - Whether the dialog is open.
+ * @param {function} props.onClose - Function to call when the dialog should close.
+ * @param {function} props.onSuccess - Function to call after a successful user creation.
+ */
 export default function CreateUserDialog({ open, onClose, onSuccess }) {
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    password2: "",
+    prefix: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    department: "",
+    role: "Faculty",
+  });
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [formErrors, setFormErrors] = useState({}); // State for validation errors
+
+  // Validation schema using Yup
+  const validationSchema = yup.object({
+    first_name: yup.string().required("First name is required"),
+    last_name: yup.string().required("Last name is required"),
+    email: yup
+      .string()
+      .email("Enter a valid email")
+      .required("Email is required"),
+    username: yup
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .required("Username is required"),
+    password: yup
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+    password2: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords must match")
+      .required("Password confirmation is required"),
+    department: yup.string().required("Department is required"),
+    role: yup.string().required("Role is required"),
+    prefix: yup.string().optional(),
+    middle_name: yup.string().optional(),
+  });
 
   useEffect(() => {
-    if (open) {
-      if (departments.length === 0) {
-        apiClient
-          .get("/api/admin/departments/")
-          .then((response) => {
-            setDepartments(response.data.results || response.data);
-          })
-          .catch((err) => {
-            console.error("Failed to fetch departments", err);
-            setError("Could not load department list.");
-          });
-      }
+    if (open && departments.length === 0) {
+      apiClient
+        .get("/api/admin/departments/")
+        .then((response) =>
+          setDepartments(response.data.results || response.data)
+        )
+        .catch((err) => {
+          console.error("Failed to fetch departments", err);
+          setServerError("Could not load department list.");
+        });
     }
   }, [open, departments.length]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear validation error for the field being edited
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      username: "",
+      password: "",
+      password2: "",
+      prefix: "",
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      email: "",
+      department: "",
+      role: "Faculty",
+    });
+    setFormErrors({});
+    setServerError("");
+    onClose();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.password2) {
-      setError("Passwords do not match.");
-      return;
-    }
-    setLoading(true);
-    setError("");
+    setServerError("");
+    setFormErrors({});
 
     try {
+      // Step 1: Perform client-side validation
+      await validationSchema.validate(formData, { abortEarly: false });
+
+      // Step 2: If validation is successful, proceed to API call
+      setLoading(true);
       await apiClient.post("/api/register/", formData);
       onSuccess();
       handleClose();
     } catch (err) {
+      // Handle Validation Errors
+      if (err instanceof yup.ValidationError) {
+        const newErrors = {};
+        err.inner.forEach((error) => {
+          newErrors[error.path] = error.message;
+        });
+        setFormErrors(newErrors);
+        return; // Stop the submission
+      }
+
+      // Handle API/Server Errors
       const errorData = err.response?.data;
       const errorMessage = errorData
         ? Object.entries(errorData)
@@ -85,17 +149,11 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
             )
             .join(" | ")
         : "An unknown error occurred.";
-      setError(`Failed to create user: ${errorMessage}`);
+      setServerError(`Failed to create user: ${errorMessage}`);
       console.error("Registration failed", err.response);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleClose = () => {
-    setFormData(initialFormState);
-    setError("");
-    onClose();
   };
 
   return (
@@ -109,7 +167,7 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
           id="create-user-form"
           onSubmit={handleSubmit}
         >
-          {error && <Alert severity="error">{error}</Alert>}
+          {serverError && <Alert severity="error">{serverError}</Alert>}
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
@@ -140,7 +198,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 onChange={handleChange}
                 required
                 fullWidth
-                variant="outlined"
+                error={!!formErrors.first_name}
+                helperText={formErrors.first_name}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -150,7 +209,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 value={formData.middle_name}
                 onChange={handleChange}
                 fullWidth
-                variant="outlined"
+                error={!!formErrors.middle_name}
+                helperText={formErrors.middle_name}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -161,7 +221,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 onChange={handleChange}
                 required
                 fullWidth
-                variant="outlined"
+                error={!!formErrors.last_name}
+                helperText={formErrors.last_name}
               />
             </Grid>
           </Grid>
@@ -174,7 +235,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
             onChange={handleChange}
             required
             fullWidth
-            variant="outlined"
+            error={!!formErrors.email}
+            helperText={formErrors.email}
           />
           <TextField
             name="username"
@@ -183,7 +245,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
             onChange={handleChange}
             required
             fullWidth
-            variant="outlined"
+            error={!!formErrors.username}
+            helperText={formErrors.username}
           />
 
           <Grid container spacing={2}>
@@ -196,7 +259,8 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 onChange={handleChange}
                 required
                 fullWidth
-                variant="outlined"
+                error={!!formErrors.password}
+                helperText={formErrors.password}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -208,15 +272,15 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 onChange={handleChange}
                 required
                 fullWidth
-                variant="outlined"
+                error={!!formErrors.password2}
+                helperText={formErrors.password2}
               />
             </Grid>
           </Grid>
 
-          <FormControl fullWidth required variant="outlined">
-            <InputLabel id="department-select-label">Department</InputLabel>
+          <FormControl fullWidth required error={!!formErrors.department}>
+            <InputLabel>Department</InputLabel>
             <Select
-              labelId="department-select-label"
               name="department"
               value={formData.department}
               label="Department"
@@ -228,11 +292,14 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
                 </MenuItem>
               ))}
             </Select>
+            {formErrors.department && (
+              <FormHelperText error>{formErrors.department}</FormHelperText>
+            )}
           </FormControl>
-          <FormControl fullWidth required variant="outlined">
-            <InputLabel id="role-select-label">Role</InputLabel>
+
+          <FormControl fullWidth required error={!!formErrors.role}>
+            <InputLabel>Role</InputLabel>
             <Select
-              labelId="role-select-label"
               name="role"
               value={formData.role}
               label="Role"
@@ -242,6 +309,9 @@ export default function CreateUserDialog({ open, onClose, onSuccess }) {
               <MenuItem value="HOD">HOD</MenuItem>
               <MenuItem value="Admin">Admin</MenuItem>
             </Select>
+            {formErrors.role && (
+              <FormHelperText error>{formErrors.role}</FormHelperText>
+            )}
           </FormControl>
         </Stack>
       </DialogContent>
