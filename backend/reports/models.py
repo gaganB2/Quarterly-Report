@@ -54,8 +54,8 @@ class BaseReportModel(models.Model):
         Q3 = 'Q3', 'Q3 (January – March)'
         Q4 = 'Q4', 'Q4 (April – June)'
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, db_index=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=False, db_index=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=False, db_index=True)
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, null=False, db_index=True)
     quarter = models.CharField(max_length=2, choices=Quarter.choices, null=False, blank=False)
     year = models.PositiveIntegerField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
