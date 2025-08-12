@@ -65,7 +65,7 @@ export default function UserManagement() {
   const handleUserCreationSuccess = () => {
     setSnackbar({
       open: true,
-      message: "User created successfully!",
+      message: "User created! A verification email has been sent.",
       severity: "success",
     });
     fetchUsers();

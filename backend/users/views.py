@@ -7,16 +7,16 @@ from rest_framework.exceptions import NotFound
 from .models import Profile
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.decorators import action
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from rest_framework.views import APIView
 
-from rest_framework import status
-# --- V MODIFIED: IMPORT NEW SERIALIZER ---
 from .serializers import (
     RegistrationSerializer, 
     UserProfileSerializer, 
     UserDetailSerializer,
     UserManagementSerializer 
 )
-# --- ^ END MODIFIED ---
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -64,7 +64,6 @@ class GetUserProfileView(generics.RetrieveAPIView):
             raise NotFound(detail="Profile not found for this user.", code=404)
 
 
-# --- V MODIFIED: UPGRADE TO FULL MODELVIEWSET ---
 class UserManagementViewSet(viewsets.ModelViewSet):
     """
     A viewset for listing, retrieving, updating, and deactivating users.
@@ -74,11 +73,6 @@ class UserManagementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser]
 
     def get_serializer_class(self):
-        """
-        Use a different serializer for read vs. write actions.
-        - UserDetailSerializer for listing/retrieving (read-only, optimized).
-        - UserManagementSerializer for updating (write-enabled).
-        """
         if self.action in ['update', 'partial_update']:
             return UserManagementSerializer
         return UserDetailSerializer
@@ -96,7 +90,6 @@ class UserManagementViewSet(viewsets.ModelViewSet):
             )
         
         try:
-            # Validate the new password against Django's validators
             validate_password(password, user)
         except Exception as e:
             return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -107,12 +100,67 @@ class UserManagementViewSet(viewsets.ModelViewSet):
 
 
     def destroy(self, request, *args, **kwargs):
-        """
-        Overrides the default delete behavior to implement a "soft delete".
-        Instead of deleting the user, it sets their `is_active` flag to False.
-        """
         instance = self.get_object()
         instance.is_active = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-# --- ^ END MODIFIED ---
+
+class VerifyEmailView(APIView):
+    """
+    An endpoint to verify an email address from a token.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+
+        if not uidb64 or not token:
+            return Response({"error": "Missing UID or token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+
+class SetInitialPasswordView(APIView):
+    """
+    An endpoint for a newly registered user to set their initial password.
+    This is only accessible if they are logged in.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        new_password = request.data.get("new_password")
+
+        if user.profile.password_changed:
+            return Response(
+                {"error": "Password has already been set."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not new_password:
+            return Response(
+                {"error": "New password not provided."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            validate_password(new_password, user)
+        except Exception as e:
+            return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.profile.password_changed = True
+        user.save()
+        user.profile.save()
+
+        return Response({"status": "password set successfully"}, status=status.HTTP_200_OK)

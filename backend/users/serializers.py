@@ -64,7 +64,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name']
             )
-            
+
             profile_data = validated_data.get('profile', {})
             user.profile.role = validated_data['role']
             user.profile.department = validated_data.get('department')
@@ -72,35 +72,34 @@ class RegistrationSerializer(serializers.ModelSerializer):
             user.profile.middle_name = profile_data.get('middle_name', '')
             user.profile.save()
             
+            if validated_data['role'] == 'Admin':
+                user.is_staff = True
+                user.save()
             return user
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     department = serializers.CharField(source='department.name', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
-    # --- MODIFIED: Removed the redundant 'source' argument ---
     full_name = serializers.CharField(read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('username', 'full_name', 'email', 'department', 'role')
+        # --- MODIFIED: Added the new 'password_changed' field ---
+        fields = ('username', 'full_name', 'email', 'department', 'role', 'password_changed')
 
-
-# backend/users/serializers.py
 
 class UserDetailSerializer(serializers.ModelSerializer):
     department = serializers.CharField(source='profile.department.name', read_only=True, allow_null=True)
     role = serializers.CharField(source='profile.role', read_only=True)
     full_name = serializers.CharField(source='profile.full_name', read_only=True)
     email = serializers.EmailField(read_only=True)
-    # --- VVV ADD THESE TWO FIELDS VVV ---
     prefix = serializers.CharField(source='profile.prefix', read_only=True)
     middle_name = serializers.CharField(source='profile.middle_name', read_only=True)
 
     class Meta:
         model = User
-        # --- VVV ADD THE FIELDS TO THE LIST VVV ---
         fields = ['id', 'username', 'full_name', 'email', 'department', 'role', 'is_active', 'prefix', 'middle_name']
 
 

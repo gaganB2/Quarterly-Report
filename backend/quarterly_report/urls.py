@@ -9,7 +9,9 @@ from users.views import (
     RegisterUserView, 
     GetUserProfileView, 
     UserManagementViewSet,
-    CustomTokenObtainPairView
+    CustomTokenObtainPairView,
+    VerifyEmailView,
+    SetInitialPasswordView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -61,11 +63,8 @@ admin_router.register(r'departments', DepartmentViewSet, basename='department')
 
 # --- Main URL Patterns ---
 urlpatterns = [
-    # Redirect the root URL to the Swagger UI API documentation
     path('', RedirectView.as_view(url='/api/schema/swagger-ui/', permanent=False), name='index'),
-
     path('admin/', admin.site.urls),
-    
     path('api/faculty/', include(faculty_router.urls)),
     path('api/admin/', include(admin_router.urls)),
     path('api/analytics/', include('analytics.urls')),
@@ -75,6 +74,8 @@ urlpatterns = [
     path('api/profile/', GetUserProfileView.as_view(), name='profile'),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('api/set-password/', SetInitialPasswordView.as_view(), name='set-initial-password'),
 
     # API DOCUMENTATION URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

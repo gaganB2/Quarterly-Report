@@ -51,7 +51,8 @@ ROOT_URLCONF = 'quarterly_report.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -191,4 +192,11 @@ LOGGING = {
         },
     },
 }
-# --- ^ END NEW ---
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# --- EMAIL CONFIGURATION (for sending real emails) ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True # For secure connection
+EMAIL_HOST_USER = config('EMAIL_HOST_USER') # Loads from .env file
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') # Loads from .env file

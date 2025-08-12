@@ -7,12 +7,14 @@ import { Box } from '@mui/material';
 import Topbar from './components/Topbar';
 
 // Pages
-import WelcomePage from './pages/WelcomePage'; // <-- IMPORT NEW
-import LoginPage from './pages/LoginPage'; // <-- IMPORT RENAMED
+import WelcomePage from './pages/WelcomePage';
+import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import UserManagement from './pages/UserManagement';
 import DepartmentManagement from './pages/DepartmentManagement';
-import AnalyticsDashboard from './pages/AnalyticsDashboard'; // <-- IMPORT Analytics
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import ForcePasswordChangePage from './pages/ForcePasswordChangePage'; // The new import
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
@@ -25,62 +27,45 @@ export default function App() {
       <Topbar />
       <Box sx={{ pt: { xs: 8, md: 10 } }}>
         <Routes>
-          {/* --- MODIFIED: Root now points to WelcomePage --- */}
+          {/* --- Public Routes --- */}
           <Route 
             path="/" 
-            element={
-              <PublicRoute>
-                <WelcomePage />
-              </PublicRoute>
-            } 
+            element={<PublicRoute><WelcomePage /></PublicRoute>} 
           />
-
-          {/* --- MODIFIED: Login is now at /login --- */}
           <Route
             path="/login"
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
+            element={<PublicRoute><LoginPage /></PublicRoute>}
+          />
+          <Route 
+            path="/verify-email/:uid/:token"
+            element={<PublicRoute><EmailVerificationPage /></PublicRoute>} 
           />
 
+          {/* --- Private Routes --- */}
           <Route
             path="/home"
-            element={
-              <PrivateRoute>
-                <HomePage />
-              </PrivateRoute>
-            }
+            element={<PrivateRoute><HomePage /></PrivateRoute>}
+          />
+          <Route
+            path="/force-password-change"
+            element={<PrivateRoute><ForcePasswordChangePage /></PrivateRoute>}
           />
 
           {/* --- Admin Routes --- */}
           <Route
             path="/admin/users"
-            element={
-              <AdminRoute>
-                <UserManagement />
-              </AdminRoute>
-            }
+            element={<AdminRoute><UserManagement /></AdminRoute>}
           />
           <Route
             path="/admin/departments"
-            element={
-              <AdminRoute>
-                <DepartmentManagement />
-              </AdminRoute>
-            }
+            element={<AdminRoute><DepartmentManagement /></AdminRoute>}
           />
           <Route
             path="/admin/analytics"
-            element={
-              <AdminRoute>
-                <AnalyticsDashboard />
-              </AdminRoute>
-            }
+            element={<AdminRoute><AnalyticsDashboard /></AdminRoute>}
           />
 
-          {/* --- MODIFIED: Catch-all redirects to the new root --- */}
+          {/* --- Catch-all redirects to the root --- */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>

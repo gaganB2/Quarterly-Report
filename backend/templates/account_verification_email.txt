@@ -1,0 +1,11 @@
+Hello {{ user.first_name }},
+
+An account has been created for you on the BIT Durg Quarterly Report Portal.
+Please click the link below to activate your account and set your password:
+
+{{ verification_url }}
+
+If you did not expect this, please ignore this email.
+
+Thank you,
+BIT Durg Administration

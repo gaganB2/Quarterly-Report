@@ -5,6 +5,13 @@ from django.db import models
 from reports.models import Department
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 
 class Profile(models.Model):
     class Role(models.TextChoices):
@@ -12,7 +19,6 @@ class Profile(models.Model):
         HOD = 'HOD', 'HOD'
         ADMIN = 'Admin', 'Admin'
     
-    # --- ADDED: Prefix choices for names ---
     class Prefix(models.TextChoices):
         DR = 'Dr.', 'Dr.'
         PROF = 'Prof.', 'Prof.'
@@ -22,11 +28,10 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
-    # --- ADDED: New fields for more detailed names ---
     prefix = models.CharField(
         max_length=10, 
         choices=Prefix.choices,
-        blank=True # Making the prefix optional
+        blank=True
     )
     middle_name = models.CharField(max_length=100, blank=True)
 
@@ -43,13 +48,13 @@ class Profile(models.Model):
         choices=Role.choices,
         default=Role.FACULTY
     )
+    
+    # --- ADDED: Field to track if the default password has been changed ---
+    password_changed = models.BooleanField(default=False)
 
-    # --- ADDED: A property to easily get the full formatted name ---
     @property
     def full_name(self):
         """Assembles the full name from the available parts."""
-        # This creates a list of name parts and joins them with spaces,
-        # ignoring any parts that are empty (like an empty middle_name).
         parts = [self.prefix, self.user.first_name, self.middle_name, self.user.last_name]
         return ' '.join(part for part in parts if part)
 
@@ -57,8 +62,29 @@ class Profile(models.Model):
         return f"{self.user.username} - {self.get_role_display()}"
 
 
-# This signal automatically creates a Profile whenever a new User is created.
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        
+        instance.is_active = False
+        instance.save()
+
+        token = default_token_generator.make_token(instance)
+        uid = urlsafe_base64_encode(force_bytes(instance.pk))
+        
+        verification_url = f"http://localhost:5173/verify-email/{uid}/{token}/"
+
+        email_subject = "Activate Your Quarterly Report Portal Account"
+        email_body = render_to_string('account_verification_email.txt', {
+            'user': instance,
+            'verification_url': verification_url,
+        })
+        
+        send_mail(
+            email_subject,
+            email_body,
+            'gagannn.skyy@gmail.com',
+            [instance.email],
+            fail_silently=False,
+        )
