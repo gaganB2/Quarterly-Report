@@ -1,35 +1,39 @@
 # Quarterly Report Portal for BIT Durg
 
-\<p align="center"\>
-\<img src="[https://i.imgur.com/K1L3x0B.png](https://www.google.com/search?q=https://i.imgur.com/K1L3x0B.png)" alt="BIT-DURG Banner" width="400"/\>
-\</p\>
+# Quarterly Report Portal for BIT Durg
 
-\<p align="center"\>
-A professional-grade, full-stack web application designed to streamline and automate the academic quarterly reporting process for the \<strong\>Bhilai Institute of Technology, Durg\</strong\>.
-\<br /\>
-\<br /\>
-\<img src="[https://img.shields.io/badge/Django-5.0-092E20?logo=django](https://www.google.com/search?q=https://img.shields.io/badge/Django-5.0-092E20%3Flogo%3Ddjango)" alt="Django"/\>
-\<img src="[https://img.shields.io/badge/React-18-61DAFB?logo=react](https://img.shields.io/badge/React-18-61DAFB?logo=react)" alt="React"/\>
-\<img src="[https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql](https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql)" alt="PostgreSQL"/\>
-\<img src="[https://img.shields.io/badge/MUI-5-007FFF?logo=mui](https://img.shields.io/badge/MUI-5-007FFF?logo=mui)" alt="Material-UI"/\>
-\<img src="[https://img.shields.io/badge/Vite-5-646CFF?logo=vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)" alt="Vite"/\>
-\</p\>
+<p align="center">
+  <img src="https://i.imgur.com/K1L3x0B.png" alt="BIT-DURG Banner" width="400"/>
+</p>
+
+<p align="center">
+  A professional-grade, full-stack web application designed to streamline and automate the academic quarterly reporting process for the <strong>Bhilai Institute of Technology, Durg</strong>.
+  <br />
+  <br />
+  <img src="https://img.shields.io/badge/Django-5.0-092E20?logo=django" alt="Django"/>
+  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react" alt="React"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/MUI-5-007FFF?logo=mui" alt="Material-UI"/>
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite" alt="Vite"/>
+</p>
 
 ## Table of Contents
 
-  - [About The Project](https://www.google.com/search?q=%23about-the-project)
-  - [Key Features](https://www.google.com/search?q=%23-key-features)
-  - [Technology Stack](https://www.google.com/search?q=%23-technology-stack)
-  - [Getting Started](https://www.google.com/search?q=%23-getting-started)
-      - [Prerequisites](https://www.google.com/search?q=%23prerequisites)
-      - [Backend Setup](https://www.google.com/search?q=%231-backend-setup)
-      - [Frontend Setup](https://www.google.com/search?q=%232-frontend-setup)
-  - [Environment Variables](https://www.google.com/search?q=%23-environment-variables)
-  - [Running Tests](https://www.google.com/search?q=%23-running-tests)
-  - [API Overview](https://www.google.com/search?q=%23-api-overview)
-  - [User Roles & Usage](https://www.google.com/search?q=%23-user-roles--usage)
-  - [Contributing](https://www.google.com/search?q=%23-contributing)
-  - [License](https://www.google.com/search?q=%23-license)
+## Table of Contents
+
+- [About The Project](#about-the-project)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#1-backend-setup)
+  - [Frontend Setup](#2-frontend-setup)
+- [Environment Variables](#-environment-variables)
+- [Running Tests](#-running-tests)
+- [API Overview](#-api-overview)
+- [User Roles & Usage](#-user-roles--usage)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 -----
 
