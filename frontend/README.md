@@ -1,9 +1,8 @@
 # Quarterly Report Portal for BIT Durg
 
-# Quarterly Report Portal for BIT Durg
 
 <p align="center">
-  <img src="https://i.imgur.com/K1L3x0B.png" alt="BIT-DURG Banner" width="400"/>
+  <img src="\public\assets\logo.png" alt="BIT-DURG Banner" width="400"/>
 </p>
 
 <p align="center">
