@@ -1,145 +1,200 @@
-# Quarterly Report Portal
+# Quarterly Report Portal for BIT Durg
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Django-4.2-092E20?logo=django" alt="Django"/>
-  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react" alt="React"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql" alt="PostgreSQL"/>
-  <img src="https://img.shields.io/badge/MUI-5-007FFF?logo=mui" alt="Material-UI"/>
-  <img src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite" alt="Vite"/>
-</p>
+\<p align="center"\>
+\<img src="[https://i.imgur.com/K1L3x0B.png](https://www.google.com/search?q=https://i.imgur.com/K1L3x0B.png)" alt="BIT-DURG Banner" width="400"/\>
+\</p\>
 
-A professional-grade, full-stack web application designed to streamline and automate the academic quarterly reporting process for **Bhilai Institute of Technology, Durg**. This portal provides a secure, role-based system for faculty to submit data, HODs to oversee their departments, and administrators to manage the entire system and derive key analytics.
+\<p align="center"\>
+A professional-grade, full-stack web application designed to streamline and automate the academic quarterly reporting process for the \<strong\>Bhilai Institute of Technology, Durg\</strong\>.
+\<br /\>
+\<br /\>
+\<img src="[https://img.shields.io/badge/Django-5.0-092E20?logo=django](https://www.google.com/search?q=https://img.shields.io/badge/Django-5.0-092E20%3Flogo%3Ddjango)" alt="Django"/\>
+\<img src="[https://img.shields.io/badge/React-18-61DAFB?logo=react](https://img.shields.io/badge/React-18-61DAFB?logo=react)" alt="React"/\>
+\<img src="[https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql](https://img.shields.io/badge/PostgreSQL-14-336791?logo=postgresql)" alt="PostgreSQL"/\>
+\<img src="[https://img.shields.io/badge/MUI-5-007FFF?logo=mui](https://img.shields.io/badge/MUI-5-007FFF?logo=mui)" alt="Material-UI"/\>
+\<img src="[https://img.shields.io/badge/Vite-5-646CFF?logo=vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)" alt="Vite"/\>
+\</p\>
 
----
+## Table of Contents
+
+  - [About The Project](https://www.google.com/search?q=%23about-the-project)
+  - [Key Features](https://www.google.com/search?q=%23-key-features)
+  - [Technology Stack](https://www.google.com/search?q=%23-technology-stack)
+  - [Getting Started](https://www.google.com/search?q=%23-getting-started)
+      - [Prerequisites](https://www.google.com/search?q=%23prerequisites)
+      - [Backend Setup](https://www.google.com/search?q=%231-backend-setup)
+      - [Frontend Setup](https://www.google.com/search?q=%232-frontend-setup)
+  - [Environment Variables](https://www.google.com/search?q=%23-environment-variables)
+  - [Running Tests](https://www.google.com/search?q=%23-running-tests)
+  - [API Overview](https://www.google.com/search?q=%23-api-overview)
+  - [User Roles & Usage](https://www.google.com/search?q=%23-user-roles--usage)
+  - [Contributing](https://www.google.com/search?q=%23-contributing)
+  - [License](https://www.google.com/search?q=%23-license)
+
+-----
+
+## About The Project
+
+This portal provides a secure, role-based system for faculty to submit academic and research data, for Heads of Department (HODs) to oversee departmental submissions, and for administrators to manage the entire system and derive key analytics. The application is built with a modern, decoupled architecture, featuring a Django REST Framework backend and a React (Vite) frontend.
+
+-----
 
 ## ✨ Key Features
 
-This project is built with a focus on security, scalability, and user experience, incorporating a range of industry-standard features.
+This project incorporates a range of industry-standard features with a focus on security, scalability, and user experience.
 
-### 👨‍💻 Core Functionality & User Management
-* **Role-Based Access Control (RBAC):** Three distinct user roles (**Faculty**, **HOD**, **Admin**) with tailored permissions and dashboard views.
-* **Dynamic Form System:** A highly scalable system that dynamically generates over 40 unique data submission forms from a central configuration, adhering to the DRY (Don't Repeat Yourself) principle.
-* **Complete Admin Dashboard:** A dedicated UI for administrators to create, edit, deactivate, and manage all user accounts and departments.
-* **Advanced Filtering:** A powerful filtering panel for administrators to sort and view submission data by academic session, department, or individual faculty member.
+  - **🔐 Role-Based Access Control (RBAC):** Three distinct user roles (**Faculty**, **HOD**, **Admin**) with tailored permissions and dashboard views.
+  - **📝 Dynamic Form System:** A highly scalable system that dynamically generates over 40 unique data submission forms from a central configuration, adhering to the DRY principle.
+  - **⚙️ Complete Admin Dashboard:** Dedicated UIs for administrators to perform full CRUD operations on user accounts and academic departments.
+  - **🔍 Advanced Filtering & Search:** Powerful filtering panels for both faculty and admins to sort and view submission data by academic session, department, or individual faculty member.
+  - **🛡️ Secure User Onboarding:**
+      - **Email Verification:** New users must verify their email via a secure, one-time link before their account is activated.
+      - **Forced Password Change:** Users are required to change their temporary, admin-provided password on their first login.
+  - **🔑 Token-Based Authentication:** Secure JWT (JSON Web Token) authentication with automated silent token refresh for a seamless user session.
+  - **🎨 Modern, Responsive UI:** A polished UI built with Material-UI that is fully responsive and supports both **light and dark modes**.
+  - **📊 Analytics & Visualization:** A dedicated analytics dashboard for admins to view aggregated data with interactive charts.
 
-### 🛡️ Security & Onboarding
-* **Secure User Onboarding:**
-    * **Email Verification:** New users must verify their email via a secure, one-time link before their account is activated.
-    * **Forced Password Change:** New users are required to change their temporary, admin-provided password on their first login.
-* **Token-Based Authentication:** Secure JWT (JSON Web Token) authentication with automated token refresh for a seamless user session.
-* **API Rate Limiting:** Protects the backend from brute-force and Denial-of-Service (DoS) attacks.
-* **Data Deletion Protection:** Implements `on_delete=PROTECT` at the database level to prevent accidental mass deletion of report data.
-
-### 🚀 User Experience (UX)
-* **Responsive Design:** A modern, polished UI built with Material-UI that is fully responsive for desktop, tablet, and mobile devices.
-* **Light & Dark Mode:** Full support for both light and dark themes.
-* **Client-Side Validation:** Robust, real-time form validation provides instant user feedback and reduces invalid API requests.
-
----
+-----
 
 ## 🛠️ Technology Stack
 
-This project uses a modern, decoupled (headless) architecture.
+| Area                  | Technology                                     |
+| --------------------- | ---------------------------------------------- |
+| **Backend**           | Django, Django REST Framework                  |
+| **Frontend**          | React 18, Vite                                 |
+| **Database**          | PostgreSQL                                     |
+| **UI Library**        | Material-UI (MUI) v5                           |
+| **Authentication**    | Simple JWT (JSON Web Token)                    |
+| **API Communication** | Axios (with interceptors for token management) |
+| **Form Validation**   | Yup (Client-Side), DRF Validators (Server-Side)|
+| **Data Visualization**| Recharts                                       |
 
-| Area                | Technology                                       |
-| ------------------- | ------------------------------------------------ |
-| **Backend** | Django, Django REST Framework                    |
-| **Frontend** | React 18, Vite                                   |
-| **Database** | PostgreSQL                                       |
-| **UI Library** | Material-UI (MUI) v5                             |
-| **Authentication** | Simple JWT (JSON Web Token)                      |
-| **Routing** | React Router v6                                  |
-| **API Communication** | Axios (with interceptors for token management)   |
-| **Form Validation** | Yup                                              |
-
----
-
-## 📂 Project Structure
-
-The repository is organized into two main directories:
-
-* `/backend`: Contains the Django REST Framework project, which serves the API.
-* `/frontend`: Contains the React (Vite) single-page application, which consumes the API.
-
----
-
-## 🌐 API Overview
-
-The backend exposes a set of RESTful endpoints for managing data.
-
-| Endpoint                  | Description                                      |
-| ------------------------- | ------------------------------------------------ |
-| `/api/token/`             | Authenticate a user and receive JWT tokens.      |
-| `/api/register/`          | (Admin) Create a new user.                       |
-| `/api/admin/users/`       | (Admin) Manage all user accounts.                |
-| `/api/admin/departments/` | (Admin) Manage academic departments.             |
-| `/api/faculty/...`        | Endpoints for faculty to submit report data.     |
-| `/api/analytics/...`      | Endpoints for aggregated analytics and charts.   |
-
----
+-----
 
 ## 🚀 Getting Started
 
 To get the project running locally, you will need to set up the backend and frontend separately.
 
-### **1. Backend Setup**
-1.  **Navigate to the backend directory:**
-    ```bash
-    cd backend
-    ```
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python -m venv env
-    source env/bin/activate  # On Windows: env\Scripts\activate
-    ```
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  **Set up the environment file:**
-    * Rename `.env.example` to `.env`.
-    * Fill in your `SECRET_KEY`, database credentials, and email settings (`EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`).
-5.  **Run database migrations:**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
-6.  **Create a superuser:**
-    ```bash
-    python manage.py createsuperuser
-    ```
-7.  **Start the server:**
-    ```bash
-    python manage.py runserver
-    ```
-    The backend API will be running at `http://127.0.0.1:8000`.
+### Prerequisites
 
-### **2. Frontend Setup**
-1.  **Navigate to the frontend directory:**
-    ```bash
-    cd frontend
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Start the development server:**
-    ```bash
-    npm run dev
-    ```
-    The frontend application will be running at `http://localhost:5173`.
+Make sure you have the following software installed on your machine:
 
----
+  * **Python** (3.8 or newer)
+  * **Node.js** (v18 or newer) & **npm**
+  * **PostgreSQL** (v12 or newer)
 
-## 📈 Usage
+### 1\. Backend Setup
+
+First, set up the Django API server.
+
+```bash
+# 1. Navigate to the backend directory
+cd backend
+
+# 2. Create and activate a virtual environment
+python -m venv env
+source env/bin/activate  # On Windows: env\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Set up the environment file
+# Rename .env.example to .env and fill in your details
+cp .env.example .env
+
+# 5. Run database migrations to create the tables
+python manage.py makemigrations
+python manage.py migrate
+
+# 6. Create a superuser to access the admin panel and create other users
+python manage.py createsuperuser
+
+# 7. Start the server
+python manage.py runserver
+```
+
+The backend API will now be running at `http://127.0.0.1:8000`.
+
+### 2\. Frontend Setup
+
+In a new terminal, set up the React client.
+
+```bash
+# 1. Navigate to the frontend directory
+cd frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up the environment file (if needed, defaults are provided)
+# Rename .env.example to .env
+cp .env.example .env
+
+# 4. Start the development server
+npm run dev
+```
+
+The frontend application will now be running at `http://localhost:5173`.
+
+-----
+
+## 🔑 Environment Variables
+
+You must create a `.env` file in the `/backend` directory. Below is a description of the required variables.
+
+#### Backend (`/backend/.env`)
+
+
+| Variable              | Description                                          | Example                       |
+| --------------------- | ---------------------------------------------------- | ----------------------------- |
+| `SECRET_KEY`          | A secret key for a Django installation.              | `'your-super-secret-key'`     |
+| `DEBUG`               | Django debug mode. Set to `False` in production.     | `True`                        |
+| `ALLOWED_HOSTS`       | Hosts/domains the Django app can serve.              | `127.0.0.1,localhost`         |
+| `DB_NAME`             | Your PostgreSQL database name.                       | `quarterly_report_db`         |
+| `DB_USER`             | Your PostgreSQL username.                            | `postgres`                    |
+| `DB_PASSWORD`         | Your PostgreSQL password.                            | `db_password`                 |
+| `DB_HOST`             | Database host.                                       | `localhost`                   |
+| `DB_PORT`             | Database port.                                       | `5432`                        |
+| `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173`       |
+| `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `your.email@gmail.com`        |
+| `EMAIL_HOST_PASSWORD` | Your Gmail App Password (not your regular password). | `your_app_password`           |
+-----
+
+## 🧪 Running Tests
+
+The backend includes a suite of tests to ensure the reliability of the user authentication and management system. To run these tests, navigate to the `/backend` directory and run:
+
+```bash
+# Ensure your virtual environment is activated
+python manage.py test
+```
+
+-----
+
+## 🌐 API Overview
+
+The backend exposes a set of RESTful endpoints for managing data.
+
+| Endpoint                  | Description                                               |
+| ------------------------- | --------------------------------------------------------- |
+| `/api/token/`             | Authenticate a user and receive JWT tokens.               |
+| `/api/register/`          | **(Admin)** Create a new user.                            |
+| `/api/admin/users/`       | **(Admin)** Manage all user accounts.                     |
+| `/api/admin/departments/` | **(Admin)** Manage academic departments.                  |
+| `/api/faculty/...`        | Endpoints for faculty to submit various report data.      |
+| `/api/analytics/...`      | **(Admin)** Endpoints for aggregated analytics and charts.|
+
+-----
+
+## 🧑‍🤝‍🧑 User Roles & Usage
 
 The application has three user roles with different capabilities:
 
-* **Faculty:** Can log in, view the submission dashboard, and add, edit, or delete their own report records.
-* **HOD (Head of Department):** Has all the permissions of a Faculty member, but can also view all submissions from every user within their specific department.
-* **Admin:** Has full access to the system. They can view all submissions from all departments and access the administrative dashboard to manage users and departments.
+  * **Faculty:** Can log in, view the submission dashboard, and add, edit, or delete their own report records.
+  * **HOD (Head of Department):** Has all the permissions of a Faculty member, but can also view all submissions from every user within their specific department.
+  * **Admin:** Has full access to the system. They can view all submissions from all departments and access the administrative dashboard to manage users and departments.
 
----
+-----
 
 ## 🤝 Contributing
 
@@ -152,8 +207,8 @@ Contributions to this project are welcome. Please follow these steps:
 5.  Push to the branch (`git push origin feature/YourFeature`).
 6.  Open a Pull Request.
 
----
+-----
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License.
