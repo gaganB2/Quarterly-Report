@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 
 // Components
@@ -14,7 +14,7 @@ import UserManagement from './pages/UserManagement';
 import DepartmentManagement from './pages/DepartmentManagement';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import EmailVerificationPage from './pages/EmailVerificationPage';
-import ForcePasswordChangePage from './pages/ForcePasswordChangePage'; // The new import
+import ForcePasswordChangePage from './pages/ForcePasswordChangePage';
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
@@ -22,10 +22,14 @@ import PublicRoute from './routes/PublicRoute';
 import AdminRoute from './routes/AdminRoute';
 
 export default function App() {
+  const location = useLocation();
+  // The Topbar will now be hidden on both the Welcome and Login pages.
+  const isPublicPage = location.pathname === '/' || location.pathname === '/login';
+
   return (
     <Box>
-      <Topbar />
-      <Box sx={{ pt: { xs: 8, md: 10 } }}>
+      {!isPublicPage && <Topbar />}
+      <Box sx={!isPublicPage ? { pt: { xs: 8, md: 10 } } : {}}>
         <Routes>
           {/* --- Public Routes --- */}
           <Route 

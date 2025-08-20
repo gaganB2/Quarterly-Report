@@ -1,1256 +1,529 @@
-// src/pages/WelcomePage.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  Grid, 
-  Paper, 
-  Stack, 
-  Container, 
-  ThemeProvider, 
-  Chip, 
-  LinearProgress, 
-  Avatar, 
-  Badge,
-  Card,
-  CardContent,
-  IconButton
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Grid,
+  // FIXED: Added AppBar and Toolbar to the import list
+  AppBar,
+  Toolbar,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  keyframes,
 } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import {
+  ArrowForward,
+  RocketLaunch,
+  EditNote,
+  Analytics,
+  TrendingUp,
+  ExpandMore,
+} from '@mui/icons-material';
 
-// --- ICON IMPORTS (CORRECTED AND CONSOLIDATED) ---
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import SecurityIcon from '@mui/icons-material/Security';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import FactCheckIcon from '@mui/icons-material/FactCheck';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import GroupIcon from '@mui/icons-material/Group';
-import SchoolIcon from '@mui/icons-material/School';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import AnalyticsIcon from '@mui/icons-material/Analytics';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import { Business as BusinessIcon } from '@mui/icons-material'; // CORRECT, SINGLE IMPORT
+// --- KEYFRAMES ---
+const auroraVibrant = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
-// --- ENHANCED THEME CONFIGURATION ---
-let landingPageTheme = createTheme({
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h1: { 
-      fontFamily: '"Inter", sans-serif', 
-      fontWeight: 800,
-      letterSpacing: '-0.02em'
-    },
-    h2: { 
-      fontFamily: '"Inter", sans-serif', 
-      fontWeight: 700,
-      letterSpacing: '-0.01em'
-    },
-    h3: { 
-      fontFamily: '"Inter", sans-serif', 
-      fontWeight: 700 
-    },
-    h4: { 
-      fontFamily: '"Inter", sans-serif', 
-      fontWeight: 600 
-    },
-    h5: { 
-      fontFamily: '"Inter", sans-serif', 
-      fontWeight: 600 
-    },
-  },
-  palette: {
-    primary: { 
-      main: '#6366f1',
-      light: '#818cf8',
-      dark: '#4f46e5'
-    },
-    secondary: { 
-      main: '#14b8a6',
-      light: '#2dd4bf',
-      dark: '#0d9488'
-    },
-    text: { 
-      primary: '#0f172a',
-      secondary: '#64748b'
-    },
-    background: { 
-      default: '#ffffff', 
-      paper: '#ffffff' 
-    },
-    success: { main: '#22c55e' },
-    error: { main: '#ef4444' }
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '50px',
-          textTransform: 'none',
-          fontWeight: 600,
-          padding: '12px 32px',
-        }
-      }
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: '16px',
-        }
-      }
+const flow = keyframes`
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+`;
+
+const panX = keyframes`
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+`;
+
+const breathe = keyframes`
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 25px -8px #4A00E0; }
+  50% { transform: scale(1.03); box-shadow: 0 12px 30px -8px #8E2DE2; }
+`;
+
+// --- HOOKS & UTILITIES ---
+const useInView = (options) => {
+  const [isInView, setIsInView] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setIsInView(true);
+    }, { ...options, triggerOnce: true });
+    if (ref.current) observer.observe(ref.current);
+    return () => { if (ref.current) observer.unobserve(ref.current); };
+  }, [options, ref]);
+  return [ref, isInView];
+};
+
+const AnimatedCounter = ({ value, suffix = "" }) => {
+  const [count, setCount] = useState(0);
+  const [ref, isInView] = useInView({ threshold: 0.5 });
+  useEffect(() => {
+    if (isInView) {
+      let startTime;
+      const duration = 2500;
+      const animate = (timestamp) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const easeOutQuint = 1 - Math.pow(1 - progress, 5);
+        setCount(Math.floor(easeOutQuint * value));
+        if (progress < 1) requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
     }
+  }, [isInView, value]);
+  return <span ref={ref}>{count}{suffix}</span>;
+};
+
+
+// --- Main Landing Page Component ---
+export default function BITDurgLandingProfessional() {
+
+  // --- START: WIDGET COMPONENTS (Now inside main component) ---
+  const colorPurple = '#8B5CF6';
+  const colorBlue = '#4A00E0';
+  const colorOrange = '#FF9100';
+  const colorSuccess = '#10b981';
+  const colorDanger = '#ef4444';
+
+  const OnboardingPreview = () => {
+    const ref = useRef(null);
+    useEffect(() => {
+      if (ref.current && window.anime) {
+        window.anime({
+            targets: ref.current.children,
+            opacity: [0, 1],
+            translateX: [-10, 0],
+            delay: window.anime.stagger(1500, {start: 500}),
+            loop: true, direction: 'alternate', duration: 1000, easing: 'easeInOutQuad'
+        });
+      }
+    }, []);
+    return (
+      <Box ref={ref} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', alignItems: 'flex-start' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, opacity: 0 }}>
+          <i className="fas fa-user-plus" style={{ color: colorPurple }}></i>
+          <Typography variant="body2" sx={{fontWeight: 500, color: '#F9FAFB'}}>Admin Creates User</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, opacity: 0 }}>
+          <i className="fas fa-envelope-open-text" style={{ color: colorPurple }}></i>
+          <Typography variant="body2" sx={{fontWeight: 500, color: '#F9FAFB'}}>Email Verification</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, opacity: 0 }}>
+          <i className="fas fa-key" style={{ color: colorPurple }}></i>
+          <Typography variant="body2" sx={{fontWeight: 500, color: '#F9FAFB'}}>Set New Password</Typography>
+        </Box>
+      </Box>
+    );
+  };
+
+  const FormListPreview = () => {
+      const ref = useRef(null);
+      useEffect(() => {
+          if(ref.current && window.anime) {
+              const forms = ['T6.5: AICTE Initiatives', 'T2.2: Workshops Organized', 'T1.1: Research Articles'];
+              forms.forEach((form) => {
+                  const item = document.createElement('div');
+                  item.textContent = form;
+                  Object.assign(item.style, {
+                      background: '#2D3748', padding: '0.75rem', borderRadius: '8px',
+                      marginBottom: '0.75rem', fontSize: '0.9rem', color: '#F9FAFB', fontWeight: '500'
+                  });
+                  ref.current.appendChild(item);
+              });
+          }
+      }, [])
+      return <Box ref={ref} sx={{width: '100%'}}></Box>
   }
-});
-landingPageTheme = responsiveFontSizes(landingPageTheme);
 
-// --- HERO SECTION COMPONENT ---
-const HeroSection = () => {
-  const navigate = useNavigate();
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const AnalyticsPreview = () => {
+      const ref = useRef(null);
+      useEffect(() => {
+          if(ref.current && window.anime) {
+              window.anime({
+                  targets: ref.current.children,
+                  height: () => window.anime.random(20, 100) + '%',
+                  opacity: () => window.anime.random(0.6, 1),
+                  duration: 1500, easing: 'easeInOutQuad',
+                  direction: 'alternate', loop: true,
+                  delay: window.anime.stagger(200)
+              });
+          }
+      }, [])
+      return(
+          <Box ref={ref} sx={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', height: 100, width: '100%', justifyContent: 'space-evenly'}}>
+              <Box sx={{width: 30, background: colorBlue, borderRadius: 1}}></Box>
+              <Box sx={{width: 30, background: colorPurple, borderRadius: 1}}></Box>
+              <Box sx={{width: 30, background: colorOrange, borderRadius: 1}}></Box>
+              <Box sx={{width: 30, background: colorBlue, borderRadius: 1}}></Box>
+          </Box>
+      )
+  }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
+  const FeatureWidget = ({ icon, title, description, preview }) => {
+      const [ref, isInView] = useInView({ threshold: 0.1 });
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    }
-  };
-
-  const dashboardData = [
-    {
-      title: "Active Users",
-      value: "147",
-      icon: <GroupIcon />,
-      trend: "+12%",
-      color: "#6366f1"
-    },
-    {
-      title: "Reports This Quarter",
-      value: "324",
-      icon: <AssignmentIcon />,
-      trend: "+28%",
-      color: "#14b8a6"
-    },
-    {
-      title: "Completion Rate",
-      value: "94.2%",
-      icon: <TrendingUpIcon />,
-      trend: "+5.2%",
-      color: "#f59e0b"
-    }
-  ];
-
-  return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        pt: { xs: 8, md: 0 },
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0%, transparent 50%)',
-          animation: 'float 20s infinite ease-in-out',
-        },
-        '@keyframes float': {
-          '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-          '50%': { transform: 'translateY(-20px) rotate(180deg)' }
-        }
-      }}
-    >
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
-        <Grid container spacing={6} alignItems="center">
-          {/* Left Column - Text Content */}
-          <Grid item xs={12} lg={6}>
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <Stack spacing={4} sx={{ maxWidth: { xs: '100%', lg: '90%' } }}>
-                <motion.div variants={itemVariants}>
-                  <Typography
-                    component="h1"
-                    variant="h1"
-                    sx={{
-                      color: 'white',
-                      fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' },
-                      lineHeight: 1.1,
-                      textShadow: '0 4px 30px rgba(0,0,0,0.3)',
-                      mb: 2
-                    }}
-                  >
-                    Transform Your
-                    <Box component="span" sx={{ display: 'block', color: '#fbbf24' }}>
-                      Academic Reporting
-                    </Box>
-                  </Typography>
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      color: 'rgba(255,255,255,0.9)',
-                      fontWeight: 400,
-                      lineHeight: 1.6,
-                      maxWidth: '500px'
-                    }}
-                  >
-                    The comprehensive digital platform for Bhilai Institute of Technology, 
-                    streamlining quarterly reports with intelligent analytics and seamless collaboration.
-                  </Typography>
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      endIcon={<ArrowForwardIcon />}
-                      onClick={() => navigate('/login')}
-                      sx={{
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                        color: 'primary.main',
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        fontWeight: 700,
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        '&:hover': {
-                          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                          transform: 'translateY(-3px) scale(1.02)',
-                          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-                        }
-                      }}
-                    >
-                      Launch Portal
-                    </Button>
-
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      startIcon={<PlayArrowIcon />}
-                      sx={{
-                        borderColor: 'rgba(255,255,255,0.3)',
-                        color: 'white',
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                        backdrop: 'blur(10px)',
-                        '&:hover': {
-                          borderColor: 'rgba(255,255,255,0.5)',
-                          backgroundColor: 'rgba(255,255,255,0.1)',
-                          transform: 'translateY(-2px)',
-                        }
-                      }}
-                    >
-                      Watch Demo
-                    </Button>
-                  </Stack>
-                </motion.div>
-              </Stack>
-            </motion.div>
-          </Grid>
-
-          {/* Right Column - Dashboard Preview */}
-          <Grid item xs={12} lg={6}>
-            <motion.div
-              style={{ y }}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <Box sx={{ position: 'relative' }}>
-                {/* Main Dashboard Card */}
-                <Paper
-                  elevation={20}
+      return (
+          <Grid item xs={12} sm={6} md={4}>
+              <Box
+                  ref={ref}
                   sx={{
-                    p: 4,
-                    background: 'rgba(255,255,255,0.95)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    borderRadius: 4,
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
-                >
-                  <Box sx={{ mb: 4 }}>
-                    <Typography variant="h5" fontWeight="bold" color="text.primary" gutterBottom>
-                      Analytics Dashboard
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Real-time insights and reporting metrics
-                    </Typography>
-                  </Box>
-
-                  <Grid container spacing={3}>
-                    {dashboardData.map((item, index) => (
-                      <Grid item xs={12} sm={4} key={index}>
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.6 + index * 0.1 }}
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <Card
-                            elevation={2}
-                            sx={{
-                              p: 2,
-                              textAlign: 'center',
-                              background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-                              border: `1px solid ${item.color}20`
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: 48,
-                                height: 48,
-                                borderRadius: 2,
-                                background: `linear-gradient(135deg, ${item.color} 0%, ${item.color}dd 100%)`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                mb: 2,
-                                mx: 'auto'
-                              }}
-                            >
-                              {item.icon}
-                            </Box>
-                            <Typography variant="h4" fontWeight="bold" color="text.primary">
-                              {item.value}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                              {item.title}
-                            </Typography>
-                            <Chip
-                              label={item.trend}
-                              size="small"
-                              sx={{
-                                backgroundColor: '#22c55e20',
-                                color: '#22c55e',
-                                fontSize: '0.75rem',
-                                fontWeight: 600
-                              }}
-                            />
-                          </Card>
-                        </motion.div>
-                      </Grid>
-                    ))}
-                  </Grid>
-
-                  {/* Progress Bars */}
-                  <Box sx={{ mt: 4 }}>
-                    <Typography variant="subtitle2" color="text.primary" gutterBottom>
-                      Department Progress
-                    </Typography>
-                    <Stack spacing={2}>
-                      {[
-                        { name: 'Computer Science', progress: 92, color: '#6366f1' },
-                        { name: 'Mechanical', progress: 87, color: '#14b8a6' },
-                        { name: 'MCA', progress: 96, color: '#f59e0b' }
-                      ].map((dept, index) => (
-                        <Box key={index}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                            <Typography variant="body2" color="text.secondary">
-                              {dept.name}
-                            </Typography>
-                            <Typography variant="body2" fontWeight="bold" color="text.primary">
-                              {dept.progress}%
-                            </Typography>
-                          </Box>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${dept.progress}%` }}
-                            transition={{ duration: 1, delay: 1 + index * 0.2 }}
-                          >
-                            <LinearProgress
-                              variant="determinate"
-                              value={100}
-                              sx={{
-                                height: 8,
-                                borderRadius: 4,
-                                backgroundColor: `${dept.color}20`,
-                                '& .MuiLinearProgress-bar': {
-                                  backgroundColor: dept.color,
-                                  borderRadius: 4
-                                }
-                              }}
-                            />
-                          </motion.div>
-                        </Box>
-                      ))}
-                    </Stack>
-                  </Box>
-                </Paper>
-
-                {/* Floating Elements */}
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  style={{
-                    position: 'absolute',
-                    top: '-20px',
-                    right: '-20px',
-                    zIndex: 10
-                  }}
-                >
-                  <Paper
-                    elevation={10}
-                    sx={{
-                      p: 2,
-                      background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-                      color: 'white',
-                      borderRadius: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
-                    <CheckCircleIcon />
-                    <Typography variant="body2" fontWeight="bold">
-                      98% Uptime
-                    </Typography>
-                  </Paper>
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-                  style={{
-                    position: 'absolute',
-                    bottom: '-20px',
-                    left: '-20px',
-                    zIndex: 10
-                  }}
-                >
-                  <Paper
-                    elevation={10}
-                    sx={{
-                      p: 2,
-                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                      color: 'white',
-                      borderRadius: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
-                    <NotificationsIcon />
-                    <Typography variant="body2" fontWeight="bold">
-                      5 New Reports
-                    </Typography>
-                  </Paper>
-                </motion.div>
-              </Box>
-            </motion.div>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
-  );
-};
-
-// --- FEATURES SECTION COMPONENT ---
-const FeaturesSection = () => {
-  const features = [
-    {
-      icon: <CloudUploadIcon fontSize="large" />,
-      title: 'Smart Document Management',
-      description: 'Advanced file handling with automated categorization, version control, and intelligent search capabilities.',
-      color: '#6366f1',
-      gradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
-    },
-    {
-      icon: <SupervisorAccountIcon fontSize="large" />,
-      title: 'Role-Based Workflows',
-      description: 'Sophisticated permission system with customizable roles, approval chains, and automated notifications.',
-      color: '#14b8a6',
-      gradient: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)'
-    },
-    {
-      icon: <AnalyticsIcon fontSize="large" />,
-      title: 'Advanced Analytics',
-      description: 'Interactive dashboards, predictive insights, and comprehensive reporting with exportable visualizations.',
-      color: '#f59e0b',
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-    },
-  ];
-
-  return (
-    <Box sx={{ py: { xs: 8, md: 12 }, background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)' }}>
-      <Container maxWidth="lg">
-        <Stack spacing={8} alignItems="center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Stack spacing={3} alignItems="center" sx={{ textAlign: 'center', maxWidth: '800px' }}>
-              <Typography
-                component="h2"
-                variant="h2"
-                sx={{
-                  fontSize: { xs: '2rem', md: '2.5rem' },
-                  background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  textAlign: 'center'
-                }}
-              >
-                Powerful Features for Modern Academia
-              </Typography>
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                sx={{ fontWeight: 400, lineHeight: 1.7 }}
-              >
-                Experience the next generation of academic management with intelligent automation,
-                seamless collaboration, and data-driven insights.
-              </Typography>
-            </Stack>
-          </motion.div>
-
-          <Grid container spacing={4} justifyContent="center">
-            {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -10 }}
-                  style={{ height: '100%' }}
-                >
-                  <Card
-                    elevation={0}
-                    sx={{
-                      p: 4,
+                      background: '#2D3748',
+                      borderRadius: '16px',
+                      p: '2rem',
                       height: '100%',
-                      background: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: 4,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
-                        borderColor: feature.color,
-                        boxShadow: `0 25px 50px -12px ${feature.color}25`,
-                        transform: 'translateY(-5px)',
-                        '& .feature-icon': {
-                          transform: 'scale(1.1) rotate(5deg)',
-                        },
-                        '&::before': {
-                          opacity: 1,
-                        }
-                      },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '4px',
-                        background: feature.gradient,
-                        opacity: 0,
-                        transition: 'opacity 0.3s ease',
-                      }
-                    }}
-                  >
-                    <Stack spacing={3} alignItems="center" textAlign="center" height="100%">
-                      <Box
-                        className="feature-icon"
-                        sx={{
-                          width: 80,
-                          height: 80,
-                          borderRadius: 4,
-                          background: feature.gradient,
-                          color: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: `0 20px 40px -15px ${feature.color}50`,
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                      >
-                        {feature.icon}
-                      </Box>
-
-                      <Stack spacing={2} sx={{ flexGrow: 1 }}>
-                        <Typography
-                          variant="h5"
-                          component="h3"
-                          sx={{
-                            fontWeight: 700,
-                            color: 'text.primary',
-                          }}
-                        >
-                          {feature.title}
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            color: 'text.secondary',
-                            lineHeight: 1.7,
-                            flexGrow: 1
-                          }}
-                        >
-                          {feature.description}
-                        </Typography>
-                      </Stack>
-
-                      <IconButton
-                        sx={{
-                          mt: 2,
-                          color: feature.color,
-                          backgroundColor: `${feature.color}10`,
-                          '&:hover': {
-                            backgroundColor: `${feature.color}20`,
-                            transform: 'scale(1.1)',
-                          }
-                        }}
-                      >
-                        <ArrowForwardIcon />
-                      </IconButton>
-                    </Stack>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </Stack>
-      </Container>
-    </Box>
-  );
-};
-
-// --- STATS SECTION COMPONENT ---
-const StatsSection = () => {
-  const stats = [
-    { number: '150+', label: 'Active Faculty', icon: <GroupIcon /> },
-    { number: '12', label: 'Departments', icon: <BusinessIcon /> },
-    { number: '1,200+', label: 'Reports Generated', icon: <AssignmentIcon /> },
-    { number: '99.9%', label: 'System Uptime', icon: <TrendingUpIcon /> }
-  ];
-
-  return (
-    <Box
-      sx={{
-        py: { xs: 8, md: 12 },
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 30% 40%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-        }
-      }}
-    >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <Typography
-            variant="h2"
-            component="h2"
-            sx={{
-              textAlign: 'center',
-              color: 'white',
-              mb: 2,
-              fontSize: { xs: '2rem', md: '2.5rem' }
-            }}
-          >
-            Trusted by Academia
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              textAlign: 'center',
-              color: 'rgba(255,255,255,0.8)',
-              mb: 6,
-              maxWidth: '600px',
-              mx: 'auto'
-            }}
-          >
-            Join thousands of educators who trust our platform for streamlined academic reporting
-          </Typography>
-        </motion.div>
-
-        <Grid container spacing={4}>
-          {stats.map((stat, index) => (
-            <Grid item xs={6} md={3} key={index}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                <Paper
-                  elevation={10}
-                  sx={{
-                    p: 4,
-                    textAlign: 'center',
-                    background: 'rgba(255,255,255,0.95)',
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: 4,
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'transform 0.3s ease'
+                      display: 'flex', flexDirection: 'column',
+                      opacity: isInView ? 1 : 0,
+                      transform: isInView ? 'translateY(0)' : 'translateY(40px)',
+                      transition: 'opacity 0.8s ease, transform 0.8s ease',
                   }}
-                >
-                  <Box
-                    sx={{
-                      color: '#6366f1',
-                      mb: 2,
-                      fontSize: '2rem'
-                    }}
-                  >
-                    {stat.icon}
+              >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                      <i className={icon} style={{ color: colorPurple, fontSize: '1.25rem' }}></i>
+                      <Typography variant="h6" sx={{ fontWeight: 600, color: '#F9FAFB' }}>{title}</Typography>
                   </Box>
-                  <Typography
-                    variant="h2"
-                    component="div"
-                    sx={{
-                      fontWeight: 800,
-                      color: 'text.primary',
-                      fontSize: { xs: '2rem', md: '2.5rem' },
-                      lineHeight: 1
-                    }}
-                  >
-                    {stat.number}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: 'text.secondary',
-                      fontWeight: 500,
-                      mt: 1
-                    }}
-                  >
-                    {stat.label}
-                  </Typography>
-                </Paper>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-    </Box>
-  );
-};
+                  <Typography variant="body2" sx={{ color: '#A0AEC0', lineHeight: 1.6, mb: 3 }}>{description}</Typography>
+                  <Box sx={{
+                      backgroundColor: '#4A5568',
+                      borderRadius: 2,
+                      p: 2,
+                      flexGrow: 1,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                  }}>
+                      {preview}
+                  </Box>
+              </Box>
+          </Grid>
+      );
+  };
+  // --- END: WIDGET COMPONENTS ---
 
-// --- ABOUT SECTION COMPONENT ---
-const AboutSection = () => {
-  const benefits = [
-    {
-      icon: <SecurityIcon />,
-      title: 'Enterprise Security',
-      description: 'Bank-grade encryption and security protocols protect your sensitive academic data.'
-    },
-    {
-      icon: <AutoAwesomeIcon />,
-      title: 'AI-Powered Insights',
-      description: 'Machine learning algorithms provide predictive analytics and intelligent recommendations.'
-    },
-    {
-      icon: <GroupIcon />,
-      title: 'Seamless Collaboration',
-      description: 'Built-in communication tools foster teamwork between faculty, departments, and administration.'
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  const baseButtonStyles = {
+    borderRadius: '99px',
+    fontWeight: 600,
+    color: 'white',
+    background: `linear-gradient(45deg, ${colorBlue}, ${colorPurple})`,
+    backgroundSize: '150% 150%',
+    backgroundPosition: '0% 50%',
+    transition: 'background-position 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease',
+    boxShadow: `0 4px 15px -5px ${colorBlue}aa`,
+    '&:hover': {
+      transform: 'translateY(-3px)',
+      backgroundPosition: '100% 50%',
+      boxShadow: `0 6px 20px -5px ${colorPurple}`,
     }
+  };
+  
+  const stats = [
+    { value: 40, suffix: "+", label: "Forms Automated" },
+    { value: 150, suffix: "+", label: "Faculty Onboarded" },
+    { value: 1000, suffix: "s", label: "Of Reports Processed" }
+  ];
+
+  const faqs = [
+    { question: "How do I reset my password?", answer: "If you forget your password, please contact the system administrator. For new users, you will be required to change your temporary password upon your first login." },
+    { question: "Who can see the data I submit?", answer: "Your submitted data is only visible to you, your Head of Department (HOD), and the system administrators. Our role-based access control ensures data privacy." },
+    { question: "What is the deadline for quarterly submissions?", answer: "Submission deadlines are set by the administration at the end of each quarter. Please refer to official circulars for the exact dates." },
+    { question: "Who do I contact for technical support?", answer: "For any technical issues, such as login problems or form errors, please reach out to the IT Department or the designated portal administrator for assistance." }
   ];
 
   return (
-    <Box sx={{ py: { xs: 8, md: 12 }, background: '#ffffff' }}>
-      <Container maxWidth="lg">
-        <Grid container spacing={8} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <Stack spacing={4}>
-                <Typography
-                  variant="h2"
-                  component="h2"
-                  sx={{
-                    fontSize: { xs: '2rem', md: '2.5rem' },
-                    background: 'linear-gradient(135deg, #0f172a 0%, #6366f1 100%)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  The Future of Academic Management
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 400,
-                    lineHeight: 1.7
-                  }}
-                >
-                  Our platform revolutionizes how educational institutions handle quarterly reporting,
-                  making complex processes simple and data-driven decisions effortless.
-                </Typography>
-
-                <Stack spacing={3}>
-                  {benefits.map((benefit, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: -30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                      <Box sx={{ display: 'flex', gap: 3 }}>
-                        <Box
-                          sx={{
-                            p: 1.5,
-                            borderRadius: 3,
-                            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                            color: 'white',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            minWidth: 56,
-                            height: 56,
-                            boxShadow: '0 8px 30px rgba(99, 102, 241, 0.3)'
-                          }}
-                        >
-                          {benefit.icon}
-                        </Box>
-                        <Box>
-                          <Typography
-                            variant="h6"
-                            sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}
-                          >
-                            {benefit.title}
-                          </Typography>
-                          <Typography
-                            variant="body1"
-                            sx={{ color: 'text.secondary', lineHeight: 1.6 }}
-                          >
-                            {benefit.description}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </motion.div>
-                  ))}
-                </Stack>
-              </Stack>
-            </motion.div>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Box sx={{ position: 'relative' }}>
-                <Paper
-                  elevation={20}
-                  sx={{
-                    p: 4,
-                    borderRadius: 4,
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
-                    border: '1px solid #e2e8f0',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
-                >
-                  <Typography variant="h5" fontWeight="bold" color="text.primary" gutterBottom>
-                    System Overview
-                  </Typography>
-                  
-                  <Stack spacing={3} sx={{ mt: 3 }}>
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          System Performance
-                        </Typography>
-                        <Typography variant="body2" fontWeight="bold" color="success.main">
-                          Excellent
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={96}
-                        sx={{
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: '#e2e8f0',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#22c55e',
-                            borderRadius: 4
-                          }
-                        }}
-                      />
-                    </Box>
-
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          User Satisfaction
-                        </Typography>
-                        <Typography variant="body2" fontWeight="bold" color="success.main">
-                          98.5%
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={98.5}
-                        sx={{
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: '#e2e8f0',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#6366f1',
-                            borderRadius: 4
-                          }
-                        }}
-                      />
-                    </Box>
-
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Data Accuracy
-                        </Typography>
-                        <Typography variant="body2" fontWeight="bold" color="success.main">
-                          99.9%
-                        </Typography>
-                      </Box>
-                      <LinearProgress
-                        variant="determinate"
-                        value={99.9}
-                        sx={{
-                          height: 8,
-                          borderRadius: 4,
-                          backgroundColor: '#e2e8f0',
-                          '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#14b8a6',
-                            borderRadius: 4
-                          }
-                        }}
-                      />
-                    </Box>
-                  </Stack>
-                </Paper>
-
-                {/* Floating notification */}
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  style={{
-                    position: 'absolute',
-                    top: '20px',
-                    right: '-20px'
-                  }}
-                >
-                  <Paper
-                    elevation={10}
-                    sx={{
-                      p: 2,
-                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                      color: 'white',
-                      borderRadius: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      minWidth: 180
-                    }}
-                  >
-                    <CheckCircleIcon />
-                    <Box>
-                      <Typography variant="caption" sx={{ display: 'block', opacity: 0.9 }}>
-                        Live Update
-                      </Typography>
-                      <Typography variant="body2" fontWeight="bold">
-                        Report Submitted
-                      </Typography>
-                    </Box>
-                  </Paper>
-                </motion.div>
-              </Box>
-            </motion.div>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
-  );
-};
-
-// --- CALL TO ACTION SECTION ---
-const CallToActionSection = () => {
-  const navigate = useNavigate();
-
-  return (
-    <Box
-      sx={{
-        py: { xs: 8, md: 12 },
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+    <Box sx={{ color: '#111827', overflowX: 'hidden' }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Sora', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        ::selection { background: rgba(142, 45, 226, 0.2); color: #111827; }
+      `}</style>
+      
+      <Box sx={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 0,
+        background: `linear-gradient(125deg, #F9F7FF, #E0F7FF, #FFF5E1, #FEDEFF, #F9F7FF)`,
+        backgroundSize: '400% 400%',
+        animation: `${auroraVibrant} 30s ease infinite`,
+      }}/>
+      
+      <Box sx={{ position: 'relative', zIndex: 2 }}>
+        <AppBar
+          position="fixed" elevation={0}
+          sx={{
+            background: scrolled ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(20px)',
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            boxShadow: scrolled ? '0 5px 20px rgba(0,0,0,0.05)' : 'none',
+            top: '1rem', left: '50%',
+            transform: 'translateX(-50%)',
+            width: 'calc(100% - 2rem)',
+            maxWidth: '1280px',
+            borderRadius: '99px',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+          }}
         >
-          <Stack spacing={4} alignItems="center">
-            <Box
+          <Container maxWidth="xl">
+            <Toolbar sx={{ py: 1, justifyContent: 'space-between' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#111827' }}>
+                BIT Durg Portal
+              </Typography>
+              <Button href="/login" variant="contained" endIcon={<ArrowForward />} sx={baseButtonStyles}>
+                Launch Portal
+              </Button>
+            </Toolbar>
+          </Container>
+        </AppBar>
+
+        {/* --- HERO SECTION --- */}
+        <Container maxWidth="xl" sx={{ pt: { xs: 20, sm: 28 }, pb: { xs: 12, sm: 16 }, textAlign: 'center' }}>
+          <Box
+            aria-labelledby="main-headline"
+            aria-describedby="main-description"
+          >
+            <Typography
+              id="main-headline"
+              component="h1"
               sx={{
-                width: 80,
-                height: 80,
-                borderRadius: 4,
-                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                mb: 2
+                fontSize: { xs: '2.75rem', sm: '4rem', md: '5.5rem' },
+                fontWeight: 800,
+                letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3,
+                background: `linear-gradient(135deg, ${colorBlue} 15%, ${colorPurple} 50%, #111827 85%)`,
+                backgroundSize: '200% 200%', backgroundClip: 'text',
+                color: 'transparent',
+                animation: `${panX} 8s ease-in-out infinite`,
               }}
             >
-              <SchoolIcon sx={{ fontSize: 40 }} />
+              The Future of Academic Reporting
+            </Typography>
+            <Typography id="main-description" variant="h5" sx={{ my: {xs: 4, sm: 5}, mx: 'auto', maxWidth: '800px', color: '#374151', fontWeight: 400, lineHeight: 1.7, fontSize: {xs: '1.1rem', md: '1.25rem'} }}>
+              A secure, centralized platform designed to streamline quarterly report submissions and provide powerful, data-driven insights.
+            </Typography>
+            <Button href="/login" variant="contained" size="large" endIcon={<RocketLaunch />}
+              sx={{
+                ...baseButtonStyles, px: 6, py: 2, fontSize: '1.2rem',
+                animation: `${breathe} 4s ease-in-out infinite`,
+                '&:hover': { 
+                    ...baseButtonStyles['&:hover'], 
+                    transform: 'translateY(-4px) scale(1.03)',
+                    animation: 'none'
+                }
+              }}
+            >
+              Login to Your Dashboard
+            </Button>
+          </Box>
+        </Container>
+        
+        {/* --- STATS SECTION --- */}
+        <Box sx={{ py: {xs: 8, md: 12} }}>
+          <Container maxWidth="lg">
+            <Typography variant="h2" align="center" sx={{ fontWeight: 700, mb: {xs: 8, md: 12}, color: '#111827', letterSpacing: '-0.02em', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
+              Proven Impact & Scale
+            </Typography>
+            <Grid container spacing={{xs: 4, md: 5}} justifyContent="center">
+              {stats.map((stat, index) => {
+                const [ref, isInView] = useInView({ threshold: 0.3 });
+                return (
+                  <Grid item xs={12} sm={4} key={index} ref={ref} sx={{ textAlign: 'center', opacity: isInView ? 1 : 0, transform: isInView ? 'translateY(0)' : 'translateY(20px)', transition: 'opacity 0.8s ease, transform 0.8s ease', transitionDelay: `${index * 200}ms`}}>
+                      <Typography component="div" sx={{ fontSize: {xs: '3.5rem', md: '5rem'}, fontWeight: 800,
+                        background: `linear-gradient(135deg, ${colorPurple} 0%, ${colorOrange} 100%)`,
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 1 }}>
+                        <AnimatedCounter value={stat.value} />{stat.suffix}
+                      </Typography>
+                      <Typography sx={{ color: '#374151', fontSize: '1.1rem' }}>
+                        {stat.label}
+                      </Typography>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Container>
+        </Box>
+
+        {/* --- WIDGET SHOWCASE SECTION --- */}
+        <Box sx={{ py: {xs: 10, md: 16} }}>
+          <Container maxWidth="lg">
+            <Box sx={{ textAlign: 'center', mb: {xs: 8, md: 12} }}>
+              <Typography variant="h2" sx={{ fontWeight: 700, mb: 2, color: '#111827', letterSpacing: '-0.02em', fontSize: { xs: '2.25rem', sm: '2.75rem', md: '3.5rem' } }}>
+                A Professional-Grade Platform
+              </Typography>
+              <Typography variant="h6" sx={{ color: '#374151', fontWeight: 400, maxWidth: '700px', mx: 'auto', lineHeight: 1.7, fontSize: {xs: '1rem', md: '1.125rem'} }}>
+                Built with a focus on security, scalability, and user experience, incorporating a range of industry-standard features.
+              </Typography>
             </Box>
-
-            <Typography
-              variant="h2"
-              sx={{
-                color: 'white',
-                fontSize: { xs: '2rem', md: '2.5rem' },
-                textAlign: 'center'
-              }}
-            >
-              Ready to Transform Your Institution?
+            <Grid container spacing={4}>
+                <FeatureWidget 
+                    icon="fas fa-users-cog" 
+                    title="Role-Based Access" 
+                    description="Secure system with distinct roles ensuring users only access relevant data."
+                    preview={
+                        <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', gap: 1}}>
+                            <Box sx={{background: '#2D3748', p: '0.75rem 1rem', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <Box>
+                                    <Typography variant="body2" sx={{fontWeight: 600, color: '#F9FAFB'}}>Faculty</Typography>
+                                    <Typography variant="caption" sx={{color: '#A0AEC0'}}>Submits own reports</Typography>
+                                </Box>
+                                <i className="fas fa-check-circle" style={{color: colorSuccess}}></i>
+                            </Box>
+                             <Box sx={{background: '#2D3748', p: '0.75rem 1rem', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <Box>
+                                    <Typography variant="body2" sx={{fontWeight: 600, color: '#F9FAFB'}}>HOD</Typography>
+                                    <Typography variant="caption" sx={{color: '#A0AEC0'}}>Views department reports</Typography>
+                                </Box>
+                                <i className="fas fa-eye" style={{color: colorOrange}}></i>
+                            </Box>
+                             <Box sx={{background: '#2D3748', p: '0.75rem 1rem', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <Box>
+                                    <Typography variant="body2" sx={{fontWeight: 600, color: '#F9FAFB'}}>Admin</Typography>
+                                    <Typography variant="caption" sx={{color: '#A0AEC0'}}>Manages all users & data</Typography>
+                                </Box>
+                                <i className="fas fa-user-shield" style={{color: colorDanger}}></i>
+                            </Box>
+                        </Box>
+                    }
+                />
+                <FeatureWidget 
+                    icon="fas fa-user-shield" 
+                    title="Secure Onboarding" 
+                    description="A multi-step, secure flow for new users, from creation to their first successful login."
+                    preview={<OnboardingPreview />}
+                />
+                <FeatureWidget 
+                    icon="fas fa-list-check" 
+                    title="Dynamic Form System" 
+                    description="A scalable system managing 40+ unique report types from a central configuration."
+                    preview={<FormListPreview />}
+                />
+                <FeatureWidget 
+                    icon="fas fa-shield-alt" 
+                    title="API Security" 
+                    description="Protected with JWT authentication and API rate limiting to defend against automated attacks."
+                    preview={<AnalyticsPreview />}
+                />
+                <FeatureWidget 
+                    icon="fas fa-database" 
+                    title="Data Integrity" 
+                    description="Backend logic prevents accidental mass data deletion, protecting valuable report history."
+                    preview={<i className="fas fa-shield-alt fa-4x" style={{ color: colorSuccess }}></i>}
+                />
+                <FeatureWidget 
+                    icon="fas fa-chart-pie" 
+                    title="Analytics Dashboard" 
+                    description="A dedicated dashboard for Admins and HODs to visualize submission data with interactive charts."
+                    preview={<AnalyticsPreview />}
+                />
+            </Grid>
+          </Container>
+        </Box>
+        
+        {/* --- HOW IT WORKS SECTION --- */}
+        <Box sx={{ py: {xs: 10, md: 16} }}>
+          <Container maxWidth="lg">
+            <Typography variant="h2" align="center" sx={{ fontWeight: 700, mb: {xs: 10, md: 14}, color: '#111827', letterSpacing: '-0.02em', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
+              How It Works
             </Typography>
-
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(255,255,255,0.8)',
-                maxWidth: '600px',
-                lineHeight: 1.7,
-                fontWeight: 400
-              }}
-            >
-              Join the digital revolution in academic management. Experience seamless reporting,
-              intelligent analytics, and enhanced collaboration today.
+            <Box sx={{ position: 'relative', display: 'flex', flexDirection: {xs: 'column', md: 'row'}, alignItems: 'center', justifyContent: 'space-between', gap: {xs: 12, md: 4},
+                '&::before': {
+                    content: '""', position: 'absolute', zIndex: 0,
+                    top: {xs: '60px', md: '50%'},
+                    left: {xs: '50%', md: '15%'},
+                    height: {xs: 'calc(100% - 120px)', md: '4px'},
+                    width: {xs: '4px', md: '70%'},
+                    transform: {xs: 'translateX(-50%)', md: 'translateY(-50%)'},
+                    background: `linear-gradient(to right, ${colorBlue}, ${colorPurple}, ${colorOrange})`,
+                    backgroundSize: '100% 300%',
+                    animation: `${flow} 5s ease infinite`,
+                    opacity: 0.4, borderRadius: '2px',
+                }
+             }}>
+              {[
+                { icon: <EditNote />, title: "1. Submit Data", description: "Faculty use intuitive, dynamic forms to submit their quarterly reports and achievements.", color: colorBlue },
+                { icon: <Analytics />, title: "2. Visualize The Picture", description: "HODs and Admins instantly access aggregated data and analytics on a centralized dashboard.", color: colorPurple },
+                { icon: <TrendingUp />, title: "3. Drive Growth", description: "Make informed, data-driven decisions to enhance academic excellence and reporting efficiency.", color: colorOrange }
+              ].map((step, index) => {
+                const [ref, isInView] = useInView({ threshold: 0.4 });
+                return (
+                  <Box ref={ref} key={index} sx={{ textAlign: 'center', maxWidth: 320, mx: 'auto', opacity: isInView ? 1 : 0, transform: isInView ? 'translateY(0)' : 'translateY(40px)', transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)', transitionDelay: `${index * 200}ms`, zIndex: 1 }}>
+                      <Box sx={{ mb: 3, p: 2, display: 'inline-flex', borderRadius: '50%',
+                        background: 'rgba(255, 255, 255, 0.8)',
+                        border: '1px solid rgba(0, 0, 0, 0.05)',
+                        boxShadow: '0 5px 25px rgba(0,0,0,0.07)'
+                      }}>
+                         {React.cloneElement(step.icon, { sx: { fontSize: 48, color: step.color }})}
+                      </Box>
+                      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, color: '#111827' }}>
+                        {step.title}
+                      </Typography>
+                      <Typography sx={{ color: '#374151', lineHeight: 1.65 }}>
+                        {step.description}
+                      </Typography>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Container>
+        </Box>
+        
+        {/* --- FAQ SECTION --- */}
+        <Box sx={{ py: {xs: 10, md: 16} }}>
+          <Container maxWidth="md">
+            <Typography variant="h2" align="center" sx={{ fontWeight: 700, mb: {xs: 8, md: 12}, color: '#111827', letterSpacing: '-0.02em', fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' } }}>
+              Frequently Asked Questions
             </Typography>
-
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={3}
-              sx={{ mt: 4 }}
-            >
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate('/login')}
-                sx={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-                    transform: 'translateY(-3px) scale(1.02)',
-                    boxShadow: '0 20px 60px rgba(99, 102, 241, 0.6)',
-                  }
-                }}
-              >
-                Get Started Free
-              </Button>
-
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                  borderColor: 'rgba(255,255,255,0.3)',
-                  color: 'white',
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  '&:hover': {
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                    transform: 'translateY(-2px)',
-                  }
-                }}
-              >
-                Schedule Demo
-              </Button>
-            </Stack>
-          </Stack>
-        </motion.div>
-      </Container>
+            {faqs.map((faq, index) => {
+              const [ref, isInView] = useInView({ threshold: 0.1 });
+              return (
+                <Box ref={ref} key={index} sx={{opacity: isInView ? 1 : 0, transform: isInView ? 'translateY(0)' : 'translateY(20px)', transition: 'opacity 0.7s ease, transform 0.7s ease', transitionDelay: `${index * 150}ms` }}>
+                  <Accordion sx={{
+                      background: 'rgba(255, 255, 255, 0.7)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.03)',
+                      mb: 2.5, borderRadius: 4,
+                      '&:before': { display: 'none' },
+                      '&.Mui-expanded': { boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)', my: '1.25rem' },
+                      transition: 'all 0.3s ease'
+                  }}>
+                    <AccordionSummary expandIcon={<ExpandMore sx={{ color: '#4B5563' }} />} sx={{ py: 1.5, px: 3 }}>
+                      <Typography sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
+                        {faq.question}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ pt: 0, pb: 2, px: 3 }}>
+                      <Typography sx={{ color: '#374151', lineHeight: 1.65 }}>
+                        {faq.answer}
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                </Box>
+              );
+            })}
+          </Container>
+        </Box>
+        
+        {/* --- FOOTER --- */}
+        <Box component="footer" sx={{ py: 6, px: 2, background: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+          <Container maxWidth="lg" sx={{textAlign: 'center'}}>
+            <Typography variant="body2" color={'#4B5563'}>
+              © {new Date().getFullYear()} Bhilai Institute of Technology, Durg. All Rights Reserved.
+            </Typography>
+            <Typography variant="caption" color={'#6B7280'} display="block" sx={{mt: 1}}>
+              A Modern Solution for Academic Excellence
+            </Typography>
+          </Container>
+        </Box>
+      </Box>
     </Box>
-  );
-};
-
-// --- FOOTER COMPONENT ---
-const Footer = () => (
-  <Box
-    component="footer"
-    sx={{
-      background: '#0f172a',
-      color: '#94a3b8',
-      py: 8
-    }}
-  >
-    <Container maxWidth="lg">
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={6}>
-          <Stack spacing={3}>
-            <Typography
-              variant="h5"
-              sx={{ color: 'white', fontWeight: 700 }}
-            >
-              BIT Durg Academic Portal
-            </Typography>
-            <Typography variant="body1" sx={{ maxWidth: '400px', lineHeight: 1.7 }}>
-              Empowering academic excellence through innovative technology and streamlined processes
-              at Bhilai Institute of Technology, Durg.
-            </Typography>
-            <Typography variant="body2">
-              Bhilai House, Durg, Chhattisgarh 491001
-            </Typography>
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 600 }}>
-            Quick Links
-          </Typography>
-          <Stack spacing={1}>
-            {['Dashboard', 'Reports', 'Analytics', 'Support'].map((link) => (
-              <Typography
-                key={link}
-                variant="body2"
-                sx={{
-                  cursor: 'pointer',
-                  transition: 'color 0.2s ease',
-                  '&:hover': { color: '#6366f1' }
-                }}
-              >
-                {link}
-              </Typography>
-            ))}
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Typography variant="h6" sx={{ color: 'white', mb: 2, fontWeight: 600 }}>
-            Support
-          </Typography>
-          <Stack spacing={1}>
-            {['Documentation', 'Help Center', 'Contact Us', 'System Status'].map((link) => (
-              <Typography
-                key={link}
-                variant="body2"
-                sx={{
-                  cursor: 'pointer',
-                  transition: 'color 0.2s ease',
-                  '&:hover': { color: '#6366f1' }
-                }}
-              >
-                {link}
-              </Typography>
-            ))}
-          </Stack>
-        </Grid>
-      </Grid>
-
-      <Box
-        sx={{
-          borderTop: '1px solid #334155',
-          mt: 6,
-          pt: 4,
-          textAlign: 'center'
-        }}
-      >
-        <Typography variant="body2">
-          © {new Date().getFullYear()} Bhilai Institute of Technology, Durg. All rights reserved.
-        </Typography>
-      </Box>
-    </Container>
-  </Box>
-);
-
-// --- MAIN COMPONENT ---
-export default function WelcomePage() {
-  return (
-    <ThemeProvider theme={landingPageTheme}>
-      <Box sx={{ minHeight: '100vh' }}>
-        <HeroSection />
-        <FeaturesSection />
-        <StatsSection />
-        <AboutSection />
-        <CallToActionSection />
-        <Footer />
-      </Box>
-    </ThemeProvider>
   );
 }
