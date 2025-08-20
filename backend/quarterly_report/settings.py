@@ -44,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'quarterly_report.urls'
@@ -200,3 +201,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True # For secure connection
 EMAIL_HOST_USER = config('EMAIL_HOST_USER') # Loads from .env file
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') # Loads from .env file
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
