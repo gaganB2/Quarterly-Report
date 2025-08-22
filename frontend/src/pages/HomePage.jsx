@@ -1,5 +1,6 @@
 // src/pages/HomePage.jsx
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -13,16 +14,44 @@ import {
 import { useAuth } from "../context/AuthContext";
 import FormTable from "../components/FormTable";
 import AdminFilterPanel from "../components/AdminFilterPanel";
+import { useSnackbar } from "notistack";
+import apiClient from "../api/axios";
 
 export default function HomePage() {
   const theme = useTheme();
-  const { user } = useAuth(); // Get the current user to check their role
+  const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [filters, setFilters] = useState({});
+  const [formCounts, setFormCounts] = useState({});
+  const [countsLoading, setCountsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      setCountsLoading(true);
+      try {
+        const params = new URLSearchParams(filters).toString();
+        // +++ CORRECTED URL: Added the required '/api' prefix +++
+        const url = `/api/reports/counts/?${params}`;
+        
+        const response = await apiClient.get(url);
+        
+        setFormCounts(response.data.counts || {});
+
+      } catch (error) {
+        console.error("Failed to fetch report counts:", error);
+        enqueueSnackbar("Could not load submission counts.", { variant: "error" });
+        setFormCounts({});
+      } finally {
+        setCountsLoading(false);
+      }
+    };
+
+    fetchCounts();
+  }, [filters, enqueueSnackbar]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    // This console log is for testing; we will connect this to the FormTable next.
-    console.log("Applying filters to HomePage:", newFilters);
   };
 
   return (
@@ -50,15 +79,17 @@ export default function HomePage() {
             Manage your form submissions
           </Typography>
           
-          {/* Conditionally render the AdminFilterPanel only for Admin users */}
           {user && user.role === 'Admin' && (
             <AdminFilterPanel onFilterChange={handleFilterChange} />
           )}
 
           <Divider sx={{ mb: 3 }} />
 
-          {/* Pass the filters down to the FormTable */}
-          <FormTable filters={filters} />
+          <FormTable
+            filters={filters}
+            formCounts={formCounts}
+            countsLoading={countsLoading}
+          />
         </Paper>
       </Container>
     </Box>

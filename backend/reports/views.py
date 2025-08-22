@@ -6,6 +6,8 @@ from .models import *
 from .serializers import *
 from .filters import *
 from users.models import Profile
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 # --- Base ViewSet for DRY code ---
 class BaseReportViewSet(viewsets.ModelViewSet):
@@ -99,7 +101,81 @@ S5_2VocationalTrainingViewSet = create_report_viewset(S5_2VocationalTraining, S5
 S5_3SpecialMentionAchievementViewSet = create_report_viewset(S5_3SpecialMentionAchievement, S5_3SpecialMentionAchievementSerializer, S5_3SpecialMentionAchievementFilter)
 S5_4StudentEntrepreneurshipViewSet = create_report_viewset(S5_4StudentEntrepreneurship, S5_4StudentEntrepreneurshipSerializer, S5_4StudentEntrepreneurshipFilter)
 
+# COUNTING VIEW
+FORM_MODEL_MAP = {
+    'T1.1': T1_ResearchArticle,
+    'T1.2': T1_2ResearchArticle,
+    'T2.1': T2_1WorkshopAttendance,
+    'T2.2': T2_2WorkshopOrganized,
+    'T3.1': T3_1BookPublication,
+    'T3.2': T3_2ChapterPublication,
+    'T4.1': T4_1EditorialBoard,
+    'T4.2': T4_2ReviewerDetails,
+    'T4.3': T4_3CommitteeMembership,
+    'T5.1': T5_1PatentDetails,
+    'T5.2': T5_2SponsoredProject,
+    'T5.3': T5_3ConsultancyProject,
+    'T5.4': T5_4CourseDevelopment,
+    'T5.5': T5_5LabEquipmentDevelopment,
+    'T5.6': T5_6ResearchGuidance,
+    'T6.1': T6_1CertificationCourse,
+    'T6.2': T6_2ProfessionalBodyMembership,
+    'T6.3': T6_3Award,
+    'T6.4': T6_4ResourcePerson,
+    'T6.5': T6_5AICTEInitiative,
+    'T7.1': T7_1ProgramOrganized,
+    # Add Student models here if you need to count them as well
+}
 
+class ReportCountsView(APIView):
+    """
+    A dedicated, efficient view to get the count of entries for all report
+    forms based on the provided filters and user permissions.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Initialize a dictionary to hold the counts.
+        counts = {}
+        # Get the user's profile to determine their role and department.
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({"error": "User profile not found."}, status=400)
+
+        # Loop through our map of form codes and models.
+        for form_code, model_cls in FORM_MODEL_MAP.items():
+            # Start with a base queryset for the current model.
+            queryset = model_cls.objects.all()
+
+            # 1. Apply Role-Based Permissions (same logic as BaseReportViewSet)
+            if profile.role == 'HOD':
+                queryset = queryset.filter(department=profile.department)
+            elif profile.role == 'Faculty':
+                queryset = queryset.filter(user=request.user)
+            # For Admin, no initial filtering is needed; they see all.
+
+            # 2. Apply Query Parameter Filters from the frontend
+            # The filter names (e.g., 'year', 'session') must match your model fields.
+            year = request.query_params.get('year')
+            if year:
+                queryset = queryset.filter(year=year)
+
+            session = request.query_params.get('session')
+            if session:
+                queryset = queryset.filter(session=session)
+            
+            # This filter is for Admins to select a specific department
+            department = request.query_params.get('department')
+            if department and profile.role == 'Admin':
+                 queryset = queryset.filter(department__id=department)
+
+            # 3. Get the final count and store it.
+            counts[form_code] = queryset.count()
+
+        # Return the complete dictionary of counts.
+        return Response({'counts': counts})
+        
 # Department ViewSet (doesn't need the base class)
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all().order_by('name')

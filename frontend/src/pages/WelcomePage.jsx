@@ -1,3 +1,5 @@
+// src/pages/WelcomePage.jsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -5,13 +7,13 @@ import {
   Typography,
   Button,
   Grid,
-  // FIXED: Added AppBar and Toolbar to the import list
   AppBar,
   Toolbar,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   keyframes,
+  GlobalStyles // Import GlobalStyles
 } from '@mui/material';
 import {
   ArrowForward,
@@ -240,14 +242,25 @@ export default function BITDurgLandingProfessional() {
     { question: "Who do I contact for technical support?", answer: "For any technical issues, such as login problems or form errors, please reach out to the IT Department or the designated portal administrator for assistance." }
   ];
 
+  // Define global styles using an object
+  const globalStyles = {
+    '@import': "url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap')",
+    html: { scrollBehavior: 'smooth' },
+    body: { 
+        fontFamily: "'Sora', sans-serif", 
+        WebkitFontSmoothing: 'antialiased', 
+        MozOsxFontSmoothing: 'grayscale' 
+    },
+    '::selection': { 
+        background: 'rgba(142, 45, 226, 0.2)', 
+        color: '#111827' 
+    }
+  };
+
   return (
     <Box sx={{ color: '#111827', overflowX: 'hidden' }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Sora', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        ::selection { background: rgba(142, 45, 226, 0.2); color: #111827; }
-      `}</style>
+      {/* Use the GlobalStyles component here */}
+      <GlobalStyles styles={globalStyles} />
       
       <Box sx={{
         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,

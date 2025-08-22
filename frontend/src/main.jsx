@@ -7,6 +7,8 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { lightTheme, darkTheme } from './theme';
 import { AuthProvider } from './context/AuthContext';
 import ColorModeContext from './ThemeContext';
+// +++ Import the SnackbarProvider +++
+import { SnackbarProvider } from 'notistack';
 
 function Root() {
   const [mode, setMode] = useState(localStorage.getItem('themeMode') || 'light');
@@ -29,12 +31,17 @@ function Root() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </BrowserRouter>
+        {/* +++ Wrap the application with SnackbarProvider +++ */}
+        {/* This enables snackbar notifications throughout the app. */}
+        {/* We configure it to show a max of 3 notifications at a time. */}
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+          <CssBaseline />
+          <BrowserRouter>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </BrowserRouter>
+        </SnackbarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

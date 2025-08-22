@@ -68,6 +68,7 @@ urlpatterns = [
     path('api/faculty/', include(faculty_router.urls)),
     path('api/admin/', include(admin_router.urls)),
     path('api/analytics/', include('analytics.urls')),
+    path('api/reports/counts/', ReportCountsView.as_view(), name='report-counts'),
 
     # Auth & Profile routes
     path('api/register/', RegisterUserView.as_view(), name='register'),
