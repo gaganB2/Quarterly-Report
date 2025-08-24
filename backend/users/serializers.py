@@ -6,53 +6,54 @@ from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from .models import Profile
 from reports.models import Department
+import datetime
 
 class RegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for registering new staff members (Faculty, HOD, Admin).
+    This endpoint is intended for Admin use only.
+    """
     department = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(),
-        write_only=True,
-        required=False,
-        allow_null=True
+        queryset=Department.objects.all(), write_only=True, required=False, allow_null=True
     )
-    role = serializers.CharField(write_only=True)
+    role = serializers.ChoiceField(choices=Profile.Role.choices, write_only=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True, label="Confirm Password")
-    email = serializers.EmailField(required=True)
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
     prefix = serializers.ChoiceField(
-        choices=Profile.Prefix.choices, 
-        source='profile.prefix', 
-        required=False, 
-        allow_blank=True
+        choices=Profile.Prefix.choices, source='profile.prefix', required=False, allow_blank=True
     )
     middle_name = serializers.CharField(source='profile.middle_name', required=False, allow_blank=True)
     
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name', 'department', 'role', 'prefix', 'middle_name')
+        fields = (
+            'username', 'password', 'password2', 'email', 'first_name', 'last_name', 
+            'department', 'role', 'prefix', 'middle_name'
+        )
         extra_kwargs = {
-            'username': {'required': True}
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'email': {'required': True}
         }
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-
-        valid_roles = [choice[0] for choice in Profile.Role.choices]
-        if attrs['role'] not in valid_roles:
-            raise serializers.ValidationError({"role": f"Invalid role. Must be one of {valid_roles}."})
+            raise serializers.ValidationError({"password": "Password fields do not match."})
         
+        # FIX: Add validation to prevent duplicate emails.
         if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({"email": "A user with that email already exists."})
+            raise serializers.ValidationError({"email": "A user with this email already exists."})
 
         role = attrs.get('role')
         department = attrs.get('department')
-        if role in ['Faculty', 'HOD'] and not department:
+        if role in [Profile.Role.FACULTY, Profile.Role.HOD] and not department:
             raise serializers.ValidationError({
-                'department': 'A Department must be assigned for Faculty and HOD roles.'
+                'department': 'A department must be assigned for Faculty and HOD roles.'
             })
-
+        if role == Profile.Role.ADMIN and department:
+            raise serializers.ValidationError({
+                'department': 'An Admin cannot be assigned to a specific department.'
+            })
         return attrs
 
     def create(self, validated_data):
@@ -64,21 +65,72 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name']
             )
-
-            profile_data = validated_data.get('profile', {})
-            user.profile.role = validated_data['role']
-            user.profile.department = validated_data.get('department')
-            user.profile.prefix = profile_data.get('prefix', '')
-            user.profile.middle_name = profile_data.get('middle_name', '')
-            user.profile.save()
             
-            if validated_data['role'] == 'Admin':
+            profile = user.profile
+            profile.role = validated_data['role']
+            profile.department = validated_data.get('department')
+            
+            profile_data = validated_data.get('profile', {})
+            profile.prefix = profile_data.get('prefix', '')
+            profile.middle_name = profile_data.get('middle_name', '')
+            profile.save()
+            
+            if validated_data['role'] == Profile.Role.ADMIN:
                 user.is_staff = True
-                user.save()
+                user.is_superuser = True
+                user.save(update_fields=['is_staff', 'is_superuser'])
+
+            return user
+
+
+class StudentRegistrationSerializer(serializers.Serializer):
+    """
+    Serializer for public student registration.
+    """
+    admission_no = serializers.CharField(write_only=True, required=True, label="Admission/Roll No.")
+    year_of_admission = serializers.IntegerField(
+        write_only=True, required=True, min_value=2000, max_value=datetime.date.today().year
+    )
+    email = serializers.EmailField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all(), write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True, label="Confirm Password")
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields do not match."})
+        
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError({"email": "A user with this email already exists."})
+            
+        username = f"{attrs['admission_no']}-{attrs['year_of_admission']}"
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({"admission_no": "A student with this Admission No. and Year already exists."})
+        
+        attrs['username'] = username
+        return attrs
+
+    def create(self, validated_data):
+        with transaction.atomic():
+            user = User.objects.create_user(
+                username=validated_data['username'],
+                password=validated_data['password'],
+                email=validated_data['email'],
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name']
+            )
+            profile = user.profile
+            profile.role = Profile.Role.STUDENT
+            profile.department = validated_data.get('department')
+            profile.save()
+            
             return user
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """Serializer for the user's own profile view."""
     department = serializers.CharField(source='department.name', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     full_name = serializers.CharField(read_only=True)
@@ -86,52 +138,37 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        # --- MODIFIED: Added the new 'password_changed' field ---
         fields = ('username', 'full_name', 'email', 'department', 'role', 'password_changed')
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    """Read-only serializer for listing users in the admin panel."""
     department = serializers.CharField(source='profile.department.name', read_only=True, allow_null=True)
     role = serializers.CharField(source='profile.role', read_only=True)
     full_name = serializers.CharField(source='profile.full_name', read_only=True)
-    email = serializers.EmailField(read_only=True)
-    prefix = serializers.CharField(source='profile.prefix', read_only=True)
-    middle_name = serializers.CharField(source='profile.middle_name', read_only=True)
-
+    
     class Meta:
         model = User
-        fields = ['id', 'username', 'full_name', 'email', 'department', 'role', 'is_active', 'prefix', 'middle_name']
+        fields = ('id', 'username', 'full_name', 'email', 'department', 'role', 'is_active')
 
 
 class UserManagementSerializer(serializers.ModelSerializer):
+    """Serializer for updating user details in the admin panel."""
     department = serializers.PrimaryKeyRelatedField(
-        queryset=Department.objects.all(),
-        source='profile.department',
-        allow_null=True
+        queryset=Department.objects.all(), source='profile.department', allow_null=True, required=False
     )
-    role = serializers.ChoiceField(
-        choices=Profile.Role.choices,
-        source='profile.role'
-    )
+    role = serializers.ChoiceField(choices=Profile.Role.choices, source='profile.role')
     prefix = serializers.ChoiceField(
-        choices=Profile.Prefix.choices,
-        source='profile.prefix',
-        required=False, 
-        allow_blank=True
+        choices=Profile.Prefix.choices, source='profile.prefix', required=False, allow_blank=True
     )
-    middle_name = serializers.CharField(
-        source='profile.middle_name',
-        required=False,
-        allow_blank=True
-    )
+    middle_name = serializers.CharField(source='profile.middle_name', required=False, allow_blank=True)
 
     class Meta:
         model = User
         fields = (
-            'id', 'username', 'email', 'first_name', 'last_name', 
+            'id', 'email', 'first_name', 'last_name', 
             'department', 'role', 'is_active', 'prefix', 'middle_name'
         )
-        read_only_fields = ('username',)
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
@@ -141,13 +178,22 @@ class UserManagementSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.is_active = validated_data.get('is_active', instance.is_active)
-        instance.save()
+        
+        profile.department = profile_data.get('department', profile.department)
+        profile.role = profile_data.get('role', profile.role)
+        profile.prefix = profile_data.get('prefix', profile.prefix)
+        profile.middle_name = profile_data.get('middle_name', profile.middle_name)
+        
+        if profile.role == Profile.Role.ADMIN:
+            instance.is_staff = True
+            instance.is_superuser = True
+            profile.department = None
+        else:
+            instance.is_staff = False
+            instance.is_superuser = False
 
-        if profile_data:
-            profile.department = profile_data.get('department', profile.department)
-            profile.role = profile_data.get('role', profile.role)
-            profile.prefix = profile_data.get('prefix', profile.prefix)
-            profile.middle_name = profile_data.get('middle_name', profile.middle_name)
+        with transaction.atomic():
+            instance.save()
             profile.save()
 
         return instance

@@ -6,19 +6,14 @@ from .models import *
 
 # --- Base Filter for Common Fields ---
 class BaseReportFilter(filters.FilterSet):
-    """
-    A base filter class that includes common filters for most report models.
-    """
-    # Allows filtering by the faculty member who submitted the record.
     faculty = filters.ModelChoiceFilter(
         field_name='user',
         queryset=User.objects.all()
     )
-    # Allows filtering by faculty name (case-insensitive contains search)
     faculty_name = filters.CharFilter(field_name='faculty_name', lookup_expr='icontains')
 
     class Meta:
-        abstract = True # This makes it a base class that won't create a DB table
+        abstract = True
         fields = ['year', 'quarter', 'department', 'faculty']
 
 # --- Teacher Form Filters (T-Series) ---
@@ -135,8 +130,6 @@ class T7_1ProgramOrganizedFilter(BaseReportFilter):
         model = T7_1ProgramOrganized
 
 # --- Student Form Filters (S-Series) ---
-# Note: These have slightly different base fields
-
 class BaseStudentFilter(filters.FilterSet):
     department = filters.ModelChoiceFilter(queryset=Department.objects.all())
     submitted_by = filters.ModelChoiceFilter(

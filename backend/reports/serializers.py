@@ -3,58 +3,63 @@
 from rest_framework import serializers
 from .models import *
 
-# ==============================================================================
-# 1. BASE SERIALIZER (NEW)
-# ==============================================================================
-# This base class prevents repeating fields in every single serializer.
+# =============================================================================
+# 1. BASE SERIALIZER (MODIFIED)
+# =============================================================================
 
 class BaseReportSerializer(serializers.ModelSerializer):
     """
-    A base serializer that provides common, read-only fields for all report models.
+    A base serializer that provides common, read-only fields and enforces
+    data integrity for all report models.
     """
-    # Uses the `faculty_name` property from our refactored BaseReportModel.
     faculty_name = serializers.CharField(read_only=True)
-    # Efficiently gets the department name from the pre-fetched department object.
     department_name = serializers.CharField(source='department.name', read_only=True)
 
     class Meta:
         abstract = True
-        # Common fields to exclude from the writeable fields list below.
         common_read_only = ('id', 'user', 'department', 'created_at', 'updated_at', 'faculty_name', 'department_name')
         
     def create(self, validated_data):
-        # Automatically associate the report with the logged-in user and their department.
-        validated_data['user'] = self.context['request'].user
-        validated_data['department'] = self.context['request'].user.profile.department
+        """
+        Overrides the default create method to enforce business logic.
+        - Automatically associates the report with the logged-in user.
+        - FIX: Forcibly sets the report's department to the user's profile
+          department, preventing users from submitting reports for other departments.
+        """
+        user = self.context['request'].user
+        validated_data['user'] = user
+        
+        # This is the critical fix for the department spoofing flaw.
+        # It ignores any department sent in the request and uses the one from the user's profile.
+        validated_data['department'] = user.profile.department
+        
         return super().create(validated_data)
 
-# ==============================================================================
-# 2. DYNAMIC SERIALIZER GENERATION
-# ==============================================================================
-# This function creates serializer classes dynamically, making the code extremely DRY.
-# Instead of 40+ class definitions, we now have this single function.
+# =============================================================================
+# 2. DYNAMIC SERIALIZER FACTORY
+# =============================================================================
 
 def create_report_serializer(model_class):
     """
-    A factory function that dynamically creates a ModelSerializer for any given report model.
+    A factory function that dynamically creates a ModelSerializer class for any
+    given report model, inheriting from our secure BaseReportSerializer.
     """
     class ReportSerializer(BaseReportSerializer):
         class Meta(BaseReportSerializer.Meta):
             model = model_class
-            # Include all fields from the model.
-            fields = '__all__'
-            # Read-only fields are the common ones plus any specific to the base.
-            read_only_fields = BaseReportSerializer.Meta.common_read_only
+            # All fields from the model are included, except the common read-only ones.
+            exclude = BaseReportSerializer.Meta.common_read_only
 
     return ReportSerializer
 
-# ==============================================================================
-# 3. CREATE ALL SERIALIZERS
-# ==============================================================================
-# We now create all necessary serializer classes with one line of code each.
+# =============================================================================
+# 3. GENERATED SERIALIZERS
+# =============================================================================
+# Using the factory to generate all necessary serializers. This keeps the code DRY.
 
-T1_ResearchArticleSerializer = create_report_serializer(T1_ResearchArticle)
-T1_2ResearchArticleSerializer = create_report_serializer(T1_2ResearchArticle)
+# Teacher Serializers
+T1ResearchSerializer = create_report_serializer(T1_ResearchArticle)
+T1_2ResearchSerializer = create_report_serializer(T1_2ResearchArticle)
 T2_1WorkshopAttendanceSerializer = create_report_serializer(T2_1WorkshopAttendance)
 T2_2WorkshopOrganizedSerializer = create_report_serializer(T2_2WorkshopOrganized)
 T3_1BookPublicationSerializer = create_report_serializer(T3_1BookPublication)
@@ -91,8 +96,13 @@ S5_2VocationalTrainingSerializer = create_report_serializer(S5_2VocationalTraini
 S5_3SpecialMentionAchievementSerializer = create_report_serializer(S5_3SpecialMentionAchievement)
 S5_4StudentEntrepreneurshipSerializer = create_report_serializer(S5_4StudentEntrepreneurship)
 
-# Department Serializer (doesn't need the base class)
+# =============================================================================
+# 4. OTHER SERIALIZERS
+# =============================================================================
+
 class DepartmentSerializer(serializers.ModelSerializer):
+    """Serializer for the Department model."""
     class Meta:
         model = Department
         fields = ['id', 'name']
+

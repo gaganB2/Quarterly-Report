@@ -1,114 +1,97 @@
 # users/views.py
 
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from decouple import config
+
 from rest_framework import status, permissions, generics, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
-from .models import Profile
-from django.contrib.auth.password_validation import validate_password
-from rest_framework.decorators import action
-from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 
+from .models import Profile
 from .serializers import (
-    RegistrationSerializer, 
-    UserProfileSerializer, 
+    RegistrationSerializer,
+    StudentRegistrationSerializer,
+    UserProfileSerializer,
     UserDetailSerializer,
-    UserManagementSerializer 
+    UserManagementSerializer,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+# --- Helper Function for Sending Verification Email ---
+def send_verification_email(user):
+    """
+    Generates a verification token and sends an email to the user.
+    This is now a reusable function called by the registration views.
+    """
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    
+    # FIX: Use environment variable for the frontend URL
+    frontend_url = config('FRONTEND_BASE_URL', default='http://localhost:5173')
+    verification_url = f"{frontend_url}/verify-email/{uid}/{token}/"
+
+    email_subject = "Activate Your Quarterly Report Portal Account"
+    email_body = render_to_string('account_verification_email.txt', {
+        'user': user,
+        'verification_url': verification_url,
+    })
+    
+    send_mail(
+        email_subject,
+        email_body,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        fail_silently=False,
+    )
+
+# --- Authentication Views ---
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        return token
-
+    """Customizes the JWT response to include user profile data."""
     def validate(self, attrs):
         data = super().validate(attrs)
         serializer = UserProfileSerializer(self.user.profile)
         data['user'] = serializer.data
         return data
 
-
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+# --- Registration Views ---
 
 class RegisterUserView(generics.CreateAPIView):
+    """Admin-only endpoint for registering staff."""
     serializer_class = RegistrationSerializer
     permission_classes = [permissions.IsAdminUser]
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(
-            {"message": "User registered successfully."},
-            status=status.HTTP_201_CREATED
-        )
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # FIX: Trigger email sending from the view after user is created.
+        send_verification_email(user)
 
+class StudentRegisterView(generics.CreateAPIView):
+    """Public endpoint for student self-registration."""
+    serializer_class = StudentRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
 
-class GetUserProfileView(generics.RetrieveAPIView):
-    queryset = Profile.objects.all().select_related('user', 'department')
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def perform_create(self, serializer):
+        user = serializer.save()
+        # FIX: Trigger email sending from the view.
+        send_verification_email(user)
 
-    def get_object(self):
-        try:
-            return self.get_queryset().get(user=self.request.user)
-        except Profile.DoesNotExist:
-            raise NotFound(detail="Profile not found for this user.", code=404)
-
-
-class UserManagementViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for listing, retrieving, updating, and deactivating users.
-    Provides full CRUD capabilities for the admin dashboard.
-    """
-    queryset = User.objects.all().select_related('profile', 'profile__department').order_by('username')
-    permission_classes = [permissions.IsAdminUser]
-
-    def get_serializer_class(self):
-        if self.action in ['update', 'partial_update']:
-            return UserManagementSerializer
-        return UserDetailSerializer
-    
-    @action(detail=True, methods=['post'], url_path='set-password')
-    def set_password(self, request, pk=None):
-        """A custom action for an admin to reset a user's password."""
-        user = self.get_object()
-        password = request.data.get("password")
-
-        if not password:
-            return Response(
-                {"error": "Password not provided."}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
-        try:
-            validate_password(password, user)
-        except Exception as e:
-            return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        user.set_password(password)
-        user.save()
-        return Response({"status": "password set successfully"}, status=status.HTTP_200_OK)
-
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.is_active = False
-        instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+# --- User Lifecycle Views ---
 
 class VerifyEmailView(APIView):
-    """
-    An endpoint to verify an email address from a token.
-    """
+    """Endpoint to verify an email address from a token."""
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -124,18 +107,15 @@ class VerifyEmailView(APIView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
 
-        if user is not None and default_token_generator.check_token(user, token):
+        if user is not None and not user.is_active and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Email verified successfully. You can now log in."}, status=status.HTTP_200_OK)
+        
+        return Response({"error": "Invalid or expired verification link."}, status=status.HTTP_400_BAD_REQUEST)
 
 class SetInitialPasswordView(APIView):
-    """
-    An endpoint for a newly registered user to set their initial password.
-    This is only accessible if they are logged in.
-    """
+    """Endpoint for a newly verified user to set their initial password."""
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -143,24 +123,64 @@ class SetInitialPasswordView(APIView):
         new_password = request.data.get("new_password")
 
         if user.profile.password_changed:
-            return Response(
-                {"error": "Password has already been set."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "Password has already been set."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not new_password:
-            return Response(
-                {"error": "New password not provided."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            validate_password(new_password, user)
-        except Exception as e:
-            return Response({"error": list(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"error": "New password not provided."}, status=status.HTTP_400_BAD_REQUEST)
+        
         user.set_password(new_password)
         user.profile.password_changed = True
         user.save()
         user.profile.save()
 
-        return Response({"status": "password set successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Password set successfully."}, status=status.HTTP_200_OK)
+
+# --- Profile & Management Views ---
+
+class GetUserProfileView(generics.RetrieveAPIView):
+    """Retrieve the profile for the currently authenticated user."""
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        try:
+            return self.request.user.profile
+        except Profile.DoesNotExist:
+            raise NotFound("Profile not found for this user.")
+
+class UserManagementViewSet(viewsets.ModelViewSet):
+    """Admin viewset for full CRUD operations on users."""
+    queryset = User.objects.all().select_related('profile', 'profile__department').order_by('username')
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_serializer_class(self):
+        if self.action in ['update', 'partial_update', 'create']:
+            return UserManagementSerializer
+        return UserDetailSerializer
+    
+    def update(self, request, *args, **kwargs):
+        # FIX: Prevent admin from removing their own admin status
+        instance = self.get_object()
+        if instance == request.user:
+            role = request.data.get('role')
+            is_active = request.data.get('is_active')
+            if (role and role != Profile.Role.ADMIN) or (is_active is False):
+                return Response(
+                    {"error": "You cannot remove your own admin role or deactivate your own account."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        # FIX: Prevent admin from deactivating their own account
+        instance = self.get_object()
+        if instance == request.user:
+            return Response(
+                {"error": "You cannot deactivate your own account."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        # Soft delete by deactivating
+        instance.is_active = False
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

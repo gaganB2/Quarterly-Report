@@ -726,3 +726,276 @@ Traceback (most recent call last):
     raise SMTPAuthenticationError(code, resp)
 smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 41be03b00d2f7-b422bacbb74sm25305898a12.42 - gsmtp')
 ERROR 2025-08-12 19:10:28,534 basehttp 17180 23152 "POST /api/register/ HTTP/1.1" 500 201635
+ERROR 2025-08-22 20:15:29,271 log 12164 20624 Internal Server Error: /api/faculty/t3_2chapters/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (1, 2025, Q1, 2025-08-22 14:45:29.041469+00, 2025-08-22 14:45:29.041469+00, ct1, Co-Author, pd2, issn1, , 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 19, in create
+    self.perform_create(serializer)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 24, in perform_create
+    serializer.save()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py", line 29, in create
+    return super().create(validated_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 991, in create
+    instance = ModelClass._default_manager.create(**validated_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (1, 2025, Q1, 2025-08-22 14:45:29.041469+00, 2025-08-22 14:45:29.041469+00, ct1, Co-Author, pd2, issn1, , 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+
+ERROR 2025-08-22 20:15:35,495 log 12164 5900 Internal Server Error: /api/faculty/t3_2chapters/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (2, 2025, Q1, 2025-08-22 14:45:35.46037+00, 2025-08-22 14:45:35.46037+00, ct1, Co-Author, pd2, issn1, i1, 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 19, in create
+    self.perform_create(serializer)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 24, in perform_create
+    serializer.save()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py", line 29, in create
+    return super().create(validated_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 991, in create
+    instance = ModelClass._default_manager.create(**validated_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (2, 2025, Q1, 2025-08-22 14:45:35.46037+00, 2025-08-22 14:45:35.46037+00, ct1, Co-Author, pd2, issn1, i1, 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+
+ERROR 2025-08-22 20:15:45,488 log 12164 7212 Internal Server Error: /api/faculty/t3_2chapters/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.NotNullViolation: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (3, 2024, Q1, 2025-08-22 14:45:45.450282+00, 2025-08-22 14:45:45.450282+00, ct1, Co-Author, pd2, issn1, i1, 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 19, in create
+    self.perform_create(serializer)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 24, in perform_create
+    serializer.save()
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py", line 29, in create
+    return super().create(validated_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 991, in create
+    instance = ModelClass._default_manager.create(**validated_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\query.py", line 1868, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
+DETAIL:  Failing row contains (3, 2024, Q1, 2025-08-22 14:45:45.450282+00, 2025-08-22 14:45:45.450282+00, ct1, Co-Author, pd2, issn1, i1, 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
+

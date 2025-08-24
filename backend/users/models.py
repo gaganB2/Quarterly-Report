@@ -5,19 +5,17 @@ from django.db import models
 from reports.models import Department
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
-
 
 class Profile(models.Model):
+    """
+    Extends the default Django User model to include role, department,
+    and other application-specific details.
+    """
     class Role(models.TextChoices):
         FACULTY = 'Faculty', 'Faculty'
         HOD = 'HOD', 'HOD'
         ADMIN = 'Admin', 'Admin'
+        STUDENT = 'Student', 'Student'
     
     class Prefix(models.TextChoices):
         DR = 'Dr.', 'Dr.'
@@ -37,7 +35,7 @@ class Profile(models.Model):
 
     department = models.ForeignKey(
         Department, 
-        on_delete=models.PROTECT,
+        on_delete=models.PROTECT, # Prevent department deletion if profiles are linked
         null=True,
         blank=True,
         db_index=True
@@ -49,42 +47,31 @@ class Profile(models.Model):
         default=Role.FACULTY
     )
     
-    # --- ADDED: Field to track if the default password has been changed ---
+    # This flag will track if the user has set their password after verification.
     password_changed = models.BooleanField(default=False)
 
     @property
     def full_name(self):
-        """Assembles the full name from the available parts."""
+        """Assembles the full name from the available parts for display."""
         parts = [self.prefix, self.user.first_name, self.middle_name, self.user.last_name]
         return ' '.join(part for part in parts if part)
 
     def __str__(self):
-        return f"{self.user.username} - {self.get_role_display()}"
+        return f"{self.user.username} ({self.get_role_display()})"
 
 
 @receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
+def handle_user_creation(sender, instance, created, **kwargs):
+    """
+    A signal that runs after a User object is saved.
+    - If a new user is created, it creates a corresponding Profile.
+    - It also sets the user to inactive, pending email verification.
+    - Email sending logic has been REMOVED from here to prevent blocking.
+    """
     if created:
         Profile.objects.create(user=instance)
-        
+        # Deactivate user until they verify their email.
+        # The view that creates the user is now responsible for triggering the email.
         instance.is_active = False
-        instance.save()
+        instance.save(update_fields=['is_active'])
 
-        token = default_token_generator.make_token(instance)
-        uid = urlsafe_base64_encode(force_bytes(instance.pk))
-        
-        verification_url = f"http://localhost:5173/verify-email/{uid}/{token}/"
-
-        email_subject = "Activate Your Quarterly Report Portal Account"
-        email_body = render_to_string('account_verification_email.txt', {
-            'user': instance,
-            'verification_url': verification_url,
-        })
-        
-        send_mail(
-            email_subject,
-            email_body,
-            'gagannn.skyy@gmail.com',
-            [instance.email],
-            fail_silently=False,
-        )

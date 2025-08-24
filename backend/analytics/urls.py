@@ -1,12 +1,18 @@
 # analytics/urls.py
 
 from django.urls import path
-from .views import SubmissionsByDepartmentView
+from .views import DepartmentSubmissionsView, AnalyticsCategoriesView
 
 urlpatterns = [
     path(
-        'submissions-by-department/', 
-        SubmissionsByDepartmentView.as_view(), 
-        name='submissions-by-department'
+        'department-submissions/', 
+        DepartmentSubmissionsView.as_view(), 
+        name='department-submissions'
+    ),
+    path(
+        'categories/',
+        AnalyticsCategoriesView.as_view(),
+        name='analytics-categories'
     ),
 ]
+
