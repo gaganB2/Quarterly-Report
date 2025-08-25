@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import apiClient from "../api/axios";
 
 /**
- * A custom hook to manage form state, submission, and feedback for all T-forms.
+ * A custom hook to manage form state, submission, and feedback for all report forms.
  * @param {object} params
- * @param {string} params.endpoint - The base API endpoint for the form (e.g., "/api/faculty/t1research/").
+ * @param {string} params.endpoint - The base API endpoint for the form.
  * @param {object} params.initialState - The initial state object for the form's fields.
  * @param {object} params.editData - The data for the item being edited, if any.
  * @param {function} params.onSuccess - The callback function to execute after a successful submission.
@@ -24,7 +24,6 @@ export const useFormManager = ({
 }) => {
   const isEditMode = Boolean(editData?.id);
 
-  // Unified state for all form fields, including quarter and year
   const [formData, setFormData] = useState({
     ...initialState,
     quarter: session || "Q1",
@@ -41,26 +40,17 @@ export const useFormManager = ({
   // Effect to pre-fill form data when in edit mode
   useEffect(() => {
     if (isEditMode && editData) {
-      // Separate quarter/year from the rest of the fields
-      const { quarter, year, ...rest } = editData;
-      
-      // Create a new state object ensuring all keys from initialState are present
-      const populatedState = { ...initialState };
-      for (const key in rest) {
-        if (key in populatedState) {
-          populatedState[key] = rest[key] || initialState[key];
-        }
-      }
-
+      // FIX: This is the corrected, robust logic for pre-filling the form.
+      // It correctly spreads the initial state to ensure all fields are present,
+      // then spreads the editData over it to pre-fill the form with saved values.
       setFormData({
-        ...populatedState,
-        quarter: quarter,
-        year: year,
+        ...initialState,
+        ...editData,
       });
     }
   }, [editData, isEditMode, initialState]);
 
-  // Generic handler for all input changes (text, select, checkbox)
+  // Generic handler for all input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -69,12 +59,11 @@ export const useFormManager = ({
     }));
   };
 
-  // Generic handler for form submission (Create or Update)
+  // Generic handler for form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    // The endpoint already includes the base path
     const url = isEditMode ? `${endpoint}${editData.id}/` : endpoint;
     const method = isEditMode ? "put" : "post";
 
@@ -92,12 +81,11 @@ export const useFormManager = ({
       let msg = "Submission failed. Please check the fields.";
       const data = err.response?.data;
 
-      // Build a user-friendly error message from the API response
       if (data && typeof data === "object") {
         msg = Object.entries(data)
           .map(([field, errors]) => {
             const errorText = Array.isArray(errors) ? errors.join(" ") : errors;
-            return `${field}: ${errorText}`;
+            return `${field.replace(/_/g, " ")}: ${errorText}`;
           })
           .join(" | ");
       } else if (Array.isArray(data)) {
@@ -117,7 +105,7 @@ export const useFormManager = ({
   return {
     isEditMode,
     formData,
-    setFormData, // Exposing this for fields like quarter/year that have dedicated controls
+    setFormData,
     submitting,
     snackbar,
     handleChange,

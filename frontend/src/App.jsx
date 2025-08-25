@@ -16,15 +16,25 @@ import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import ForcePasswordChangePage from './pages/ForcePasswordChangePage';
 
+// NEW: Student Pages
+import StudentLoginPage from './pages/StudentLoginPage';
+import StudentSignupPage from './pages/StudentSignupPage';
+import StudentDashboard from './pages/StudentDashboard';
+
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
 import AdminRoute from './routes/AdminRoute';
+// NEW: Student Route Guard
+import StudentRoute from './routes/StudentRoute';
 
 export default function App() {
   const location = useLocation();
-  // The Topbar will now be hidden on both the Welcome and Login pages.
-  const isPublicPage = location.pathname === '/' || location.pathname === '/login';
+  // The Topbar is now hidden on all public auth pages.
+  const isPublicAuthPage = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/login/student' || location.pathname === '/signup' ;
+  const isEmailVerification = location.pathname.startsWith('/verify-email');
+  const isPublicPage = isPublicAuthPage || isEmailVerification;
+
 
   return (
     <Box>
@@ -40,6 +50,17 @@ export default function App() {
             path="/login"
             element={<PublicRoute><LoginPage /></PublicRoute>}
           />
+
+          {/* NEW: Public Student Routes */}
+          <Route
+            path="/login/student"
+            element={<PublicRoute><StudentLoginPage /></PublicRoute>}
+          />
+          <Route
+            path="/signup"
+            element={<PublicRoute><StudentSignupPage /></PublicRoute>}
+          />
+          {/* Email verification can be public */}
           <Route 
             path="/verify-email/:uid/:token"
             element={<PublicRoute><EmailVerificationPage /></PublicRoute>} 
@@ -68,6 +89,13 @@ export default function App() {
             path="/admin/analytics"
             element={<AdminRoute><AnalyticsDashboard /></AdminRoute>}
           />
+          
+          {/* NEW: Student Routes */}
+          <Route
+            path="/student/dashboard"
+            element={<StudentRoute><StudentDashboard /></StudentRoute>}
+          />
+
 
           {/* --- Catch-all redirects to the root --- */}
           <Route path="*" element={<Navigate to="/" replace />} />

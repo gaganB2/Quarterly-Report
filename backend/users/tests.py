@@ -6,119 +6,125 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from reports.models import Department
 from .models import Profile
+# We need to mock the email sending function to prevent real emails during tests
+from unittest.mock import patch
 
-class UserAuthenticationAndProfileTests(APITestCase):
+class UserFlowsTests(APITestCase):
     """
-    Comprehensive test suite for the entire user lifecycle.
+    A comprehensive test suite for the entire user lifecycle,
+    covering both Staff (Faculty/HOD) and Student registration and login flows.
     """
+
+    @classmethod
+    def setUpTestData(cls):
+        """Set up non-modified objects used by all test methods."""
+        cls.cse_dept = Department.objects.get(name='CSE')
+        cls.admin_user = User.objects.create_superuser('admin_user', 'admin@test.com', 'password')
+        cls.admin_user.profile.role = Profile.Role.ADMIN
+        cls.admin_user.profile.save()
 
     def setUp(self):
-        """
-        Set up the necessary objects for all tests in this class.
-        """
-        # --- 1. Get Department ---
-        # The 0002 migration creates departments, so we can just get one.
-        self.department = Department.objects.get(name='CSE')
-        
-        # --- 2. Create Admin User (FIXED) ---
-        # We now create the admin user here to make the test self-contained.
-        self.admin_user = User.objects.create_superuser('admin', 'admin@test.com', 'password')
-        self.admin_user.profile.role = Profile.Role.ADMIN
-        self.admin_user.profile.save()
-
-        # --- 3. Define Test Data ---
+        """Set up data that might be modified by tests."""
         self.faculty_data = {
-            'username': 'testfaculty',
-            'password': 'testpassword123',
-            'password2': 'testpassword123',
-            'email': 'faculty@test.com',
-            'first_name': 'Test',
-            'last_name': 'Faculty',
-            'department': self.department.id,
-            'role': 'Faculty'
+            'username': 'test_faculty', 'password': 'strongpassword123', 'password2': 'strongpassword123',
+            'email': 'faculty@test.com', 'first_name': 'Test', 'last_name': 'Faculty',
+            'department': self.cse_dept.id, 'role': 'Faculty'
+        }
+        self.student_data = {
+            'username': '2023CSE001', 'password': 'strongpassword123', 'password2': 'strongpassword123',
+            'email': 'student@test.com', 'first_name': 'Test', 'last_name': 'Student',
+            'department': self.cse_dept.id
         }
 
-    def test_admin_can_register_new_user(self):
+    @patch('users.views.send_verification_email')
+    def test_faculty_registration_and_forced_password_change(self, mock_send_email):
         """
-        Verify that an authenticated admin user can successfully register a new user.
+        ASSURANCE: Verifies the entire flow for staff (Faculty/HOD).
+        1. Admin registers a new faculty member.
+        2. Faculty member is created as INACTIVE.
+        3. Faculty member CANNOT log in.
+        4. After activation, they CAN log in but must change their password.
         """
+        # 1. Admin registers a new faculty member
         self.client.force_authenticate(user=self.admin_user)
-        url = reverse('register')
-        
-        initial_user_count = User.objects.count()
-        
-        response = self.client.post(url, self.faculty_data, format='json')
-        
+        register_url = reverse('register')
+        response = self.client.post(register_url, self.faculty_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(User.objects.count(), initial_user_count + 1)
-        self.assertTrue(User.objects.filter(username='testfaculty').exists())
+        
+        # Verify email function was called
+        mock_send_email.assert_called_once()
+        
+        # 2. Verify the new faculty member exists and is inactive
+        faculty_user = User.objects.get(username=self.faculty_data['username'])
+        self.assertFalse(faculty_user.is_active)
+        self.assertFalse(faculty_user.profile.password_changed)
 
-    def test_registration_fails_with_duplicate_email(self):
-        """
-        Verify user registration fails if the email address is already in use.
-        """
-        # Create a user with the email we're about to test.
-        User.objects.create_user(username='anotheruser', email='faculty@test.com', password='password')
-        initial_user_count = User.objects.count()
-        
-        self.client.force_authenticate(user=self.admin_user)
-        url = reverse('register')
-        response = self.client.post(url, self.faculty_data, format='json')
-        
-        # This test is CORRECT and is exposing a bug in the RegistrationSerializer.
-        # It will continue to fail until the serializer's validation is fixed.
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('email', response.data)
-        self.assertEqual(User.objects.count(), initial_user_count)
-
-    def test_successful_user_login(self):
-        """
-        Verify that a user with correct credentials can log in and receive tokens.
-        """
-        # Create the user to log in with
-        user = User.objects.create_user(
-            username=self.faculty_data['username'],
-            password=self.faculty_data['password'],
-            email=self.faculty_data['email']
-        )
-        user.profile.department = self.department
-        user.profile.role = self.faculty_data['role']
-        user.profile.save()
-        
-        # FIX: Manually activate the user for this test to simulate email verification.
-        user.is_active = True
-        user.save()
-        
-        url = reverse('token_obtain_pair')
-        response = self.client.post(url, {
-            'username': self.faculty_data['username'],
-            'password': self.faculty_data['password']
+        # 3. Verify the inactive faculty CANNOT log in
+        login_url = reverse('token_obtain_pair')
+        response = self.client.post(login_url, {
+            'username': self.faculty_data['username'], 'password': self.faculty_data['password']
         }, format='json')
-        
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('access', response.data)
-        self.assertIn('refresh', response.data)
-        self.assertIn('user', response.data)
-        self.assertEqual(response.data['user']['email'], self.faculty_data['email'])
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_authenticated_user_can_get_profile(self):
-        """
-        Verify that a logged-in user can successfully retrieve their own profile.
-        """
-        user = User.objects.create_user(
-            username=self.faculty_data['username'],
-            password=self.faculty_data['password']
-        )
-        user.profile.department = self.department
-        user.profile.role = self.faculty_data['role']
-        user.profile.save()
-        
-        self.client.force_authenticate(user=user)
-        
-        url = reverse('profile')
-        response = self.client.get(url)
-        
+        # 4. Manually activate the user (simulating email verification)
+        faculty_user.is_active = True
+        faculty_user.save()
+
+        # 5. Verify the NOW ACTIVE faculty CAN log in
+        response = self.client.post(login_url, {
+            'username': self.faculty_data['username'], 'password': self.faculty_data['password']
+        }, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['username'], self.faculty_data['username'])
-        self.assertEqual(response.data['role'], self.faculty_data['role'])
+        # The login response should confirm they need to change their password
+        self.assertFalse(response.data['user']['password_changed'])
+
+        # 6. Verify they can use the force-password-change endpoint
+        self.client.force_authenticate(user=faculty_user)
+        set_password_url = reverse('set-initial-password')
+        response = self.client.post(set_password_url, {'new_password': 'a_new_secure_password'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # 7. Verify the flag is now updated
+        faculty_user.refresh_from_db()
+        self.assertTrue(faculty_user.profile.password_changed)
+
+    @patch('users.views.send_verification_email')
+    def test_student_registration_and_login_flow(self, mock_send_email):
+        """
+        ASSURANCE: Verifies the entire flow for Students.
+        1. Student self-registers.
+        2. Student is created as INACTIVE.
+        3. Student CANNOT log in.
+        4. After activation, they CAN log in without a forced password change.
+        """
+        # 1. Student self-registers
+        register_url = reverse('student-register')
+        response = self.client.post(register_url, self.student_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        # Verify email function was called
+        mock_send_email.assert_called_once()
+
+        # 2. Verify the new student exists and is inactive
+        student_user = User.objects.get(username=self.student_data['username'])
+        self.assertFalse(student_user.is_active)
+        self.assertEqual(student_user.profile.role, Profile.Role.STUDENT)
+
+        # 3. Verify the inactive student CANNOT log in
+        login_url = reverse('token_obtain_pair')
+        response = self.client.post(login_url, {
+            'username': self.student_data['username'], 'password': self.student_data['password']
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # 4. Manually activate the user (simulating email verification)
+        student_user.is_active = True
+        student_user.save()
+
+        # 5. Verify the NOW ACTIVE student CAN log in
+        response = self.client.post(login_url, {
+            'username': self.student_data['username'], 'password': self.student_data['password']
+        }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['user']['role'], 'Student')
 

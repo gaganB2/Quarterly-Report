@@ -14,7 +14,7 @@ import {
   DialogActions,
   Button,
   TableContainer,
-  Typography, // Import Typography for the empty state message
+  Typography,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 
@@ -39,8 +39,6 @@ export default function GenericList({
     setTarget(null);
   };
 
-  // --- ADD THIS ROBUSTNESS CHECK ---
-  // If data is not an array, don't try to render the table.
   if (!Array.isArray(data)) {
     console.error("GenericList received non-array data:", data);
     return (
@@ -68,7 +66,8 @@ export default function GenericList({
           </TableHead>
           <TableBody>
             {data.length === 0 ? (
-              <TableRow>
+              // FIX: Added a static key to the empty state TableRow
+              <TableRow key="no-data-row">
                 <TableCell colSpan={fields.length + 1} align="center">
                   <Typography sx={{ p: 2, color: 'text.secondary' }}>No entries found.</Typography>
                 </TableCell>

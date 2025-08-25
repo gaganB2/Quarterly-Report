@@ -17,20 +17,14 @@ import {
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
 
-// +++ Update component to accept formCounts and countsLoading props +++
-export default function FormTable({ filters, formCounts, countsLoading }) {
-  const visibleSections = formSections;
-  const [expandedRows, setExpandedRows] = useState([]);
+// FIX: The component now accepts a `visibleSections` prop.
+export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp }) {
+  // Use the passed-in sections if they exist, otherwise default to all sections.
+  const visibleSections = visibleSectionsProp || formSections;
+  const [activeForm, setActiveForm] = useState(null);
 
   const handleToggleActive = (formCode) => {
-    setExpandedRows((prevExpanded) => {
-      const isCurrentlyExpanded = prevExpanded.includes(formCode);
-      if (isCurrentlyExpanded) {
-        return prevExpanded.filter((code) => code !== formCode);
-      } else {
-        return [...prevExpanded, formCode];
-      }
-    });
+    setActiveForm(prev => (prev === formCode ? null : formCode));
   };
 
   return (
@@ -51,9 +45,7 @@ export default function FormTable({ filters, formCounts, countsLoading }) {
           </TableHead>
           <TableBody>
             {visibleSections.map((f, i) => {
-              const isActive = expandedRows.includes(f.code);
-              // +++ Get the count for this specific form from the formCounts object +++
-              // Default to null if not found.
+              const isActive = activeForm === f.code;
               const count = formCounts[f.code] ?? null;
 
               return (
@@ -64,7 +56,6 @@ export default function FormTable({ filters, formCounts, countsLoading }) {
                   filters={filters}
                   isActive={isActive}
                   onToggleActive={handleToggleActive}
-                  // +++ Pass the count and loading state down to the FormRow +++
                   count={count}
                   isLoadingCount={countsLoading}
                 />

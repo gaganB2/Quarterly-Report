@@ -999,3 +999,207 @@ Traceback (most recent call last):
 django.db.utils.IntegrityError: null value in column "department_id" of relation "reports_t3_2chapterpublication" violates not-null constraint
 DETAIL:  Failing row contains (3, 2024, Q1, 2025-08-22 14:45:45.450282+00, 2025-08-22 14:45:45.450282+00, ct1, Co-Author, pd2, issn1, i1, 2025, National, https://drive.google.com/file/d/19_StdCCOvbD3LqHP9ZpMFr5Oe3pCMDK..., null, 1).
 
+ERROR 2025-08-25 14:10:46,171 log Internal Server Error: /api/data/s2_1articles/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1193, in get_field_names
+    assert field_name not in self._declared_fields, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Cannot both declare the field 'faculty_name' and include it in the ReportSerializer 'exclude' option. Remove the field or, if inherited from a parent serializer, disable with `faculty_name = None`.
+ERROR 2025-08-25 14:14:59,664 log Internal Server Error: /api/data/s2_1articles/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1193, in get_field_names
+    assert field_name not in self._declared_fields, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Cannot both declare the field 'department_name' and include it in the ReportSerializer 'exclude' option. Remove the field or, if inherited from a parent serializer, disable with `department_name = None`.
+ERROR 2025-08-25 14:16:05,629 log Internal Server Error: /api/data/s2_1articles/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1193, in get_field_names
+    assert field_name not in self._declared_fields, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Cannot both declare the field 'department_name' and include it in the ReportSerializer 'exclude' option. Remove the field or, if inherited from a parent serializer, disable with `department_name = None`.
+ERROR 2025-08-25 14:18:40,294 log Internal Server Error: /api/data/s2_1articles/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\mixins.py", line 18, in create
+    serializer.is_valid(raise_exception=True)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 444, in run_validation
+    value = self.to_internal_value(data)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 497, in to_internal_value
+    for field in fields:
+                 ^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 380, in _writable_fields
+    for field in self.fields.values():
+                 ^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 374, in fields
+    for key, value in self.get_fields().items():
+                      ^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1081, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\serializers.py", line 1193, in get_field_names
+    assert field_name not in self._declared_fields, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Cannot both declare the field 'student_name' and include it in the ReportSerializer 'exclude' option. Remove the field or, if inherited from a parent serializer, disable with `student_name = None`.

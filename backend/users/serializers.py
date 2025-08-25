@@ -6,12 +6,10 @@ from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from .models import Profile
 from reports.models import Department
-import datetime
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """
     Serializer for registering new staff members (Faculty, HOD, Admin).
-    This endpoint is intended for Admin use only.
     """
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all(), write_only=True, required=False, allow_null=True
@@ -40,20 +38,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields do not match."})
         
-        # FIX: Add validation to prevent duplicate emails.
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "A user with this email already exists."})
 
         role = attrs.get('role')
         department = attrs.get('department')
         if role in [Profile.Role.FACULTY, Profile.Role.HOD] and not department:
-            raise serializers.ValidationError({
-                'department': 'A department must be assigned for Faculty and HOD roles.'
-            })
+            raise serializers.ValidationError({'department': 'A department must be assigned for Faculty and HOD roles.'})
         if role == Profile.Role.ADMIN and department:
-            raise serializers.ValidationError({
-                'department': 'An Admin cannot be assigned to a specific department.'
-            })
+            raise serializers.ValidationError({'department': 'An Admin cannot be assigned to a specific department.'})
         return attrs
 
     def create(self, validated_data):
@@ -79,24 +72,29 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 user.is_staff = True
                 user.is_superuser = True
                 user.save(update_fields=['is_staff', 'is_superuser'])
-
             return user
 
 
-class StudentRegistrationSerializer(serializers.Serializer):
+class StudentRegistrationSerializer(serializers.ModelSerializer):
     """
     Serializer for public student registration.
+    FIX: This now correctly uses username for Admission/Roll No.
     """
-    admission_no = serializers.CharField(write_only=True, required=True, label="Admission/Roll No.")
-    year_of_admission = serializers.IntegerField(
-        write_only=True, required=True, min_value=2000, max_value=datetime.date.today().year
+    department = serializers.PrimaryKeyRelatedField(
+        queryset=Department.objects.all(), write_only=True, required=True
     )
-    email = serializers.EmailField(required=True)
-    first_name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all(), write_only=True, required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True, label="Confirm Password")
+
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name', 'department')
+        extra_kwargs = {
+            'username': {'label': 'Admission/Roll No.'},
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'email': {'required': True},
+        }
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -104,12 +102,10 @@ class StudentRegistrationSerializer(serializers.Serializer):
         
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "A user with this email already exists."})
-            
-        username = f"{attrs['admission_no']}-{attrs['year_of_admission']}"
-        if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError({"admission_no": "A student with this Admission No. and Year already exists."})
         
-        attrs['username'] = username
+        if User.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError({"username": "A user with this Admission/Roll No. already exists."})
+
         return attrs
 
     def create(self, validated_data):
@@ -130,7 +126,6 @@ class StudentRegistrationSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """Serializer for the user's own profile view."""
     department = serializers.CharField(source='department.name', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     full_name = serializers.CharField(read_only=True)
@@ -142,7 +137,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    """Read-only serializer for listing users in the admin panel."""
     department = serializers.CharField(source='profile.department.name', read_only=True, allow_null=True)
     role = serializers.CharField(source='profile.role', read_only=True)
     full_name = serializers.CharField(source='profile.full_name', read_only=True)
@@ -153,7 +147,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserManagementSerializer(serializers.ModelSerializer):
-    """Serializer for updating user details in the admin panel."""
     department = serializers.PrimaryKeyRelatedField(
         queryset=Department.objects.all(), source='profile.department', allow_null=True, required=False
     )

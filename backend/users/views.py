@@ -26,16 +26,10 @@ from .serializers import (
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-# --- Helper Function for Sending Verification Email ---
 def send_verification_email(user):
-    """
-    Generates a verification token and sends an email to the user.
-    This is now a reusable function called by the registration views.
-    """
     token = default_token_generator.make_token(user)
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     
-    # FIX: Use environment variable for the frontend URL
     frontend_url = config('FRONTEND_BASE_URL', default='http://localhost:5173')
     verification_url = f"{frontend_url}/verify-email/{uid}/{token}/"
 
@@ -53,10 +47,7 @@ def send_verification_email(user):
         fail_silently=False,
     )
 
-# --- Authentication Views ---
-
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Customizes the JWT response to include user profile data."""
     def validate(self, attrs):
         data = super().validate(attrs)
         serializer = UserProfileSerializer(self.user.profile)
@@ -66,32 +57,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-# --- Registration Views ---
-
 class RegisterUserView(generics.CreateAPIView):
-    """Admin-only endpoint for registering staff."""
     serializer_class = RegistrationSerializer
     permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         user = serializer.save()
-        # FIX: Trigger email sending from the view after user is created.
         send_verification_email(user)
 
 class StudentRegisterView(generics.CreateAPIView):
-    """Public endpoint for student self-registration."""
     serializer_class = StudentRegistrationSerializer
     permission_classes = [permissions.AllowAny]
 
     def perform_create(self, serializer):
         user = serializer.save()
-        # FIX: Trigger email sending from the view.
         send_verification_email(user)
 
-# --- User Lifecycle Views ---
-
 class VerifyEmailView(APIView):
-    """Endpoint to verify an email address from a token."""
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -115,7 +97,6 @@ class VerifyEmailView(APIView):
         return Response({"error": "Invalid or expired verification link."}, status=status.HTTP_400_BAD_REQUEST)
 
 class SetInitialPasswordView(APIView):
-    """Endpoint for a newly verified user to set their initial password."""
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
@@ -135,10 +116,7 @@ class SetInitialPasswordView(APIView):
 
         return Response({"message": "Password set successfully."}, status=status.HTTP_200_OK)
 
-# --- Profile & Management Views ---
-
 class GetUserProfileView(generics.RetrieveAPIView):
-    """Retrieve the profile for the currently authenticated user."""
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -149,7 +127,6 @@ class GetUserProfileView(generics.RetrieveAPIView):
             raise NotFound("Profile not found for this user.")
 
 class UserManagementViewSet(viewsets.ModelViewSet):
-    """Admin viewset for full CRUD operations on users."""
     queryset = User.objects.all().select_related('profile', 'profile__department').order_by('username')
     permission_classes = [permissions.IsAdminUser]
 
@@ -159,7 +136,6 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         return UserDetailSerializer
     
     def update(self, request, *args, **kwargs):
-        # FIX: Prevent admin from removing their own admin status
         instance = self.get_object()
         if instance == request.user:
             role = request.data.get('role')
@@ -172,15 +148,12 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        # FIX: Prevent admin from deactivating their own account
         instance = self.get_object()
         if instance == request.user:
             return Response(
                 {"error": "You cannot deactivate your own account."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        # Soft delete by deactivating
         instance.is_active = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-

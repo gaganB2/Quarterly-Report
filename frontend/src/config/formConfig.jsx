@@ -21,6 +21,8 @@ import T6_3Form from "../components/T6_3Form";
 import T6_4Form from "../components/T6_4Form";
 import T6_5Form from "../components/T6_5Form";
 import T7_1Form from "../components/T7_1Form";
+import S2_1Form from "../components/S2_1Form";
+import S2_2Form from "../components/S2_2Form"; 
 
 
 export const formSections = [
@@ -64,8 +66,8 @@ export const formSections = [
   { code: "T6.5", title: "Hackathons / Technical Competitions" },
   { code: "T7.1", title: "Startups / Entrepreneurship Initiatives" },
   { code: "S1.1", title: "Extension Activities / Social Responsibility" },
-  { code: "S2.1", title: "Sports Achievements" },
-  { code: "S2.2", title: "Cultural Achievements" },
+  { code: "S2.1", title: "Details of the Published Research Articles/Papers in Journals/Periodicals by the students" },
+  { code: "S2.2", title: "Details of the Research Paper Presented by the Students in a conferences" },
   { code: "S2.3", title: "Student Awards / Scholarships" },
   { code: "S3.1", title: "Placements & Higher Studies" },
   { code: "S3.2", title: "Internships (Students)" },
@@ -726,6 +728,89 @@ export const formConfig = {
             ""
           ),
       },
+    ],
+  },
+  "S2.1": {
+    endpoint: "/api/data/s2_1articles/",
+    FormComponent: S2_1Form,
+    listFields: [
+      { label: "Title", key: "title" },
+      { label: "Author Type", key: "author_type" },
+      { label: "Internal Authors", key: "internal_authors" },
+      { label: "External Authors", key: "external_authors" },
+      { label: "Journal Name", key: "journal_name" },
+      { label: "Volume", key: "volume" },
+      { label: "Issue", key: "issue" },
+      { label: "Page No", key: "page_no" },
+      { label: "Month & Year", key: "publication_month_year" },
+      { label: "ISSN", key: "issn_number" },
+      { label: "Impact Factor", key: "impact_factor" },
+      { label: "Publisher", key: "publisher" },
+      {
+        label: "Web of Science",
+        key: "indexing_wos",
+        render: (item) => (item.indexing_wos ? "✔︎" : "—"),
+      },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (item) => (item.indexing_scopus ? "✔︎" : "—"),
+      },
+      {
+        label: "UGC Care",
+        key: "indexing_ugc",
+        render: (item) => (item.indexing_ugc ? "✔︎" : "—"),
+      },
+      { label: "Other Indexing", key: "indexing_other" },
+      { label: "DOI", key: "doi" },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : (
+            "N/A"
+          ),
+      },
+    ],
+  },
+  "S2.2": {
+    endpoint: "/api/data/s2_2conferences/",
+    FormComponent: S2_2Form,
+    listFields: [
+      { label: "Title", key: "title" },
+      { label: "Author Type", key: "author_type" },
+      { label: "Internal Authors", key: "internal_authors" },
+      { label: "External Authors", key: "external_authors" },
+      { label: "Conference Details", key: "conference_details" },
+      { label: "ISBN/ISSN", key: "isbn_issn" },
+      { label: "Publisher", key: "publisher" },
+      { label: "Page No", key: "page_no" },
+      { label: "Month & Year", key: "publication_month_year" },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (item) => (item.indexing_scopus ? "✔︎" : "—"),
+      },
+      { label: "Other Indexing", key: "indexing_other" },
+      { label: "Conference Status", key: "conference_status" },
+      { label: "Conference Mode", key: "conference_mode" },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : (
+            "N/A"
+          ),
+      },
+      { label: "Department", key: "department_name" },
     ],
   },
   // …other configs remain unchanged

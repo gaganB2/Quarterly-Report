@@ -7,10 +7,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 class Profile(models.Model):
-    """
-    Extends the default Django User model to include role, department,
-    and other application-specific details.
-    """
     class Role(models.TextChoices):
         FACULTY = 'Faculty', 'Faculty'
         HOD = 'HOD', 'HOD'
@@ -35,7 +31,7 @@ class Profile(models.Model):
 
     department = models.ForeignKey(
         Department, 
-        on_delete=models.PROTECT, # Prevent department deletion if profiles are linked
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         db_index=True
@@ -47,12 +43,10 @@ class Profile(models.Model):
         default=Role.FACULTY
     )
     
-    # This flag will track if the user has set their password after verification.
     password_changed = models.BooleanField(default=False)
 
     @property
     def full_name(self):
-        """Assembles the full name from the available parts for display."""
         parts = [self.prefix, self.user.first_name, self.middle_name, self.user.last_name]
         return ' '.join(part for part in parts if part)
 
@@ -62,16 +56,8 @@ class Profile(models.Model):
 
 @receiver(post_save, sender=User)
 def handle_user_creation(sender, instance, created, **kwargs):
-    """
-    A signal that runs after a User object is saved.
-    - If a new user is created, it creates a corresponding Profile.
-    - It also sets the user to inactive, pending email verification.
-    - Email sending logic has been REMOVED from here to prevent blocking.
-    """
     if created:
         Profile.objects.create(user=instance)
-        # Deactivate user until they verify their email.
-        # The view that creates the user is now responsible for triggering the email.
         instance.is_active = False
         instance.save(update_fields=['is_active'])
 

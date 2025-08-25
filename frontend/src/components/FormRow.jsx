@@ -15,10 +15,8 @@ import {
   Typography,
   Chip,
   useTheme,
-  alpha,
   CircularProgress,
 } from "@mui/material";
-// +++ THIS IS THE CORRECTED IMPORT PATH +++
 import CloseIcon from "@mui/icons-material/Close";
 import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
@@ -27,7 +25,7 @@ import GenericForm from "./GenericForm";
 
 const PREVIEW_COLUMN_LIMIT = 5;
 
-// Helper component to display filters (Unchanged)
+// Helper component to display filters
 const FilterDisplay = ({ filters }) => {
   const activeFilters = Object.entries(filters)
     .filter(([, value]) => value)
@@ -151,8 +149,9 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     );
   };
 
+  // FIX: Added unique keys to both TableRow components
   return (
-    <>
+    <React.Fragment key={form.code}>
       <TableRow
         hover
         sx={{
@@ -220,6 +219,6 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
           />
         </Box>
       </Dialog>
-    </>
+    </React.Fragment>
   );
 }
