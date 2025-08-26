@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import {
   Logout, AdminPanelSettings, Business as BusinessIcon, Dashboard,
-  Settings, KeyboardArrowDown, Menu as MenuIcon, Home
+  Home, KeyboardArrowDown, Menu as MenuIcon, Assessment, // Changed Icon
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -27,9 +27,6 @@ function stringToColor(string) {
   return color;
 }
 
-/**
- * A professional-grade, responsive Topbar with full light/dark mode support.
- */
 export default function Topbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -39,24 +36,10 @@ export default function Topbar() {
 
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
-  const [isScrolled, setScrolled] = useState(false);
 
   const isUserMenuOpen = Boolean(userMenuAnchor);
   const isMobileMenuOpen = Boolean(mobileMenuAnchor);
-  const isWelcomePage = location.pathname === '/';
-  
-  // Determine if the AppBar should be transparent
-  const isTransparent = isWelcomePage && !isScrolled;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // --- Handlers ---
   const handleOpenUserMenu = (event) => setUserMenuAnchor(event.currentTarget);
   const handleCloseUserMenu = () => setUserMenuAnchor(null);
   const handleOpenMobileMenu = (event) => setMobileMenuAnchor(event.currentTarget);
@@ -75,32 +58,26 @@ export default function Topbar() {
     navigate('/');
   };
 
-  // --- Menu Item Components (for reusability) ---
+  // --- Reusable Menu Item Components for cleaner code ---
   const AdminMenuItems = () => (
     <>
-      <MenuItem onClick={() => handleNavigate('/home')}>
-        <ListItemIcon><Dashboard fontSize="small" /></ListItemIcon>
-        Submissions View
-      </MenuItem>
-      <MenuItem onClick={() => handleNavigate('/admin/users')}>
-        <ListItemIcon><AdminPanelSettings fontSize="small" /></ListItemIcon>
-        User Management
-      </MenuItem>
-      <MenuItem onClick={() => handleNavigate('/admin/departments')}>
-        <ListItemIcon><BusinessIcon fontSize="small" /></ListItemIcon>
-        Departments
-      </MenuItem>
-      <MenuItem onClick={() => handleNavigate('/admin/analytics')}>
-        <ListItemIcon><AdminPanelSettings fontSize="small" /></ListItemIcon>
-        Analytics
-      </MenuItem>
+      <MenuItem onClick={() => handleNavigate('/home')}><ListItemIcon><Dashboard fontSize="small" /></ListItemIcon>Submissions View</MenuItem>
+      <MenuItem onClick={() => handleNavigate('/admin/users')}><ListItemIcon><AdminPanelSettings fontSize="small" /></ListItemIcon>User Management</MenuItem>
+      <MenuItem onClick={() => handleNavigate('/admin/departments')}><ListItemIcon><BusinessIcon fontSize="small" /></ListItemIcon>Departments</MenuItem>
+      {/* Enhancement: Using a more specific icon for Analytics */}
+      <MenuItem onClick={() => handleNavigate('/admin/analytics')}><ListItemIcon><Assessment fontSize="small" /></ListItemIcon>Analytics</MenuItem>
     </>
   );
 
   const FacultyMenuItems = () => (
-    <MenuItem onClick={() => handleNavigate('/home')}>
-      <ListItemIcon><Home fontSize="small" /></ListItemIcon>
-      My Submissions
+    <MenuItem onClick={() => handleNavigate('/home')}><ListItemIcon><Home fontSize="small" /></ListItemIcon>My Submissions</MenuItem>
+  );
+
+  // Enhancement: Logout button is now a reusable component
+  const LogoutMenuItem = () => (
+    <MenuItem onClick={handleLogout}>
+      <ListItemIcon><Logout fontSize="small" color="error" /></ListItemIcon>
+      <Typography color="error">Logout</Typography>
     </MenuItem>
   );
 
@@ -108,19 +85,10 @@ export default function Topbar() {
     <AppBar
       position="fixed"
       elevation={0}
-      sx={{
-        background: isTransparent ? 'transparent' : theme.palette.background.paper,
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid',
-        borderColor: isTransparent ? 'transparent' : theme.palette.divider,
-        transition: theme.transitions.create(['background', 'border-color'], {
-          duration: theme.transitions.duration.short,
-        }),
-      }}
+      // The styles from theme.js are automatically applied here
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 72 } }}>
-          {/* Logo */}
           <Box
             component="img"
             src={topPanelImg}
@@ -129,8 +97,8 @@ export default function Topbar() {
             sx={{ 
               height: { xs: 36, md: 42 }, 
               cursor: 'pointer',
-              // Adjust filter for dark mode on welcome page
-              filter: isTransparent && theme.palette.mode === 'light' ? 'brightness(1.5) contrast(1.2)' : 'none',
+              // Enhancement: Invert logo color in dark mode for better visibility
+              filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none',
             }}
           />
           <Box sx={{ flexGrow: 1 }} />
@@ -138,15 +106,10 @@ export default function Topbar() {
           {/* === Desktop Navigation === */}
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             {!user ? (
-              <Button variant="contained" onClick={() => handleNavigate('/login')}>
-                Login
-              </Button>
+              <Button variant="contained" onClick={() => handleNavigate('/login')}>Login</Button>
             ) : (
               <Tooltip title="Account settings">
-                <Button
-                  onClick={handleOpenUserMenu}
-                  sx={{ borderRadius: '50px', p: 0.5, textTransform: 'none' }}
-                >
+                <Button onClick={handleOpenUserMenu} sx={{ borderRadius: '50px', p: 0.5, textTransform: 'none' }}>
                   <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 1 }}>
                     <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(user.username) }}>
                       {user.username.charAt(0).toUpperCase()}
@@ -165,56 +128,37 @@ export default function Topbar() {
           {/* === Mobile Navigation === */}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <Tooltip title="Menu">
-              <IconButton
-                onClick={handleOpenMobileMenu}
-                aria-label="open navigation menu"
-                aria-controls="mobile-menu"
-                aria-haspopup="true"
-                sx={{ color: 'text.primary' }}
-              >
+              <IconButton onClick={handleOpenMobileMenu} sx={{ color: 'text.primary' }}>
                 <MenuIcon />
               </IconButton>
             </Tooltip>
           </Box>
           
-          {/* --- Menus --- */}
-          {/* User Menu (Desktop) */}
+          {/* --- Menus (Now cleaner and more readable) --- */}
           <Menu
             anchorEl={userMenuAnchor}
             open={isUserMenuOpen}
             onClose={handleCloseUserMenu}
-            MenuListProps={{ 'aria-labelledby': 'user-menu-button' }}
             PaperProps={{ elevation: 3, sx: { borderRadius: 2, minWidth: 240, mt: 1.5 } }}
           >
             {user?.role === 'Admin' ? <AdminMenuItems /> : <FacultyMenuItems />}
             <Divider sx={{ my: 1 }} />
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon><Logout fontSize="small" color="error" /></ListItemIcon>
-              <Typography color="error">Logout</Typography>
-            </MenuItem>
+            <LogoutMenuItem />
           </Menu>
 
-          {/* Mobile Menu */}
           <Menu
-            id="mobile-menu"
             anchorEl={mobileMenuAnchor}
             open={isMobileMenuOpen}
             onClose={handleCloseMobileMenu}
             PaperProps={{ elevation: 3, sx: { borderRadius: 2, width: '90%', maxWidth: 320 } }}
           >
             {!user ? (
-              <MenuItem onClick={() => handleNavigate('/login')}>
-                <ListItemIcon><Logout fontSize="small" /></ListItemIcon>
-                Login
-              </MenuItem>
+              <MenuItem onClick={() => handleNavigate('/login')}><ListItemIcon><Logout fontSize="small" /></ListItemIcon>Login</MenuItem>
             ) : (
               <>
                 {user.role === 'Admin' ? <AdminMenuItems /> : <FacultyMenuItems />}
                 <Divider sx={{ my: 1 }} />
-                <MenuItem onClick={handleLogout}>
-                  <ListItemIcon><Logout fontSize="small" color="error" /></ListItemIcon>
-                  <Typography color="error">Logout</Typography>
-                </MenuItem>
+                <LogoutMenuItem />
               </>
             )}
           </Menu>

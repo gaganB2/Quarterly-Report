@@ -11,15 +11,11 @@ import {
   TableContainer,
   Paper,
   Typography,
-  Divider,
 } from "@mui/material";
-
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
 
-// FIX: The component now accepts a `visibleSections` prop.
 export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp }) {
-  // Use the passed-in sections if they exist, otherwise default to all sections.
   const visibleSections = visibleSectionsProp || formSections;
   const [activeForm, setActiveForm] = useState(null);
 
@@ -28,19 +24,19 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
   };
 
   return (
-    <Box mt={4}>
-      <Typography variant="h6" fontWeight={600} gutterBottom>
+    <Paper sx={{ p: { xs: 2, md: 3 } }}> 
+      <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 2 }}>
         Submission Sections
       </Typography>
-      <Divider sx={{ mb: 2 }} />
-
-      <TableContainer component={Paper} variant="outlined">
+      
+      <TableContainer>
         <Table>
-          <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+          {/* --- FIX: The stray comment that caused the warning has been removed from here. --- */}
+          <TableHead sx={{ backgroundColor: "transparent" }}>
             <TableRow>
-              <TableCell sx={{ pl: 3.5 }}>S. No.</TableCell>
-              <TableCell>Form</TableCell>
-              <TableCell align="right">Options</TableCell>
+              <TableCell sx={{ pl: 3.5, fontWeight: 'bold' }}>S. No.</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Form</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Options</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -64,6 +60,6 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+    </Paper>
   );
 }

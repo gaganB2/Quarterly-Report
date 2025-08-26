@@ -1,59 +1,86 @@
 // src/theme.js
-import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
-const BIT_BLUE = '#005BBB';
-
-// --- V NEW: A dedicated, clean theme for the Welcome Page ---
-let landingPageTheme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: BIT_BLUE,
-    },
-    background: {
-      default: '#f8f9fa', // The light grey background for the page
-    },
-  },
+const sharedThemeConfig = {
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h2: {
-      fontWeight: 800,
-    },
-    h6: {
-      lineHeight: 1.6,
-    }
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 600 },
+    h6: { fontWeight: 600 },
   },
   shape: {
     borderRadius: 12,
   },
+};
+
+export const lightTheme = createTheme({
+  ...sharedThemeConfig,
+  palette: {
+    mode: 'light',
+    primary: { main: '#007BFF' },
+    background: {
+      default: '#f4f7fa',
+      paper: 'rgba(255, 255, 255, 0.7)',
+    },
+    text: { primary: '#1a2027', secondary: '#6c757d' },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(209, 213, 219, 0.3)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: 'none',
+          borderBottom: '1px solid rgba(209, 213, 219, 0.3)',
+        },
+      },
+    },
+    // --- FIX: The flawed MuiDialog override has been REMOVED ---
+  },
 });
-landingPageTheme = responsiveFontSizes(landingPageTheme);
-export { landingPageTheme };
-// --- ^ END NEW ---
 
-
-// --- Your existing theme for the rest of the app ---
-// Note: I've removed the global MuiPaper override from here as well,
-// as it's better to apply glass styles on a case-by-case basis.
-function makeTheme(mode) {
-  const isDark = mode === 'dark';
-  const base = createTheme({
-    palette: {
-      mode,
-      primary: {
-        main: BIT_BLUE,
-      },
-      background: {
-        default: isDark ? '#121212' : '#f0f2f5',
-        paper: isDark ? '#1e1e1e' : '#ffffff',
+export const darkTheme = createTheme({
+  ...sharedThemeConfig,
+  palette: {
+    mode: 'dark',
+    primary: { main: '#3689ff' },
+    background: {
+      default: '#121212',
+      paper: 'rgba(30, 30, 30, 0.7)',
+    },
+    text: { primary: '#ffffff', secondary: '#adb5bd' },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(30, 30, 30, 0.7)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.15)',
+        },
       },
     },
-    shape: {
-      borderRadius: 16,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(30, 30, 30, 0.6)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: 'none',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        },
+      },
     },
-  });
-  return responsiveFontSizes(base);
-}
-
-export const lightTheme = makeTheme('light');
-export const darkTheme = makeTheme('dark');
+    // --- FIX: The flawed MuiDialog override has been REMOVED ---
+  },
+});

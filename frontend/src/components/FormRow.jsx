@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   TableRow, TableCell, Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
-  IconButton, Typography, Chip, useTheme, CircularProgress, Alert,
+  IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import apiClient from "../api/axios";
@@ -13,8 +13,6 @@ import GenericForm from "./GenericForm";
 
 const PREVIEW_COLUMN_LIMIT = 5;
 
-// --- FIX 1: Create a helper function to get the current quarter ---
-// This will be our fallback if no filters are selected.
 const getCurrentQuarter = () => {
   const now = new Date();
   const month = now.getMonth();
@@ -26,8 +24,6 @@ const getCurrentQuarter = () => {
   return { session: 'Q1', year };
 };
 
-
-// Helper component to display active filters
 const FilterDisplay = ({ filters }) => {
   const activeFilters = Object.entries(filters).filter(([, value]) => value).map(([key, value]) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1),
@@ -52,10 +48,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   const [error, setError] = useState(null);
 
   const cfg = formConfig[form.code];
-  if (!cfg || !cfg.endpoint) {
-    console.error(`Configuration missing for form code: ${form.code}`);
-    return null;
-  }
+  if (!cfg || !cfg.endpoint) { return null; }
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -66,16 +59,14 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
       const res = await apiClient.get(url);
       setData(res.data.results || []);
     } catch (err) {
-      const errorMessage = err.response?.data?.detail || "An unexpected error occurred.";
-      setError(errorMessage);
-      setData([]);
+      setError(err.response?.data?.detail || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
   }, [form.code, cfg.endpoint, filters]);
 
   useEffect(() => {
-    if (isActive && (mode === 'view' || mode === 'edit' || mode === 'delete')) {
+    if (isActive && ['view', 'edit', 'delete'].includes(mode)) {
       loadData();
     }
     if (!isActive) {
@@ -111,23 +102,14 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
     if (error) return <Alert severity="error">Could not load data: {error}</Alert>;
 
-    // --- FIX 2: Implement the fallback logic ---
-    // If filters exist (from Admin), use them. Otherwise, use the current quarter/year.
     const formSession = filters.session || getCurrentQuarter().session;
     const formYear = filters.year || getCurrentQuarter().year;
 
     if (mode === "add") {
-      return (
-        <GenericForm
-          FormComponent={cfg.FormComponent}
-          onSuccess={handleSuccess}
-          session={formSession}
-          year={formYear}
-        />
-      );
+      return (<GenericForm FormComponent={cfg.FormComponent} onSuccess={handleSuccess} session={formSession} year={formYear} />);
     }
 
-    if (mode === "view" || mode === "edit" || mode === "delete") {
+    if (['view', 'edit', 'delete'].includes(mode)) {
       const previewFields = (cfg.listFields || []).slice(0, PREVIEW_COLUMN_LIMIT);
       return (
         <>
@@ -139,13 +121,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
           {mode === "edit" && editData && (
             <Box mt={3} p={2} border={1} borderColor="divider" borderRadius={2}>
               <Typography variant="h6" gutterBottom>Editing Entry #{editData.id}</Typography>
-              <GenericForm
-                FormComponent={cfg.FormComponent}
-                editData={editData}
-                onSuccess={handleSuccess}
-                session={formSession}
-                year={formYear}
-              />
+              <GenericForm FormComponent={cfg.FormComponent} editData={editData} onSuccess={handleSuccess} session={formSession} year={formYear} />
             </Box>
           )}
         </>
@@ -165,7 +141,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
 
   return (
     <React.Fragment>
-      <TableRow key={`${form.code}-data`} hover sx={{ borderLeft: `4px solid ${isActive ? theme.palette.primary.main : 'transparent'}`, transition: 'border-left 0.2s ease-in-out, background-color 0.2s ease-in-out' }}>
+      <TableRow key={`${form.code}-data`} hover sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>{idx + 1}</TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -184,19 +160,37 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
       </TableRow>
       <TableRow key={`${form.code}-collapse`}>
         <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
-          <Collapse in={isActive} timeout="auto" unmountOnExit><Box m={2}>{renderPanelContent()}</Box><Divider /></Collapse>
+          <Collapse in={isActive} timeout="auto" unmountOnExit>
+            <Box sx={{ m: 1, p: 2, borderRadius: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
+              {renderPanelContent()}
+            </Box>
+          </Collapse>
         </TableCell>
       </TableRow>
+
+      {/* --- THIS IS THE DEFINITIVE FIX --- */}
       <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton edge="start" color="inherit" onClick={() => setFullOpen(false)}><CloseIcon /></IconButton>
-            <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>{form.code} — Full Table</Typography>
-          </Toolbar>
-        </AppBar>
-        <Box p={3}>
-          <FilterDisplay filters={filters} />
-          <GenericList data={data} fields={cfg.listFields || []} mode="view" onEdit={handleEditItem} onDelete={handleDeleteItem}/>
+        {/* The Dialog's Paper now has its own background gradient, providing contrast */}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          width: '100%',
+          backgroundImage: `linear-gradient(120deg, ${theme.palette.background.default} 0%, ${theme.palette.action.hover} 100%)`,
+        }}>
+          {/* The AppBar will now get its glass style from the theme and be clearly visible against the gradient */}
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton edge="start" color="inherit" onClick={() => setFullOpen(false)}><CloseIcon /></IconButton>
+              <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>{form.code} — Full Table</Typography>
+            </Toolbar>
+          </AppBar>
+          
+          <Box sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, sm: 3 } }}>
+            <FilterDisplay filters={filters} />
+            {/* GenericList renders its own Paper, which will have the glass effect */}
+            <GenericList data={data} fields={cfg.listFields || []} mode="view" onEdit={handleEditItem} onDelete={handleDeleteItem}/>
+          </Box>
         </Box>
       </Dialog>
     </React.Fragment>
