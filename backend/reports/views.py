@@ -47,27 +47,26 @@ class BaseReportViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='export-excel')
     def export_excel(self, request, *args, **kwargs):
         """
-        NEW FEATURE: An action to export the filtered queryset data to an Excel file.
+        An action to export the filtered queryset data to an Excel file.
         This respects all applied filters (year, quarter, department, etc.).
         """
         filtered_queryset = self.filter_queryset(self.get_queryset())
         return generate_excel_report(filtered_queryset, self.queryset.model)
 
 # =============================================================================
-# 2. DYNAMIC VIEWSET FACTORY (FIXED)
+# 2. DYNAMIC VIEWSET FACTORY
 # =============================================================================
 
 def create_report_viewset(model_class, ser_class, filt_class, is_student_form=False):
     """
     A factory function that dynamically creates a ViewSet class.
-    FIX: Renamed parameters to avoid NameError.
     """
     custom_permissions = [IsStudent] if is_student_form else [IsNotStudent]
 
     class ReportViewSet(BaseReportViewSet):
         queryset = model_class.objects.all()
-        serializer_class = ser_class  # Use renamed parameter
-        filterset_class = filt_class   # Use renamed parameter
+        serializer_class = ser_class
+        filterset_class = filt_class
         permission_classes = BaseReportViewSet.permission_classes + custom_permissions
 
     return ReportViewSet
@@ -75,7 +74,6 @@ def create_report_viewset(model_class, ser_class, filt_class, is_student_form=Fa
 # =============================================================================
 # 3. GENERATED VIEWSETS
 # =============================================================================
-# Updated to use the corrected factory function.
 
 # --- Teacher ViewSets ---
 T1ResearchViewSet = create_report_viewset(T1_ResearchArticle, T1ResearchSerializer, T1ResearchArticleFilter)
@@ -131,7 +129,59 @@ class PublicDepartmentListViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 class ReportCountsView(APIView):
+    """
+    Calculates and returns the number of submissions for each report type,
+    respecting the user's role and any applied filters.
+    """
     permission_classes = [permissions.IsAuthenticated]
-    def get(self, request, *args, **kwargs):
-        return Response({'message': 'This endpoint logic is correct and remains unchanged.'})
 
+    # Map form codes from the frontend to the backend Django models
+    MODEL_MAP = {
+        'T1.1': T1_ResearchArticle, 'T1.2': T1_2ResearchArticle,
+        'T2.1': T2_1WorkshopAttendance, 'T2.2': T2_2WorkshopOrganized,
+        'T3.1': T3_1BookPublication, 'T3.2': T3_2ChapterPublication,
+        'T4.1': T4_1EditorialBoard, 'T4.2': T4_2ReviewerDetails, 'T4.3': T4_3CommitteeMembership,
+        'T5.1': T5_1PatentDetails, 'T5.2': T5_2SponsoredProject, 'T5.3': T5_3ConsultancyProject,
+        'T5.4': T5_4CourseDevelopment, 'T5.5': T5_5LabEquipmentDevelopment, 'T5.6': T5_6ResearchGuidance,
+        'T6.1': T6_1CertificationCourse, 'T6.2': T6_2ProfessionalBodyMembership, 'T6.3': T6_3Award,
+        'T6.4': T6_4ResourcePerson, 'T6.5': T6_5AICTEInitiative,
+        'T7.1': T7_1ProgramOrganized,
+        'S1.1': S1_1TheorySubjectData,
+        'S2.1': S2_1StudentArticle, 'S2.2': S2_2StudentConferencePaper, 'S2.3': S2_3StudentSponsoredProject,
+        'S3.1': S3_1CompetitionParticipation, 'S3.2': S3_2DeptProgram,
+        'S4.1': S4_1StudentExamQualification, 'S4.2': S4_2CampusRecruitment, 'S4.3': S4_3GovtPSUSelection, 'S4.4': S4_4PlacementHigherStudies,
+        'S5.1': S5_1StudentCertificationCourse, 'S5.2': S5_2VocationalTraining, 'S5.3': S5_3SpecialMentionAchievement, 'S5.4': S5_4StudentEntrepreneurship,
+    }
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            profile = user.profile
+        except Profile.DoesNotExist:
+            return Response({'counts': {}}, status=403)
+
+        # 1. Build a base filter based on user role
+        base_filters = {}
+        if profile.role == Profile.Role.HOD:
+            base_filters['department'] = profile.department
+        elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]:
+            base_filters['user'] = user
+
+        # 2. Add query parameter filters from the frontend
+        query_params = request.query_params
+        if 'year' in query_params and query_params['year']:
+            base_filters['year'] = query_params['year']
+        if 'session' in query_params and query_params['session']:
+            base_filters['quarter'] = query_params['session']
+        if 'department' in query_params and query_params['department']:
+             base_filters['department_id'] = query_params['department']
+        
+        # 3. Iterate over the models and get counts
+        counts = {}
+        for form_code, model_class in self.MODEL_MAP.items():
+            # Apply the combined filters to each model and get the count
+            count = model_class.objects.filter(**base_filters).count()
+            counts[form_code] = count
+            
+        # 4. Return the data in the format the frontend expects
+        return Response({'counts': counts})

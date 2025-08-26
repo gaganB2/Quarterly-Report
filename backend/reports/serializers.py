@@ -13,8 +13,11 @@ class BaseReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         abstract = True
-        # This now ONLY contains fields from the actual database model.
-        common_read_only = ('id', 'user', 'department', 'created_at', 'updated_at')
+        
+        # --- FIX 1: Define the read_only_fields here in the base class. ---
+        # This tells the serializer to INCLUDE these fields in the response,
+        # but not allow the frontend to change them on POST/PUT requests.
+        read_only_fields = ('id', 'user', 'department', 'created_at', 'updated_at')
         
     def create(self, validated_data):
         user = self.context['request'].user
@@ -24,7 +27,6 @@ class BaseReportSerializer(serializers.ModelSerializer):
 
 class BaseFacultyReportSerializer(BaseReportSerializer):
     """Base serializer specifically for Teacher (T-series) reports."""
-    # This field is now correctly handled as a read-only declared field.
     faculty_name = serializers.CharField(read_only=True)
     
     class Meta(BaseReportSerializer.Meta):
@@ -32,7 +34,6 @@ class BaseFacultyReportSerializer(BaseReportSerializer):
 
 class BaseStudentReportSerializer(BaseReportSerializer):
     """Base serializer specifically for Student (S-series) reports."""
-    # This field is now correctly handled as a read-only declared field.
     student_name = serializers.CharField(source='user.profile.full_name', read_only=True)
 
     class Meta(BaseReportSerializer.Meta):
@@ -50,17 +51,20 @@ def create_report_serializer(model_class, base_class):
     class ReportSerializer(base_class):
         class Meta(base_class.Meta):
             model = model_class
-            # The 'exclude' list now only contains the base model fields,
-            # which resolves the conflict permanently.
-            exclude = base_class.Meta.common_read_only
+            
+            # --- FIX 2: Use 'fields = "__all__"' instead of 'exclude'. ---
+            # This tells the serializer to include ALL fields from the model by default.
+            # The 'read_only_fields' defined in the base class will be automatically
+            # inherited and applied, correctly including 'id' as a read-only field.
+            fields = "__all__"
 
     return ReportSerializer
 
 # =============================================================================
-# 3. GENERATED SERIALIZERS
+# 3. GENERATED SERIALIZERS (No changes needed here)
 # =============================================================================
 
-# --- Teacher Serializers (Now using the correct base class) ---
+# --- Teacher Serializers ---
 T1ResearchSerializer = create_report_serializer(T1_ResearchArticle, BaseFacultyReportSerializer)
 T1_2ResearchSerializer = create_report_serializer(T1_2ResearchArticle, BaseFacultyReportSerializer)
 T2_1WorkshopAttendanceSerializer = create_report_serializer(T2_1WorkshopAttendance, BaseFacultyReportSerializer)
@@ -83,7 +87,7 @@ T6_4ResourcePersonSerializer = create_report_serializer(T6_4ResourcePerson, Base
 T6_5AICTEInitiativeSerializer = create_report_serializer(T6_5AICTEInitiative, BaseFacultyReportSerializer)
 T7_1ProgramOrganizedSerializer = create_report_serializer(T7_1ProgramOrganized, BaseFacultyReportSerializer)
 
-# --- Student Serializers (Now using the correct base class) ---
+# --- Student Serializers ---
 S1_1TheorySubjectDataSerializer = create_report_serializer(S1_1TheorySubjectData, BaseStudentReportSerializer)
 S2_1StudentArticleSerializer = create_report_serializer(S2_1StudentArticle, BaseStudentReportSerializer)
 S2_2StudentConferencePaperSerializer = create_report_serializer(S2_2StudentConferencePaper, BaseStudentReportSerializer)
