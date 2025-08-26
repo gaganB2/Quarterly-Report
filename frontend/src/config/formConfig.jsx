@@ -23,7 +23,7 @@ import T6_5Form from "../components/T6_5Form";
 import T7_1Form from "../components/T7_1Form";
 import S1_1Form from "../components/S1_1Form";
 import S2_1Form from "../components/S2_1Form";
-import S2_2Form from "../components/S2_2Form"; 
+import S2_2Form from "../components/S2_2Form";
 import S2_3Form from "../components/S2_3Form";
 import S3_1Form from "../components/S3_1Form";
 import S3_2Form from "../components/S3_2Form";
@@ -35,8 +35,6 @@ import S5_1Form from "../components/S5_1Form";
 import S5_2Form from "../components/S5_2Form";
 import S5_3Form from "../components/S5_3Form";
 import S5_4Form from "../components/S5_4Form";
-
-
 
 export const formSections = [
   {
@@ -79,19 +77,35 @@ export const formSections = [
   { code: "T6.5", title: "Hackathons / Technical Competitions" },
   { code: "T7.1", title: "Startups / Entrepreneurship Initiatives" },
   // { code: "S1.1", title: "Extension Activities / Social Responsibility" },
-  { code: "S2.1", title: "Details of the Published Research Articles/Papers in Journals/Periodicals by the students" },
-  { code: "S2.2", title: "Details of the Research Paper Presented by the Students in a conferences" },
-  // { code: "S2.3", title: "Student Awards / Scholarships" },
-  // { code: "S3.1", title: "Placements & Higher Studies" },
-  // { code: "S3.2", title: "Internships (Students)" },
-  // { code: "S4.1", title: "Faculty Development Initiatives" },
-  // { code: "S4.2", title: "Infrastructure Development" },
-  // { code: "S4.3", title: "Digital Initiatives" },
-  // { code: "S4.4", title: "Green Campus / Sustainability Efforts" },
-  // { code: "S5.1", title: "Institutional Collaborations" },
-  // { code: "S5.2", title: "Alumni Engagement" },
-  // { code: "S5.3", title: "Industry Visits / Linkages" },
-  // { code: "S5.4", title: "Feedback / Surveys / Rankings" },
+  {
+    code: "S2.1",
+    title:
+      "Details of the Published Research Articles/Papers in Journals/Periodicals by the students",
+  },
+  {
+    code: "S2.2",
+    title:
+      "Details of the Research Paper Presented by the Students in a conferences",
+  },
+  {
+    code: "S2.3",
+    title:
+      " Details of Sponsored/Collaboration with industry Projects Carried Out By Students as a Part of Their Curriculum",
+  },
+  {
+    code: "S3.1",
+    title:
+      "S3.1: Details of the Competitions Organized/Participation by the Students",
+  },
+  { code: "S3.2", title: "S3.2: Details of the Programme Organized by the Department for the Students" },
+  { code: "S4.1", title: "S4.1: Details of the Students Qualified GATE" },
+  { code: "S4.2", title: "S4.2: Details of the Students selected in Campus Recruitment" },
+  { code: "S4.3", title: "S4.3: Details of the Students selected in Government/Public Sector Units" },
+  { code: "S4.4", title: "S4.4: Complete Details of the Students selected in Companies and Higher Studies" },
+  { code: "S5.1", title: "S5.1: Details of Certification Courses completed by the Students" },
+  { code: "S5.2", title: "S5.2: Details of the vocational training/workshop/industrial visit" },
+  { code: "S5.3", title: "S5.3: Details of Special Mention achievements/Awards Received" },
+  { code: "S5.4", title: "S5.4: Details of students established as Entrepreneurs" },
 ];
 
 export const formConfig = {
@@ -564,7 +578,7 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T5.6": {
+  "T5.6": {
     endpoint: "api/data/t5_6research/",
     FormComponent: T5_6Form,
     listFields: [
@@ -575,10 +589,16 @@ export const formConfig = {
       { label: "Title of Thesis", key: "thesis_title" },
       { label: "Date of Registration", key: "registration_date" },
       { label: "Date of PhD Viva-Voce", key: "viva_voce_date" },
-      { label: "Complete Details of External Examiner", key: "external_examiner_details" },
+      {
+        label: "Complete Details of External Examiner",
+        key: "external_examiner_details",
+      },
       { label: "Status (Completed/Ongoing)", key: "status" },
       { label: "Name of the Research Center", key: "research_center" },
-      { label: "Name of the PhD Conferring University", key: "conferring_university" },
+      {
+        label: "Name of the PhD Conferring University",
+        key: "conferring_university",
+      },
       {
         label: "Google Drive Link (Proof)",
         key: "proof_link",
@@ -594,12 +614,15 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T6.1": {
+  "T6.1": {
     endpoint: "api/data/t6_1certcourses/",
     FormComponent: T6_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
-      { label: "Name of the Certification Course", key: "certification_course" },
+      {
+        label: "Name of the Certification Course",
+        key: "certification_course",
+      },
       { label: "Course Name", key: "course_name" },
       { label: "Category of the Course", key: "category" },
       { label: "Duration of the Course", key: "duration" },
@@ -620,7 +643,7 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T6.2": {
+  "T6.2": {
     endpoint: "api/data/t6_2professmb/",
     FormComponent: T6_2Form,
     listFields: [
@@ -644,7 +667,7 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T6.3": {
+  "T6.3": {
     endpoint: "api/data/t6_3awards/",
     FormComponent: T6_3Form,
     listFields: [
@@ -652,7 +675,10 @@ export const formConfig = {
       { label: "Name of Award", key: "award_name" },
       { label: "Award Conferred by", key: "conferred_by" },
       { label: "Award Date", key: "award_date" },
-      { label: "Type of Award (Regional/National/International)", key: "award_type" },
+      {
+        label: "Type of Award (Regional/National/International)",
+        key: "award_type",
+      },
       {
         label: "Google Drive Link (Upload Proof)",
         key: "proof_link",
@@ -668,7 +694,7 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T6.4": {
+  "T6.4": {
     endpoint: "api/data/t6_4resource/",
     FormComponent: T6_4Form,
     listFields: [
@@ -692,7 +718,7 @@ export const formConfig = {
       },
     ],
   },
-    "T6.5": {
+  "T6.5": {
     endpoint: "api/data/t6_5aicte/",
     FormComponent: T6_5Form,
     listFields: [
@@ -700,7 +726,10 @@ export const formConfig = {
       { label: "Name of the AICTE Initiative Taken", key: "initiative_name" },
       { label: "Date", key: "date" },
       { label: "Role", key: "role" },
-      { label: "Name of the Organizing Institute", key: "organizing_institute" },
+      {
+        label: "Name of the Organizing Institute",
+        key: "organizing_institute",
+      },
       {
         label: "Google Drive Link (Upload Proof)",
         key: "proof_link",
@@ -716,7 +745,7 @@ export const formConfig = {
       { label: "Department", key: "department" },
     ],
   },
-    "T7.1": {
+  "T7.1": {
     endpoint: "api/data/t7_1programs/",
     FormComponent: T7_1Form,
     listFields: [
@@ -728,7 +757,10 @@ export const formConfig = {
       { label: "Number of Days", key: "num_days" },
       { label: "Mode (Online/Offline)", key: "mode" },
       { label: "Number of Participants attended", key: "participants_count" },
-      { label: "Collaborator (If any) with complete contact details", key: "collaborator_details" },
+      {
+        label: "Collaborator (If any) with complete contact details",
+        key: "collaborator_details",
+      },
       {
         label: "Google Drive Link (Upload Report)",
         key: "report_link",
@@ -828,52 +860,307 @@ export const formConfig = {
   },
 
   "S1.1": {
-    endpoint: "api/data/s1_1_placeholder/", FormComponent: S1_1Form,
+    endpoint: "api/data/s1_1_placeholder/",
+    FormComponent: S1_1Form,
     listFields: [{ label: "Title", key: "title" }],
   },
   "S2.3": {
-    endpoint: "api/data/s2_3_placeholder/", FormComponent: S2_3Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s2_3sponsored/",
+    FormComponent: S2_3Form,
+    listFields: [
+      { label: "Name Of The Student", key: "student_name" },
+      { label: "Semester", key: "semester" },
+      { label: "Title of The Project", key: "project_title" },
+      { label: "Sponsored By", key: "sponsored_by" },
+      { label: "Name of The Guide", key: "guide_name" },
+      {
+        label: "Google Drive Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : (
+            "N/A"
+          ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S3.1": {
-    endpoint: "api/data/s3_1_placeholder/", FormComponent: S3_1Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s3_1competitions/", // This endpoint is from your urls.py
+    FormComponent: S3_1Form,
+    listFields: [
+      { label: "Name of The Student", key: "student_name" },
+      { label: "Semester", key: "semester" },
+      {
+        label: "Type of Activity (Sports/Cultural etc.)",
+        key: "activity_type",
+      },
+      { label: "Organized By", key: "organized_by" },
+      { label: "Date", key: "date" },
+      { label: "Level (Regional/National/International)", key: "level" },
+      { label: "Awards", key: "awards" },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : (
+            "N/A"
+          ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S3.2": {
-    endpoint: "api/data/s3_2_placeholder/", FormComponent: S3_2Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s3_2deptprograms/", // This endpoint is from your urls.py
+    FormComponent: S3_2Form,
+    listFields: [
+      { label: "Name Of The Programme/Competition", key: "program_name" },
+      { label: "Number of Participants", key: "participants_count" },
+      { label: "Type of Programme/Competition", key: "program_type" },
+      { label: "In collaboration with external agency (if any)", key: "external_agency" },
+      { label: "Date", key: "date" },
+      { label: "Level (Regional/National/International)", key: "level" },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S4.1": {
-    endpoint: "api/data/s4_1_placeholder/", FormComponent: S4_1Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s4_1examqual/", // This endpoint is from your urls.py
+    FormComponent: S4_1Form,
+    listFields: [
+      { label: "Name of The Student", key: "student_name" },
+      { label: "Batch", key: "batch" },
+      { label: "Name of the Competitive Exam Qualified", key: "exam_name" },
+      { label: "Registration/Roll Number", key: "registration_number" },
+      { label: "Score/Percentile/AIR", key: "score_detail" },
+      { label: "PG Programme Admitted", key: "pg_programme" },
+      { label: "Year of Admission in Higher Studies", key: "admission_year" },
+      { label: "Name of the Institution Joined", key: "institution_name" },
+      { label: "Contact Details", key: "contact_details" },
+      { label: "E-mail ID", key: "email" },
+      { label: "Mobile No.", key: "mobile" },
+      { label: "Profile in Social Sites", key: "social_profile_link", 
+        render: (item) => item.social_profile_link ? <a href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</a> : "N/A"
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S4.2": {
-    endpoint: "api/data/s4_2_placeholder/", FormComponent: S4_2Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s4_2campus/", // This endpoint is from your urls.py
+    FormComponent: S4_2Form,
+    listFields: [
+      { label: "Name of The Student", key: "student_name" },
+      { label: "Batch", key: "batch" },
+      { label: "Name of the Company Joined", key: "company_name" },
+      { label: "Package offered", key: "package_offered" },
+      { label: "Offer Letter Reference Number", key: "offer_ref_number" },
+      { label: "Contact Details of Student", key: "contact_details" },
+      { label: "E-mail ID", key: "email" },
+      { label: "Mobile No.", key: "mobile" },
+      { 
+        label: "Profile in Social Sites", 
+        key: "social_profile_link",
+        render: (item) => item.social_profile_link ? <a href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</a> : "N/A"
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S4.3": {
-    endpoint: "api/data/s4_3_placeholder/", FormComponent: S4_3Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s4_3psu/", // This endpoint is from your urls.py
+    FormComponent: S4_3Form,
+    listFields: [
+      { label: "Name of The Student", key: "student_name" },
+      { label: "Batch", key: "batch" },
+      { label: "Name of the Competitive Exam Qualified", key: "exam_name" },
+      { label: "Registration Number/Roll Number", key: "registration_number" },
+      { label: "Name of the PSU", key: "psv_name" },
+      { label: "Package offered", key: "package_offered" },
+      { label: "Year of Joining", key: "joining_year" },
+      { label: "Reference Number of Joining Letter", key: "offer_ref_number" },
+      { label: "Contact Details", key: "contact_details" },
+      { label: "E-mail ID", key: "email" },
+      { label: "Mobile No.", key: "mobile" },
+      { 
+        label: "Profile in Social Sites", 
+        key: "social_profile_link",
+        render: (item) => item.social_profile_link ? <a href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</a> : "N/A"
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S4.4": {
-    endpoint: "api/data/s4_4_placeholder/", FormComponent: S4_4Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s4_4full/", // This endpoint is from your urls.py
+    FormComponent: S4_4Form,
+    listFields: [
+      { label: "Roll No", key: "student_roll_no" },
+      { label: "Name", key: "student_name" },
+      { 
+        label: "Photo", 
+        key: "photo_link",
+        render: (item) => item.photo_link ? <a href={item.photo_link} target="_blank" rel="noopener noreferrer">View</a> : "N/A"
+      },
+      { label: "Placement Type", key: "placement_type" },
+      { label: "Name of Organization", key: "organization_name" },
+      { label: "Package", key: "package_offered" },
+      { label: "Higher Studies: Programme", key: "program_name" },
+      { label: "Higher Studies: Institution", key: "institution_joined" },
+      { label: "Year of Admission", key: "admission_year" },
+      { label: "Entrepreneurship (Company)", key: "entrepreneurship" },
+      { label: "E-mail ID", key: "email" },
+      { label: "Contact Details", key: "contact_details" },
+      { label: "Mobile No", key: "mobile" },
+      { 
+        label: "Social Profile", 
+        key: "social_profile_link",
+        render: (item) => item.social_profile_link ? <a href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</a> : "N/A"
+      },
+      { label: "Joining Letter Ref", key: "offer_ref_number" },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S5.1": {
-    endpoint: "api/data/s5_1_placeholder/", FormComponent: S5_1Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s5_1certcourses/", // This endpoint is from your urls.py
+    FormComponent: S5_1Form,
+    listFields: [
+      { label: "Name of The Student", key: "student_name" },
+      { label: "Name of the Certification Course", key: "certification_course" },
+      { label: "Category of the Course", key: "category" },
+      { label: "Duration of the Course", key: "duration" },
+      { label: "Credit Points Earned", key: "credit_points" },
+      { label: "Certification type", key: "certification_type" },
+      {
+        label: "Google Drive Link (Upload Certificate)",
+        key: "certificate_link",
+        render: (item) =>
+          item.certificate_link ? (
+            <a href={item.certificate_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S5.2": {
-    endpoint: "api/data/s5_2_placeholder/", FormComponent: S5_2Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s5_2vocational/", // This endpoint is from your urls.py
+    FormComponent: S5_2Form,
+    listFields: [
+      { label: "Name of the Student", key: "student_name" },
+      { label: "Name of the Company", key: "company_name" },
+      { label: "Duration of the Course Attended", key: "duration" },
+      {
+        label: "Google Drive Link (Upload Certificate)",
+        key: "certificate_link",
+        render: (item) =>
+          item.certificate_link ? (
+            <a href={item.certificate_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S5.3": {
-    endpoint: "api/data/s5_3_placeholder/", FormComponent: S5_3Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s5_3special/", // This endpoint is from your urls.py
+    FormComponent: S5_3Form,
+    listFields: [
+      { label: "Name of the Student/Alumni", key: "student_name" },
+      { label: "Name of the Award", key: "award_name" },
+      { label: "Name of the Work for which Award is received", key: "work_title" },
+      { label: "Date of Award Received", key: "date_received" },
+      { label: "Name of Awarding Organization", key: "awarding_organization" },
+      { label: "Award Amount (INR) if any", key: "award_amount" },
+      { label: "Level of Award", key: "award_level" },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   "S5.4": {
-    endpoint: "api/data/s5_4_placeholder/", FormComponent: S5_4Form,
-    listFields: [{ label: "Title", key: "title" }],
+    endpoint: "api/data/s5_4entrepreneurs/", // This endpoint is from your urls.py
+    FormComponent: S5_4Form,
+    listFields: [
+      { label: "Name of the Student", key: "student_name" },
+      { label: "Year of Establishment", key: "establishment_year" },
+      { label: "Name of Organization with Address & Website", key: "organization_details" },
+      { label: "Sector", key: "sector" },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <a href={item.proof_link} target="_blank" rel="noopener noreferrer">
+              View
+            </a>
+          ) : ( "N/A" ),
+      },
+      { label: "Department", key: "department_name" },
+    ],
   },
   // …other configs remain unchanged
 };
