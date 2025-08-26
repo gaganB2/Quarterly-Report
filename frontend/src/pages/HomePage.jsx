@@ -22,7 +22,10 @@ export default function HomePage() {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
+  // --- FIX: Reverted to your original, correct logic ---
+  // This starts with no filters, allowing the API to fetch all submissions.
   const [filters, setFilters] = useState({});
+  
   const [formCounts, setFormCounts] = useState({});
   const [countsLoading, setCountsLoading] = useState(false);
 
@@ -31,13 +34,9 @@ export default function HomePage() {
       setCountsLoading(true);
       try {
         const params = new URLSearchParams(filters).toString();
-        // +++ CORRECTED URL: Added the required '/api' prefix +++
         const url = `/api/reports/counts/?${params}`;
-        
         const response = await apiClient.get(url);
-        
         setFormCounts(response.data.counts || {});
-
       } catch (error) {
         console.error("Failed to fetch report counts:", error);
         enqueueSnackbar("Could not load submission counts.", { variant: "error" });

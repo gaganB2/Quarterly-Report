@@ -1,6 +1,6 @@
 // src/components/T4_1Form.jsx
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Paper,
@@ -12,225 +12,104 @@ import {
   MenuItem,
   Button,
   CircularProgress,
-  Snackbar,
-  Alert,
+  Grid,
 } from "@mui/material";
 import { motion } from "framer-motion";
-
-// Import the hook and constants we created
-import { useFormManager } from "../hooks/useFormManager";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSnackbar } from "notistack";
+import apiClient from "../api/axios";
 import { QUARTER_OPTIONS, YEAR_OPTIONS } from "../config/formConstants";
 import { formConfig } from "../config/formConfig";
 
-// Define the initial state based on the T4_1EditorialBoard model
+// 1. Define the validation schema with Zod
+const formSchema = z.object({
+  faculty_name: z.string().min(1, "Faculty name is required"),
+  title: z.string().min(1, "Title of the book or journal is required"),
+  role: z.string(),
+  publisher: z.string().min(1, "Publisher is required"),
+  issn_isbn: z.string().min(1, "ISSN/ISBN is required"),
+  indexing: z.string(),
+  type: z.string(),
+  proof_link: z.string().url("Please enter a valid URL").min(1, "Proof link is required"),
+  quarter: z.string().min(1, "Quarter is required"),
+  year: z.number({ required_error: "Year is required" }),
+});
+
+// Add default quarter and year to the initialState
 const initialState = {
-  faculty_name: "",
-  title: "",
-  role: "Editor",
-  publisher: "",
-  issn_isbn: "",
-  indexing: "WoS",
-  // No quarter/year here, they are managed by the hook's own state
-  type: "National",
-  proof_link: "",
+  faculty_name: "", title: "", role: "Editor", publisher: "",
+  issn_isbn: "", indexing: "WoS", type: "National", proof_link: "",
+  quarter: "", year: "",
 };
 
 export default function T4_1Form({ session, year, editData, onSuccess }) {
-  // The useFormManager hook handles all the logic
+  const { enqueueSnackbar } = useSnackbar();
+  const isEditMode = Boolean(editData?.id);
+
+  // Set definitive defaultValues to prevent uncontrolled component errors
   const {
-    isEditMode,
-    formData,
-    submitting,
-    snackbar,
-    handleChange,
+    control,
+    register,
     handleSubmit,
-    closeSnackbar,
-  } = useFormManager({
-    endpoint: formConfig["T4.1"].endpoint,
-    initialState,
-    editData,
-    onSuccess,
-    session,
-    year,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: editData 
+      ? editData 
+      : { ...initialState, quarter: session, year: parseInt(year, 10) || new Date().getFullYear() },
   });
 
+  // Simplified effect to handle prop changes
+  useEffect(() => {
+    const defaultValues = editData 
+      ? editData 
+      : { ...initialState, quarter: session, year: parseInt(year, 10) || new Date().getFullYear() };
+    reset(defaultValues);
+  }, [editData, session, year, reset]);
+
+  // Handle the form submission
+  const onFormSubmit = async (data) => {
+    try {
+      const endpoint = formConfig["T4.1"].endpoint;
+      const url = isEditMode ? `${endpoint}${editData.id}/` : endpoint;
+      const method = isEditMode ? "put" : "post";
+      await apiClient[method](url, data);
+      enqueueSnackbar(`Editorial board entry ${isEditMode ? "updated" : "added"} successfully!`, { variant: "success" });
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error("Form submission error:", err);
+      enqueueSnackbar("Submission failed. Please check the fields and try again.", { variant: "error" });
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 16 }}
-      transition={{ duration: 0.2 }}
-    >
-      <Paper variant="outlined" sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          {isEditMode
-            ? "Edit Editorial Board (T4.1)"
-            : "Add Editorial Board (T4.1)"}
-        </Typography>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+        <Typography variant="h6" gutterBottom>{isEditMode ? "Edit Editorial Board (T4.1)" : "Add Editorial Board (T4.1)"}</Typography>
+        <Box component="form" onSubmit={handleSubmit(onFormSubmit)} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            {/* Session & Year */}
+            <Grid item xs={12} sm={6}><Controller name="quarter" control={control} render={({ field }) => (<FormControl fullWidth size="small" error={!!errors.quarter}><InputLabel>Quarter</InputLabel><Select {...field} label="Quarter">{QUARTER_OPTIONS.map((o) => (<MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>))}</Select></FormControl>)}/></Grid>
+            <Grid item xs={12} sm={6}><Controller name="year" control={control} render={({ field }) => (<FormControl fullWidth size="small" error={!!errors.year}><InputLabel>Year</InputLabel><Select {...field} label="Year">{YEAR_OPTIONS.map((o) => (<MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>))}</Select></FormControl>)}/></Grid>
 
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            display: "grid",
-            gap: 2,
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          }}
-        >
-          {/* Quarter and Year selectors */}
-          <FormControl size="small" fullWidth>
-            <InputLabel>Quarter</InputLabel>
-            <Select
-              name="quarter"
-              value={formData.quarter}
-              label="Quarter"
-              onChange={handleChange}
-            >
-              {QUARTER_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            {/* Core Fields */}
+            <Grid item xs={12}><TextField {...register("faculty_name")} label="Name of Faculty" size="small" fullWidth error={!!errors.faculty_name} helperText={errors.faculty_name?.message} /></Grid>
+            <Grid item xs={12}><TextField {...register("title")} label="Title of the Book or Journal" size="small" fullWidth error={!!errors.title} helperText={errors.title?.message} /></Grid>
+            <Grid item xs={12} sm={6}><Controller name="role" control={control} render={({ field }) => (<FormControl fullWidth size="small"><InputLabel>Role</InputLabel><Select {...field} label="Role"><MenuItem value="Editor">Editor</MenuItem><MenuItem value="Co-editor">Co-editor</MenuItem><MenuItem value="Member">Member</MenuItem></Select></FormControl>)}/></Grid>
+            <Grid item xs={12} sm={6}><TextField {...register("publisher")} label="Publisher with complete address" size="small" fullWidth error={!!errors.publisher} helperText={errors.publisher?.message} /></Grid>
+            <Grid item xs={12} sm={4}><TextField {...register("issn_isbn")} label="ISSN/ISBN No." size="small" fullWidth error={!!errors.issn_isbn} helperText={errors.issn_isbn?.message} /></Grid>
+            <Grid item xs={12} sm={4}><Controller name="indexing" control={control} render={({ field }) => (<FormControl fullWidth size="small"><InputLabel>Indexing</InputLabel><Select {...field} label="Indexing"><MenuItem value="WoS">WoS</MenuItem><MenuItem value="Scopus">Scopus</MenuItem><MenuItem value="UGC CARE">UGC CARE</MenuItem><MenuItem value="Others">Others</MenuItem></Select></FormControl>)}/></Grid>
+            <Grid item xs={12} sm={4}><Controller name="type" control={control} render={({ field }) => (<FormControl fullWidth size="small"><InputLabel>Type of Book/Journal</InputLabel><Select {...field} label="Type of Book/Journal"><MenuItem value="National">National</MenuItem><MenuItem value="International">International</MenuItem></Select></FormControl>)}/></Grid>
+            <Grid item xs={12}><TextField {...register("proof_link")} label="Google Drive Link (Proof)" size="small" fullWidth error={!!errors.proof_link} helperText={errors.proof_link?.message} /></Grid>
 
-          <FormControl size="small" fullWidth>
-            <InputLabel>Year</InputLabel>
-            <Select
-              name="year"
-              value={formData.year}
-              label="Year"
-              onChange={handleChange}
-            >
-              {YEAR_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* All other form fields from the model */}
-          <TextField
-            name="faculty_name"
-            label="Name of Faculty"
-            value={formData.faculty_name}
-            onChange={handleChange}
-            size="small"
-            fullWidth
-            sx={{ gridColumn: "1 / -1" }} // Span full width
-          />
-          <TextField
-            name="title"
-            label="Title of the Book or Journal"
-            value={formData.title}
-            onChange={handleChange}
-            size="small"
-            fullWidth
-            sx={{ gridColumn: "1 / -1" }}
-          />
-          <FormControl size="small" fullWidth>
-            <InputLabel>Role</InputLabel>
-            <Select
-              name="role"
-              value={formData.role}
-              label="Role"
-              onChange={handleChange}
-            >
-              <MenuItem value="Editor">Editor</MenuItem>
-              <MenuItem value="Co-editor">Co-editor</MenuItem>
-              <MenuItem value="Member">Member</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            name="publisher"
-            label="Publisher with complete address"
-            value={formData.publisher}
-            onChange={handleChange}
-            size="small"
-            fullWidth
-          />
-          <TextField
-            name="issn_isbn"
-            label="ISSN/ISBN No."
-            value={formData.issn_isbn}
-            onChange={handleChange}
-            size="small"
-            fullWidth
-          />
-          <FormControl size="small" fullWidth>
-            <InputLabel>Indexing</InputLabel>
-            <Select
-              name="indexing"
-              value={formData.indexing}
-              label="Indexing"
-              onChange={handleChange}
-            >
-              <MenuItem value="WoS">WoS</MenuItem>
-              <MenuItem value="Scopus">Scopus</MenuItem>
-              <MenuItem value="UGC CARE">UGC CARE</MenuItem>
-              <MenuItem value="Others">Others</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl size="small" fullWidth>
-            <InputLabel>Type of Book/Journal</InputLabel>
-            <Select
-              name="type"
-              value={formData.type}
-              label="Type of Book/Journal"
-              onChange={handleChange}
-            >
-              <MenuItem value="National">National</MenuItem>
-              <MenuItem value="International">International</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            name="proof_link"
-            label="Google Drive Link (Upload Proof)"
-            type="url"
-            value={formData.proof_link}
-            onChange={handleChange}
-            size="small"
-            fullWidth
-            sx={{ gridColumn: "1 / -1" }}
-          />
-
-          {/* Submit Button */}
-          <Box sx={{ gridColumn: "1 / -1", textAlign: "right", mt: 2 }}>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={submitting}
-              sx={{ minWidth: 120 }}
-            >
-              {submitting ? (
-                <CircularProgress size={20} />
-              ) : isEditMode ? (
-                "Update"
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </Box>
+            {/* Submit Button */}
+            <Grid item xs={12} sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}><Button type="submit" variant="contained" disabled={isSubmitting}>{isSubmitting ? <CircularProgress size={24} /> : isEditMode ? "Update Entry" : "Submit Entry"}</Button></Grid>
+          </Grid>
         </Box>
       </Paper>
-
-      {/* Snackbar for feedback */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={closeSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </motion.div>
   );
 }

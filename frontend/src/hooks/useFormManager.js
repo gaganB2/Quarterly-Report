@@ -1,19 +1,9 @@
 // src/hooks/useFormManager.js
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSnackbar } from "notistack";
 import apiClient from "../api/axios";
 
-/**
- * A custom hook to manage form state, submission, and feedback for all report forms.
- * @param {object} params
- * @param {string} params.endpoint - The base API endpoint for the form.
- * @param {object} params.initialState - The initial state object for the form's fields.
- * @param {object} params.editData - The data for the item being edited, if any.
- * @param {function} params.onSuccess - The callback function to execute after a successful submission.
- * @param {string} params.session - The initial quarter value.
- * @param {number} params.year - The initial year value.
- * @returns {object} - The state and handlers to be used by the form component.
- */
 export const useFormManager = ({
   endpoint,
   initialState,
@@ -22,94 +12,89 @@ export const useFormManager = ({
   session,
   year,
 }) => {
+  const { enqueueSnackbar } = useSnackbar();
+  
+  // This value is derived directly from props for use in the return statement.
   const isEditMode = Boolean(editData?.id);
 
-  const [formData, setFormData] = useState({
+  // Memoize the base form state to prevent re-computation on every render.
+  const initialFormState = useMemo(() => ({
     ...initialState,
     quarter: session || "Q1",
     year: year || new Date().getFullYear(),
-  });
+  }), [initialState, session, year]);
 
+  // FIX: Always initialize the form as blank. The useEffect below is the single
+  // source of truth for populating or resetting the form based on props.
+  const [formData, setFormData] = useState(initialFormState);
   const [submitting, setSubmitting] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
 
-  // Effect to pre-fill form data when in edit mode
+  // FIX: This useEffect is now the definitive source of truth for syncing props to state.
   useEffect(() => {
+    console.log('[useFormManager] Syncing state. Has editData:', !!editData);
     if (isEditMode && editData) {
-      // FIX: This is the corrected, robust logic for pre-filling the form.
-      // It correctly spreads the initial state to ensure all fields are present,
-      // then spreads the editData over it to pre-fill the form with saved values.
-      setFormData({
-        ...initialState,
-        ...editData,
-      });
+      // If we are in edit mode, populate the form with the provided data.
+      console.log('[useFormManager] Populating form for EDIT mode with:', editData);
+      setFormData({ ...initialFormState, ...editData });
+    } else {
+      // If we are in add mode (or editData was cleared), reset to the initial blank state.
+      console.log('[useFormManager] Resetting form for ADD mode.');
+      setFormData(initialFormState);
     }
-  }, [editData, isEditMode, initialState]);
+  }, [editData, initialFormState, isEditMode]); // Effect runs when editData changes.
 
-  // Generic handler for all input changes
-  const handleChange = (e) => {
+
+  const handleChange = useCallback((e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-  };
+  }, []);
 
-  // Generic handler for form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
     const url = isEditMode ? `${endpoint}${editData.id}/` : endpoint;
     const method = isEditMode ? "put" : "post";
+    console.log(`[useFormManager] Submitting form. Method: ${method.toUpperCase()}, URL: ${url}`);
 
     try {
       await apiClient[method](url, formData);
-      setSnackbar({
-        open: true,
-        message: `Entry ${isEditMode ? "updated" : "submitted"} successfully!`,
-        severity: "success",
-      });
+      const successMessage = `Entry ${isEditMode ? "updated" : "submitted"} successfully!`;
+      enqueueSnackbar(successMessage, { variant: "success" });
       if (onSuccess) onSuccess();
     } catch (err) {
-      console.error("Form submission error:", err.response?.data);
-
-      let msg = "Submission failed. Please check the fields.";
+      console.error("[useFormManager] Form submission error:", err.response || err);
+      let msg = "Submission failed. Please check the fields and try again.";
       const data = err.response?.data;
-
-      if (data && typeof data === "object") {
-        msg = Object.entries(data)
-          .map(([field, errors]) => {
-            const errorText = Array.isArray(errors) ? errors.join(" ") : errors;
-            return `${field.replace(/_/g, " ")}: ${errorText}`;
-          })
-          .join(" | ");
-      } else if (Array.isArray(data)) {
-        msg = data.join(" ");
+      if (data) {
+        if (data.non_field_errors) {
+          msg = data.non_field_errors.join(" ");
+        } else if (data.detail) {
+          msg = data.detail;
+        } else if (typeof data === "object") {
+          msg = Object.entries(data)
+            .map(([field, errors]) => {
+              const errorText = Array.isArray(errors) ? errors.join(" ") : String(errors);
+              return `${field.replace(/_/g, " ")}: ${errorText}`;
+            })
+            .join(" | ");
+        }
       }
-
-      setSnackbar({ open: true, message: msg, severity: "error" });
+      enqueueSnackbar(msg, { variant: "error" });
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const closeSnackbar = () => {
-    setSnackbar((s) => ({ ...s, open: false }));
-  };
+  }, [endpoint, formData, isEditMode, editData?.id, onSuccess, enqueueSnackbar]);
 
   return {
     isEditMode,
     formData,
     setFormData,
     submitting,
-    snackbar,
     handleChange,
     handleSubmit,
-    closeSnackbar,
   };
 };
