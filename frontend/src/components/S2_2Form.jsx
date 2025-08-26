@@ -15,8 +15,6 @@ import {
   Checkbox,
   Button,
   CircularProgress,
-  Snackbar,
-  Alert,
   Grid,
 } from "@mui/material";
 import { motion } from "framer-motion";
@@ -24,7 +22,6 @@ import { useFormManager } from "../hooks/useFormManager";
 import { QUARTER_OPTIONS, YEAR_OPTIONS } from "../config/formConstants";
 import { formConfig } from "../config/formConfig";
 
-// FIX: Renamed 'conference_mode' to 'mode'
 const initialState = {
   title: "",
   author_type: "Sole",
@@ -38,19 +35,18 @@ const initialState = {
   indexing_scopus: false,
   indexing_other: "",
   conference_status: "National",
-  mode: "Offline", // Corrected field name
+  mode: "Offline",
   proof_link: "",
 };
 
 export default function S2_2Form({ session, year, editData, onSuccess }) {
+  // --- FIX 1: Removed 'snackbar' and 'closeSnackbar' ---
   const {
     isEditMode,
     formData,
     submitting,
-    snackbar,
     handleChange,
     handleSubmit,
-    closeSnackbar,
   } = useFormManager({
     endpoint: formConfig["S2.2"].endpoint,
     initialState,
@@ -163,7 +159,6 @@ export default function S2_2Form({ session, year, editData, onSuccess }) {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              {/* FIX: The 'name' prop is now correctly set to 'mode' */}
               <FormControl fullWidth size="small">
                 <InputLabel>Mode of Conference</InputLabel>
                 <Select name="mode" value={formData.mode} label="Mode of Conference" onChange={handleChange}>
@@ -188,11 +183,7 @@ export default function S2_2Form({ session, year, editData, onSuccess }) {
         </Box>
       </Paper>
 
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={closeSnackbar} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={closeSnackbar} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      {/* --- FIX 2: Removed the entire Snackbar block --- */}
     </motion.div>
   );
 }

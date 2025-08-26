@@ -15,8 +15,6 @@ import {
   Checkbox,
   Button,
   CircularProgress,
-  Snackbar,
-  Alert,
   Grid,
 } from "@mui/material";
 import { motion } from "framer-motion";
@@ -24,7 +22,6 @@ import { useFormManager } from "../hooks/useFormManager";
 import { QUARTER_OPTIONS, YEAR_OPTIONS } from "../config/formConstants";
 import { formConfig } from "../config/formConfig";
 
-// FIX: Renamed 'publication_month_year' to 'month_year' to match the backend model.
 const initialState = {
   title: "",
   author_type: "Sole",
@@ -34,7 +31,7 @@ const initialState = {
   volume: "",
   issue: "",
   page_no: "",
-  month_year: "", // Corrected field name
+  month_year: "",
   issn_number: "",
   impact_factor: "",
   publisher: "",
@@ -47,14 +44,13 @@ const initialState = {
 };
 
 export default function S2_1Form({ session, year, editData, onSuccess }) {
+  // --- FIX 1: Removed 'snackbar' and 'closeSnackbar' ---
   const {
     isEditMode,
     formData,
     submitting,
-    snackbar,
     handleChange,
     handleSubmit,
-    closeSnackbar,
   } = useFormManager({
     endpoint: formConfig["S2.1"].endpoint,
     initialState,
@@ -142,7 +138,6 @@ export default function S2_1Form({ session, year, editData, onSuccess }) {
               <TextField name="page_no" label="Page No." value={formData.page_no} onChange={handleChange} size="small" fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              {/* FIX: The 'name' prop is now correctly set to 'month_year' */}
               <TextField name="month_year" label="Month & Year" placeholder="MM/YYYY" value={formData.month_year} onChange={handleChange} size="small" fullWidth />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -187,11 +182,7 @@ export default function S2_1Form({ session, year, editData, onSuccess }) {
         </Box>
       </Paper>
 
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={closeSnackbar} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={closeSnackbar} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      {/* --- FIX 2: Removed the entire Snackbar block --- */}
     </motion.div>
   );
 }

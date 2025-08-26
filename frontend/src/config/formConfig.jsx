@@ -21,8 +21,21 @@ import T6_3Form from "../components/T6_3Form";
 import T6_4Form from "../components/T6_4Form";
 import T6_5Form from "../components/T6_5Form";
 import T7_1Form from "../components/T7_1Form";
+import S1_1Form from "../components/S1_1Form";
 import S2_1Form from "../components/S2_1Form";
 import S2_2Form from "../components/S2_2Form"; 
+import S2_3Form from "../components/S2_3Form";
+import S3_1Form from "../components/S3_1Form";
+import S3_2Form from "../components/S3_2Form";
+import S4_1Form from "../components/S4_1Form";
+import S4_2Form from "../components/S4_2Form";
+import S4_3Form from "../components/S4_3Form";
+import S4_4Form from "../components/S4_4Form";
+import S5_1Form from "../components/S5_1Form";
+import S5_2Form from "../components/S5_2Form";
+import S5_3Form from "../components/S5_3Form";
+import S5_4Form from "../components/S5_4Form";
+
 
 
 export const formSections = [
@@ -65,25 +78,25 @@ export const formSections = [
   { code: "T6.4", title: "Students Qualified GATE/NET/GMAT/etc." },
   { code: "T6.5", title: "Hackathons / Technical Competitions" },
   { code: "T7.1", title: "Startups / Entrepreneurship Initiatives" },
-  { code: "S1.1", title: "Extension Activities / Social Responsibility" },
+  // { code: "S1.1", title: "Extension Activities / Social Responsibility" },
   { code: "S2.1", title: "Details of the Published Research Articles/Papers in Journals/Periodicals by the students" },
   { code: "S2.2", title: "Details of the Research Paper Presented by the Students in a conferences" },
-  { code: "S2.3", title: "Student Awards / Scholarships" },
-  { code: "S3.1", title: "Placements & Higher Studies" },
-  { code: "S3.2", title: "Internships (Students)" },
-  { code: "S4.1", title: "Faculty Development Initiatives" },
-  { code: "S4.2", title: "Infrastructure Development" },
-  { code: "S4.3", title: "Digital Initiatives" },
-  { code: "S4.4", title: "Green Campus / Sustainability Efforts" },
-  { code: "S5.1", title: "Institutional Collaborations" },
-  { code: "S5.2", title: "Alumni Engagement" },
-  { code: "S5.3", title: "Industry Visits / Linkages" },
-  { code: "S5.4", title: "Feedback / Surveys / Rankings" },
+  // { code: "S2.3", title: "Student Awards / Scholarships" },
+  // { code: "S3.1", title: "Placements & Higher Studies" },
+  // { code: "S3.2", title: "Internships (Students)" },
+  // { code: "S4.1", title: "Faculty Development Initiatives" },
+  // { code: "S4.2", title: "Infrastructure Development" },
+  // { code: "S4.3", title: "Digital Initiatives" },
+  // { code: "S4.4", title: "Green Campus / Sustainability Efforts" },
+  // { code: "S5.1", title: "Institutional Collaborations" },
+  // { code: "S5.2", title: "Alumni Engagement" },
+  // { code: "S5.3", title: "Industry Visits / Linkages" },
+  // { code: "S5.4", title: "Feedback / Surveys / Rankings" },
 ];
 
 export const formConfig = {
   "T1.1": {
-    endpoint: "/api/faculty/t1research/",
+    endpoint: "api/data/t1research/",
     FormComponent: T1_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -133,7 +146,7 @@ export const formConfig = {
   },
 
   "T1.2": {
-    endpoint: "/api/faculty/t1_2research/",
+    endpoint: "api/data/t1_2research/",
     FormComponent: T1_2Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -179,7 +192,7 @@ export const formConfig = {
   },
 
   "T2.1": {
-    endpoint: "/api/faculty/t2_1workshops/",
+    endpoint: "api/data/t2_1workshops/",
     FormComponent: T2_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -215,7 +228,7 @@ export const formConfig = {
   },
 
   "T2.2": {
-    endpoint: "/api/faculty/t2_2organized/",
+    endpoint: "api/data/t2_2organized/",
     FormComponent: T2_2Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -249,7 +262,7 @@ export const formConfig = {
   },
 
   "T3.1": {
-    endpoint: "/api/faculty/t3_1books/",
+    endpoint: "api/data/t3_1books/",
     FormComponent: T3_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -280,7 +293,7 @@ export const formConfig = {
   },
 
   "T3.2": {
-    endpoint: "/api/faculty/t3_2chapters/",
+    endpoint: "api/data/t3_2chapters/",
     FormComponent: T3_2Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -309,7 +322,7 @@ export const formConfig = {
     ],
   },
   "T4.1": {
-    endpoint: "/api/faculty/t4_1editorial/",
+    endpoint: "api/data/t4_1editorial/",
     FormComponent: T4_1Form,
     listFields: [
       { label: "Faculty Name", key: "faculty_name" },
@@ -337,7 +350,7 @@ export const formConfig = {
   },
 
   "T4.2": {
-    endpoint: "/api/faculty/t4_2reviewers/",
+    endpoint: "api/data/t4_2reviewers/",
     FormComponent: T4_2Form,
     listFields: [
       { label: "Faculty Name", key: "faculty_name" },
@@ -361,7 +374,7 @@ export const formConfig = {
     ],
   },
   "T4.3": {
-    endpoint: "/api/faculty/t4_3committees/",
+    endpoint: "api/data/t4_3committees/",
     FormComponent: T4_3Form,
     listFields: [
       { label: "Faculty Name", key: "faculty_name" },
@@ -387,7 +400,7 @@ export const formConfig = {
   // In src/config/formConfig.jsx
 
   "T5.1": {
-    endpoint: "/api/faculty/t5_1patents/",
+    endpoint: "api/data/t5_1patents/",
     FormComponent: T5_1Form, // This remains the same
     listFields: [
       // This array now includes all columns to match your screenshot
@@ -423,7 +436,7 @@ export const formConfig = {
     ],
   },
   "T5.2": {
-    endpoint: "/api/faculty/t5_2sponsored/",
+    endpoint: "api/data/t5_2sponsored/",
     FormComponent: T5_2Form,
     listFields: [
       { label: "Principal Investigator (PI)", key: "principal_investigator" },
@@ -458,7 +471,7 @@ export const formConfig = {
     ],
   },
   "T5.3": {
-    endpoint: "/api/faculty/t5_3consultancy/",
+    endpoint: "api/data/t5_3consultancy/",
     FormComponent: T5_3Form,
     listFields: [
       { label: "Internal Faculty", key: "internal_faculty" },
@@ -490,7 +503,7 @@ export const formConfig = {
   // In src/config/formConfig.jsx
 
   "T5.4": {
-    endpoint: "/api/faculty/t5_4content/",
+    endpoint: "api/data/t5_4content/",
     FormComponent: T5_4Form, // This remains the same
     listFields: [
       // This new array matches your screenshot headers exactly
@@ -526,7 +539,7 @@ export const formConfig = {
     ],
   },
   "T5.5": {
-    endpoint: "/api/faculty/t5_5labequipment/",
+    endpoint: "api/data/t5_5labequipment/",
     FormComponent: T5_5Form,
     listFields: [
       { label: "Name of the Laboratory", key: "lab_name" },
@@ -552,7 +565,7 @@ export const formConfig = {
     ],
   },
     "T5.6": {
-    endpoint: "/api/faculty/t5_6research/",
+    endpoint: "api/data/t5_6research/",
     FormComponent: T5_6Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -582,7 +595,7 @@ export const formConfig = {
     ],
   },
     "T6.1": {
-    endpoint: "/api/faculty/t6_1certcourses/",
+    endpoint: "api/data/t6_1certcourses/",
     FormComponent: T6_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -608,7 +621,7 @@ export const formConfig = {
     ],
   },
     "T6.2": {
-    endpoint: "/api/faculty/t6_2professmb/",
+    endpoint: "api/data/t6_2professmb/",
     FormComponent: T6_2Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -632,7 +645,7 @@ export const formConfig = {
     ],
   },
     "T6.3": {
-    endpoint: "/api/faculty/t6_3awards/",
+    endpoint: "api/data/t6_3awards/",
     FormComponent: T6_3Form,
     listFields: [
       { label: "Name of the Recipient", key: "faculty_name" },
@@ -656,7 +669,7 @@ export const formConfig = {
     ],
   },
     "T6.4": {
-    endpoint: "/api/faculty/t6_4resource/",
+    endpoint: "api/data/t6_4resource/",
     FormComponent: T6_4Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -680,7 +693,7 @@ export const formConfig = {
     ],
   },
     "T6.5": {
-    endpoint: "/api/faculty/t6_5aicte/",
+    endpoint: "api/data/t6_5aicte/",
     FormComponent: T6_5Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
@@ -704,7 +717,7 @@ export const formConfig = {
     ],
   },
     "T7.1": {
-    endpoint: "/api/faculty/t7_1programs/",
+    endpoint: "api/data/t7_1programs/",
     FormComponent: T7_1Form,
     listFields: [
       { label: "Name of the Organizer", key: "organizer_name" },
@@ -731,7 +744,7 @@ export const formConfig = {
     ],
   },
   "S2.1": {
-    endpoint: "/api/data/s2_1articles/",
+    endpoint: "api/data/s2_1articles/",
     FormComponent: S2_1Form,
     listFields: [
       { label: "Title", key: "title" },
@@ -778,7 +791,7 @@ export const formConfig = {
     ],
   },
   "S2.2": {
-    endpoint: "/api/data/s2_2conferences/",
+    endpoint: "api/data/s2_2conferences/",
     FormComponent: S2_2Form,
     listFields: [
       { label: "Title", key: "title" },
@@ -812,6 +825,55 @@ export const formConfig = {
       },
       { label: "Department", key: "department_name" },
     ],
+  },
+
+  "S1.1": {
+    endpoint: "api/data/s1_1_placeholder/", FormComponent: S1_1Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S2.3": {
+    endpoint: "api/data/s2_3_placeholder/", FormComponent: S2_3Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S3.1": {
+    endpoint: "api/data/s3_1_placeholder/", FormComponent: S3_1Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S3.2": {
+    endpoint: "api/data/s3_2_placeholder/", FormComponent: S3_2Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S4.1": {
+    endpoint: "api/data/s4_1_placeholder/", FormComponent: S4_1Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S4.2": {
+    endpoint: "api/data/s4_2_placeholder/", FormComponent: S4_2Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S4.3": {
+    endpoint: "api/data/s4_3_placeholder/", FormComponent: S4_3Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S4.4": {
+    endpoint: "api/data/s4_4_placeholder/", FormComponent: S4_4Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S5.1": {
+    endpoint: "api/data/s5_1_placeholder/", FormComponent: S5_1Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S5.2": {
+    endpoint: "api/data/s5_2_placeholder/", FormComponent: S5_2Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S5.3": {
+    endpoint: "api/data/s5_3_placeholder/", FormComponent: S5_3Form,
+    listFields: [{ label: "Title", key: "title" }],
+  },
+  "S5.4": {
+    endpoint: "api/data/s5_4_placeholder/", FormComponent: S5_4Form,
+    listFields: [{ label: "Title", key: "title" }],
   },
   // …other configs remain unchanged
 };
