@@ -1,45 +1,44 @@
 // src/pages/HomePage.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Box,
   Typography,
-  Grid, // Import Grid for layout
+  Grid,
   Breadcrumbs,
   Link,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
+import { formSections } from "../config/formConfig";
 import FormTable from "../components/FormTable";
 import AdminFilterPanel from "../components/AdminFilterPanel";
+import FacultyFilterPanel from "../components/FacultyFilterPanel"; // --- 1. Import the new component ---
 import { useSnackbar } from "notistack";
 import apiClient from "../api/axios";
-
-// Helper function to get the current quarter and year for non-admin users
-const getCurrentQuarter = () => {
-  const now = new Date();
-  const month = now.getMonth();
-  const year = now.getFullYear();
-  if (month >= 6 && month <= 8) return { session: 'Q1', year };
-  if (month >= 9 && month <= 11) return { session: 'Q2', year };
-  if (month >= 0 && month <= 2) return { session: 'Q3', year };
-  if (month >= 3 && month <= 5) return { session: 'Q4', year };
-  return { session: 'Q1', year };
-};
 
 export default function HomePage() {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [filters, setFilters] = useState(() => {
-    if (user && user.role !== 'Admin') {
-      return getCurrentQuarter();
-    }
-    return {};
-  });
-  
+  // --- 2. State now defaults to empty, allowing "view all" for everyone ---
+  const [filters, setFilters] = useState({});
   const [formCounts, setFormCounts] = useState({});
   const [countsLoading, setCountsLoading] = useState(false);
+
+  const visibleSections = useMemo(() => {
+    if (!user) return [];
+
+    switch (user.role) {
+      case 'Admin':
+        return formSections;
+      case 'HOD':
+      case 'Faculty':
+        return formSections.filter(section => section.code.startsWith('T') || section.code === 'S1.1');
+      default:
+        return [];
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -65,48 +64,41 @@ export default function HomePage() {
   };
 
   return (
-    // The main container. The background is now applied globally from App.jsx
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Breadcrumbs sx={{ mb: 2, color: 'text.primary' }}>
+            <Link underline="hover" color="inherit" href="/">Log-in</Link>
+            <Typography color="text.primary" sx={{ fontWeight: 600 }}>Quarterly Reports</Typography>
+          </Breadcrumbs>
+          <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
+            Quarterly Report Submissions
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Manage your form submissions
+          </Typography>
+        </Box>
 
-      {/* --- FIX: Header content is now outside of any Paper component --- */}
-      {/* This makes it feel like part of the page, not part of a card. */}
-      <Box sx={{ mb: 4 }}>
-        <Breadcrumbs sx={{ mb: 2, color: 'text.primary' }}>
-          <Link underline="hover" color="inherit" href="/">
-            Log-in
-          </Link>
-          <Typography color="text.primary" sx={{ fontWeight: 600 }}>Quarterly Reports</Typography>
-        </Breadcrumbs>
-        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ color: 'text.primary' }}>
-          Quarterly Report Submissions
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage your form submissions
-        </Typography>
-      </Box>
-
-      {/* --- FIX: Use a Grid container to manage the layout of the "cards" --- */}
-      {/* This creates the floating card effect with proper spacing. */}
-      <Grid container spacing={4}>
-        
-        {/* The Admin Filter Panel is now its own card */}
-        {user && user.role === 'Admin' && (
+        <Grid container spacing={4}>
           <Grid item xs={12}>
-            <AdminFilterPanel onFilterChange={handleFilterChange} />
+            {/* --- 3. Conditionally render the correct filter panel based on user role --- */}
+            {user && user.role === 'Admin' ? (
+              <AdminFilterPanel onFilterChange={handleFilterChange} />
+            ) : (
+              <FacultyFilterPanel onFilterChange={handleFilterChange} />
+            )}
           </Grid>
-        )}
-
-        {/* The Form Table is the main content card */}
-        <Grid item xs={12}>
-          <FormTable
-            filters={filters}
-            formCounts={formCounts}
-            countsLoading={countsLoading}
-          />
+          
+          <Grid item xs={12}>
+            <FormTable
+              filters={filters}
+              formCounts={formCounts}
+              countsLoading={countsLoading}
+              visibleSections={visibleSections}
+            />
+          </Grid>
         </Grid>
-
-      </Grid>
-      
-    </Container>
+      </Container>
+    </Box>
   );
 }
