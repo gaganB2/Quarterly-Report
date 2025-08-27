@@ -1,16 +1,18 @@
 // frontend/src/pages/ForcePasswordChangePage.jsx
 
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // --- THIS IS THE FIX: 'useState' is now imported ---
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Container, Paper, Typography, TextField, Button, Stack,
   CircularProgress, Alert, Box,
 } from '@mui/material';
-import apiClient from '../api/axios';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import apiClient from '../api/axios';
 
-// Validation schema for the password form
+// Validation schema using yup
 const validationSchema = yup.object({
   new_password: yup.string()
     .min(8, 'Password must be at least 8 characters')
@@ -21,58 +23,38 @@ const validationSchema = yup.object({
 });
 
 export default function ForcePasswordChangePage() {
-  const [formData, setFormData] = useState({ new_password: '', confirm_password: '' });
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { updateUser } = useAuth();
+  
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [formErrors, setFormErrors] = useState({});
-  
-  const navigate = useNavigate();
-  const { user, logout } = useAuth(); // We need logout if the token expires
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onFormSubmit = async (data) => {
     setError('');
     setSuccess('');
-    setFormErrors({});
-
+    
     try {
-      await validationSchema.validate(formData, { abortEarly: false });
-      setLoading(true);
+      await apiClient.post('/api/set-password/', { new_password: data.new_password });
 
-      // We need a separate API endpoint for this. Let's assume it will be '/api/set-password/'
-      // This endpoint should only be accessible by authenticated users.
-      await apiClient.post('/api/set-password/', { new_password: formData.new_password });
-
-      setSuccess('Password changed successfully! You will be logged out and can now log in with your new password.');
+      setSuccess('Password changed successfully! Redirecting you to the home page...');
       
-      // After success, log the user out and redirect them to the login page.
+      updateUser({ requires_password_change: false });
+      
       setTimeout(() => {
-        logout();
-        navigate('/login');
-      }, 3000); // Wait 3 seconds to let the user read the message
+        navigate('/home');
+      }, 2000);
 
     } catch (err) {
-      if (err instanceof yup.ValidationError) {
-        const newErrors = {};
-        err.inner.forEach(error => {
-          newErrors[error.path] = error.message;
-        });
-        setFormErrors(newErrors);
-      } else {
-        setError(err.response?.data?.error || 'An unexpected error occurred.');
-        console.error("Password change failed:", err);
-      }
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.error || 'An unexpected error occurred.');
+      console.error("Password change failed:", err);
     }
   };
 
@@ -86,29 +68,25 @@ export default function ForcePasswordChangePage() {
           For your security, you must change the temporary password provided by the administrator.
         </Typography>
 
-        <Stack component="form" spacing={2} onSubmit={handleSubmit}>
+        <Stack component="form" spacing={2} onSubmit={handleSubmit(onFormSubmit)}>
           {error && <Alert severity="error">{error}</Alert>}
           {success && <Alert severity="success">{success}</Alert>}
 
           <TextField
-            name="new_password"
+            {...register("new_password")}
             label="New Password"
             type="password"
-            value={formData.new_password}
-            onChange={handleChange}
-            error={!!formErrors.new_password}
-            helperText={formErrors.new_password}
+            error={!!errors.new_password}
+            helperText={errors.new_password?.message}
             required
             fullWidth
           />
           <TextField
-            name="confirm_password"
+            {...register("confirm_password")}
             label="Confirm New Password"
             type="password"
-            value={formData.confirm_password}
-            onChange={handleChange}
-            error={!!formErrors.confirm_password}
-            helperText={formErrors.confirm_password}
+            error={!!errors.confirm_password}
+            helperText={errors.confirm_password?.message}
             required
             fullWidth
           />
@@ -117,10 +95,10 @@ export default function ForcePasswordChangePage() {
               type="submit"
               variant="contained"
               fullWidth
-              disabled={loading || success}
+              disabled={isSubmitting || !!success}
               size="large"
             >
-              {loading ? <CircularProgress size={24} /> : 'Set New Password'}
+              {isSubmitting ? <CircularProgress size={24} /> : 'Set New Password'}
             </Button>
           </Box>
         </Stack>

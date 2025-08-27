@@ -3,9 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import apiClient from "../api/axios";
 import { CircularProgress, Box } from "@mui/material";
-// --- V FIXED: Use a named import instead of a default import ---
 import { jwtDecode } from "jwt-decode";
-// --- ^ END FIXED ---
 
 export const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -21,6 +19,12 @@ export const AuthProvider = ({ children }) => {
     delete apiClient.defaults.headers.common["Authorization"];
   }, []);
 
+  
+  // Allows other parts of the app to update the user state after an action, like changing a password.
+  const updateUser = useCallback((updatedUserData) => {
+    setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
+  }, []);
+
   useEffect(() => {
     const initializeAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
@@ -28,9 +32,7 @@ export const AuthProvider = ({ children }) => {
 
       if (accessToken && refreshToken) {
         try {
-          // --- V FIXED: Use the correctly imported function name ---
           const decodedToken = jwtDecode(accessToken);
-          // --- ^ END FIXED ---
           if (decodedToken.exp * 1000 < Date.now()) {
             console.log("Access token expired, interceptor will refresh.");
           }
@@ -69,11 +71,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // --- EXPOSE THE NEW FUNCTION IN THE CONTEXT VALUE ---
   const value = {
     user,
     loading,
     login,
     logout,
+    updateUser, // Add the new function here
   };
   
   if (loading) {
