@@ -11,11 +11,15 @@ import {
   TableContainer,
   Paper,
   Typography,
+  Divider,
 } from "@mui/material";
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
+// --- LINE REMOVED --- The 'motion' import from framer-motion is no longer needed here.
 
-export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp }) {
+// --- BLOCK REMOVED --- The 'tableContainerVariants' object is removed as the animation logic is being moved to the child.
+
+export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp, FilterPanel }) {
   const visibleSections = visibleSectionsProp || formSections;
   const [activeForm, setActiveForm] = useState(null);
 
@@ -25,20 +29,32 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
 
   return (
     <Paper sx={{ p: { xs: 2, md: 3 } }}> 
-      <Typography variant="h5" fontWeight={600} gutterBottom sx={{ mb: 2 }}>
-        Submission Sections
-      </Typography>
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 2
+      }}>
+        <Typography variant="h4" fontWeight={700}>
+          Submission Sections
+        </Typography>
+        
+        {FilterPanel}
+      </Box>
       
+      <Divider sx={{ mb: 1 }} />
+
       <TableContainer>
         <Table>
-          {/* --- FIX: The stray comment that caused the warning has been removed from here. --- */}
           <TableHead sx={{ backgroundColor: "transparent" }}>
             <TableRow>
-              <TableCell sx={{ pl: 3.5, fontWeight: 'bold' }}>S. No.</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Form</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Options</TableCell>
+              <TableCell sx={{ width: '5%', pl: 3.5, fontWeight: 'bold' }}>S. No.</TableCell>
+              <TableCell sx={{ width: '70%', fontWeight: 'bold' }}>Form</TableCell>
+              <TableCell align="center" sx={{ width: '25%', fontWeight: 'bold', pr: 3.5 }}>Options</TableCell>
             </TableRow>
           </TableHead>
+          
+          {/* --- FIX: The <motion.tbody> has been replaced with a standard <tbody> --- */}
           <TableBody>
             {visibleSections.map((f, i) => {
               const isActive = activeForm === f.code;

@@ -1,17 +1,19 @@
 // src/components/Topbar.jsx
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   AppBar, Toolbar, Box, Button, Typography, Avatar, Menu, MenuItem,
   ListItemIcon, Divider, Container, IconButton, useTheme, Tooltip, Stack,
+  InputBase, alpha, Badge
 } from '@mui/material';
 import {
   Logout, AdminPanelSettings, Business as BusinessIcon, Dashboard,
-  Home, KeyboardArrowDown, Menu as MenuIcon, Assessment, // Changed Icon
+  Home, KeyboardArrowDown, Menu as MenuIcon, Assessment, Search,
+  Notifications, Brightness4, Brightness7
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
-import topPanelImg from '../assets/bittoppanel.png';
+import { useNavigate } from 'react-router-dom';
+import topPanelImg from '../assets/favicon.png';
 import ColorModeContext from '../ThemeContext';
 
 function stringToColor(string) {
@@ -30,7 +32,6 @@ function stringToColor(string) {
 export default function Topbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
 
@@ -58,13 +59,11 @@ export default function Topbar() {
     navigate('/');
   };
 
-  // --- Reusable Menu Item Components for cleaner code ---
   const AdminMenuItems = () => (
     <>
       <MenuItem onClick={() => handleNavigate('/home')}><ListItemIcon><Dashboard fontSize="small" /></ListItemIcon>Submissions View</MenuItem>
       <MenuItem onClick={() => handleNavigate('/admin/users')}><ListItemIcon><AdminPanelSettings fontSize="small" /></ListItemIcon>User Management</MenuItem>
       <MenuItem onClick={() => handleNavigate('/admin/departments')}><ListItemIcon><BusinessIcon fontSize="small" /></ListItemIcon>Departments</MenuItem>
-      {/* Enhancement: Using a more specific icon for Analytics */}
       <MenuItem onClick={() => handleNavigate('/admin/analytics')}><ListItemIcon><Assessment fontSize="small" /></ListItemIcon>Analytics</MenuItem>
     </>
   );
@@ -73,7 +72,6 @@ export default function Topbar() {
     <MenuItem onClick={() => handleNavigate('/home')}><ListItemIcon><Home fontSize="small" /></ListItemIcon>My Submissions</MenuItem>
   );
 
-  // Enhancement: Logout button is now a reusable component
   const LogoutMenuItem = () => (
     <MenuItem onClick={handleLogout}>
       <ListItemIcon><Logout fontSize="small" color="error" /></ListItemIcon>
@@ -82,34 +80,85 @@ export default function Topbar() {
   );
 
   return (
-    <AppBar
-      position="fixed"
-      elevation={0}
-      // The styles from theme.js are automatically applied here
-    >
+    <AppBar position="fixed" elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters sx={{ minHeight: { xs: 64, md: 72 } }}>
           <Box
-            component="img"
-            src={topPanelImg}
-            alt="BIT-DURG Banner"
             onClick={() => handleNavigate('/')}
-            sx={{ 
-              height: { xs: 36, md: 42 }, 
-              cursor: 'pointer',
-              // Enhancement: Invert logo color in dark mode for better visibility
-              filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none',
-            }}
-          />
+            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+          >
+            <Box
+              component="img"
+              src={topPanelImg}
+              alt="QR Portal Logo"
+              sx={{ 
+                height: { xs: 32, md: 36 }, 
+                filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none',
+                mr: 1.5,
+              }}
+            />
+            <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700, display: { xs: 'none', sm: 'block' }, color: 'text.primary' }}>
+              QR Portal
+            </Typography>
+          </Box>
+
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* === Desktop Navigation === */}
+          {/* === Desktop Global Controls === */}
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+            
+            <Box sx={{
+              position: 'relative',
+              borderRadius: '50px',
+              backgroundColor: alpha(theme.palette.text.primary, 0.05),
+              border: '1px solid',
+              borderColor: theme.palette.divider,
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.text.primary, 0.1),
+              },
+              width: '320px',
+            }}>
+              <Box sx={{ p: '0 16px', height: '100%', position: 'absolute', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Search sx={{ color: 'text.secondary' }} />
+              </Box>
+              <InputBase
+                placeholder="Search or type a command..."
+                sx={{
+                  color: 'text.primary',
+                  pl: '48px',
+                  width: '100%',
+                  '& .MuiInputBase-input': { py: 1.5 }
+                }}
+              />
+            </Box>
+
+            <Tooltip title={theme.palette.mode === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}>
+              <IconButton onClick={colorMode.toggleColorMode} sx={{ color: 'text.secondary' }}>
+                {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Notifications">
+              <IconButton sx={{ color: 'text.secondary' }}>
+                <Badge badgeContent={4} color="primary">
+                  <Notifications />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Divider orientation="vertical" flexItem sx={{ mx: 1, my: 1.5 }} />
+
             {!user ? (
               <Button variant="contained" onClick={() => handleNavigate('/login')}>Login</Button>
             ) : (
+              // --- THIS IS THE DEFINITIVE FIX FOR THE BROKEN MENU ---
+              // The Tooltip now wraps an IconButton, and the Button that opens the menu is separate.
+              // This provides a larger click area for the user while keeping the anchorEl correct.
               <Tooltip title="Account settings">
-                <Button onClick={handleOpenUserMenu} sx={{ borderRadius: '50px', p: 0.5, textTransform: 'none' }}>
+                <Button
+                  onClick={handleOpenUserMenu}
+                  sx={{ borderRadius: '50px', p: 0.5, textTransform: 'none' }}
+                >
                   <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 1 }}>
                     <Avatar sx={{ width: 40, height: 40, bgcolor: stringToColor(user.username) }}>
                       {user.username.charAt(0).toUpperCase()}
@@ -125,33 +174,19 @@ export default function Topbar() {
             )}
           </Stack>
           
-          {/* === Mobile Navigation === */}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <Tooltip title="Menu">
-              <IconButton onClick={handleOpenMobileMenu} sx={{ color: 'text.primary' }}>
-                <MenuIcon />
-              </IconButton>
+              <IconButton onClick={handleOpenMobileMenu} sx={{ color: 'text.primary' }}><MenuIcon /></IconButton>
             </Tooltip>
           </Box>
           
-          {/* --- Menus (Now cleaner and more readable) --- */}
-          <Menu
-            anchorEl={userMenuAnchor}
-            open={isUserMenuOpen}
-            onClose={handleCloseUserMenu}
-            PaperProps={{ elevation: 3, sx: { borderRadius: 2, minWidth: 240, mt: 1.5 } }}
-          >
+          <Menu anchorEl={userMenuAnchor} open={isUserMenuOpen} onClose={handleCloseUserMenu} PaperProps={{ sx: { minWidth: 240, mt: 1.5 } }}>
             {user?.role === 'Admin' ? <AdminMenuItems /> : <FacultyMenuItems />}
             <Divider sx={{ my: 1 }} />
             <LogoutMenuItem />
           </Menu>
 
-          <Menu
-            anchorEl={mobileMenuAnchor}
-            open={isMobileMenuOpen}
-            onClose={handleCloseMobileMenu}
-            PaperProps={{ elevation: 3, sx: { borderRadius: 2, width: '90%', maxWidth: 320 } }}
-          >
+          <Menu anchorEl={mobileMenuAnchor} open={isMobileMenuOpen} onClose={handleCloseMobileMenu} PaperProps={{ sx: { width: '90%', maxWidth: 320 } }}>
             {!user ? (
               <MenuItem onClick={() => handleNavigate('/login')}><ListItemIcon><Logout fontSize="small" /></ListItemIcon>Login</MenuItem>
             ) : (

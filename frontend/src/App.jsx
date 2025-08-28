@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Box, useTheme } from '@mui/material'; // Import useTheme
+import { Box, useTheme, alpha } from '@mui/material'; // Import alpha for color manipulation
 
 // Components
 import Topbar from './components/Topbar';
@@ -27,48 +27,46 @@ import StudentRoute from './routes/StudentRoute';
 
 export default function App() {
   const location = useLocation();
-  const theme = useTheme(); // Access the theme for background colors
+  const theme = useTheme();
 
   const isPublicAuthPage = ['/', '/login', '/login/student', '/signup'].includes(location.pathname);
   const isEmailVerification = location.pathname.startsWith('/verify-email');
   const isPublicPage = isPublicAuthPage || isEmailVerification;
 
-  // --- FIX: Define the background style for our glassmorphism effect ---
+  // --- THIS IS THE UI ENHANCEMENT ---
+  // A more vibrant, multi-layered radial gradient background.
   const backgroundStyles = {
     minHeight: '100vh',
     width: '100%',
-    // A subtle, modern gradient that works for both light and dark themes
-    backgroundImage: `linear-gradient(120deg, ${theme.palette.background.default} 0%, ${theme.palette.action.hover} 100%)`,
-    backgroundSize: 'cover',
-    backgroundAttachment: 'fixed', // Keeps the background static while content scrolls
+    backgroundColor: theme.palette.background.default, // Fallback color
+    // This creates soft, colored glows at the corners of the screen.
+    backgroundImage: `
+      radial-gradient(at 20% 25%, ${alpha(theme.palette.primary.main, 0.15)} 0px, transparent 50%),
+      radial-gradient(at 80% 20%, ${alpha(theme.palette.success.main, 0.15)} 0px, transparent 50%),
+      radial-gradient(at 25% 85%, ${alpha(theme.palette.warning.main, 0.15)} 0px, transparent 50%),
+      radial-gradient(at 80% 80%, ${alpha(theme.palette.error.main, 0.15)} 0px, transparent 50%)
+    `,
+    backgroundSize: '100% 100%',
+    backgroundAttachment: 'fixed',
   };
 
   return (
-    // This outer Box is now the main application container with our new background
     <Box sx={backgroundStyles}>
       {!isPublicPage && <Topbar />}
       <Box sx={!isPublicPage ? { pt: { xs: 8, md: 10 } } : {}}>
         <Routes>
-          {/* --- Public Routes --- */}
+          {/* --- All Route components remain the same --- */}
           <Route path="/" element={<PublicRoute><WelcomePage /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/login/student" element={<PublicRoute><StudentLoginPage /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><StudentSignupPage /></PublicRoute>} />
           <Route path="/verify-email/:uid/:token" element={<PublicRoute><EmailVerificationPage /></PublicRoute>} />
-
-          {/* --- Private Routes --- */}
           <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
           <Route path="/force-password-change" element={<PrivateRoute><ForcePasswordChangePage /></PrivateRoute>} />
-
-          {/* --- Admin Routes --- */}
           <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
           <Route path="/admin/departments" element={<AdminRoute><DepartmentManagement /></AdminRoute>} />
           <Route path="/admin/analytics" element={<AdminRoute><AnalyticsDashboard /></AdminRoute>} />
-          
-          {/* --- Student Routes --- */}
           <Route path="/student/dashboard" element={<StudentRoute><StudentDashboard /></StudentRoute>} />
-
-          {/* --- Catch-all redirects to the root --- */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>

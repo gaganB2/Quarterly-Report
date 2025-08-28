@@ -3,13 +3,34 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   TableRow, TableCell, Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
-  IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha,
+  IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha, Container,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
+import { motion } from "framer-motion";
+
+// --- THIS IS THE ANIMATION LOGIC ---
+const rowVariants = {
+  hidden: { 
+    opacity: 0,
+    y: 10, // Start 10px below its final position
+  },
+  visible: (i) => ({ // The (i) is the custom index we will pass
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.05, // Calculate the delay based on the row's index
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  }),
+};
+
+// Framer Motion works best when animating a direct motion component.
+const MotionTableRow = motion(TableRow);
 
 const PREVIEW_COLUMN_LIMIT = 5;
 
@@ -48,7 +69,9 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   const [error, setError] = useState(null);
 
   const cfg = formConfig[form.code];
-  if (!cfg || !cfg.endpoint) { return null; }
+  if (!cfg || !cfg.endpoint) {
+    return null;
+  }
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -130,19 +153,41 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     return null;
   };
 
-  const renderButton = (btnMode, label, color = "primary") => {
+  const renderActionButton = (btnMode, label, color = "primary", variant = "text") => {
     const active = isActive && mode === btnMode;
+    const isCollapse = active && ['add', 'view', 'edit', 'delete'].includes(btnMode);
+    
     return (
-      <Button size="small" onClick={() => handleOpen(btnMode)} sx={{ mr: 1, minWidth: 60 }} variant={active ? "contained" : "text"} color={active ? color : "inherit"}>
-        {active ? "Collapse" : label}
+      <Button
+        size="small"
+        onClick={() => handleOpen(btnMode)}
+        sx={{ 
+          minWidth: 64,
+          fontWeight: 600,
+        }}
+        variant={active ? "contained" : variant}
+        color={isCollapse ? color : "inherit"}
+        {...(btnMode === 'add' && { color: 'success' })}
+        {...(btnMode === 'edit' && { color: 'warning' })}
+        {...(btnMode === 'delete' && { color: 'error' })}
+      >
+        {isCollapse ? "Collapse" : label}
       </Button>
     );
   };
 
   return (
     <React.Fragment>
-      <TableRow key={`${form.code}-data`} hover sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>{idx + 1}</TableCell>
+      <MotionTableRow
+        key={`${form.code}-data`}
+        variants={rowVariants}
+        initial="hidden"
+        animate="visible"
+        custom={idx}
+        hover 
+        sx={{ '& > *': { borderBottom: 'unset' } }}
+      >
+        <TableCell sx={{ pl: 3.5 }}>{idx + 1}</TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Typography variant="body2" component="span" sx={{ flexGrow: 1 }}><strong>{form.code}</strong> — {form.title}</Typography>
@@ -151,13 +196,14 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
             ))}
           </Box>
         </TableCell>
-        <TableCell align="right">
-          {renderButton("add", "Add", "success")}
-          {renderButton("view", "View")}
-          {renderButton("edit", "Edit", "warning")}
-          {renderButton("delete", "Delete", "error")}
+        <TableCell align="center" sx={{ pr: 3.5, display: 'flex', gap: 1, justifyContent: 'center' }}>
+          {renderActionButton("add", "Add", "success")}
+          {renderActionButton("view", "View", "primary")}
+          {renderActionButton("edit", "Edit", "warning")}
+          {renderActionButton("delete", "Delete", "error")}
         </TableCell>
-      </TableRow>
+      </MotionTableRow>
+      
       <TableRow key={`${form.code}-collapse`}>
         <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
           <Collapse in={isActive} timeout="auto" unmountOnExit>
@@ -167,29 +213,22 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
           </Collapse>
         </TableCell>
       </TableRow>
-
-      {/* --- THIS IS THE DEFINITIVE FIX --- */}
+      
       <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
-        {/* The Dialog's Paper now has its own background gradient, providing contrast */}
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100vh',
-          width: '100%',
-          backgroundImage: `linear-gradient(120deg, ${theme.palette.background.default} 0%, ${theme.palette.action.hover} 100%)`,
-        }}>
-          {/* The AppBar will now get its glass style from the theme and be clearly visible against the gradient */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', background: theme.palette.background.default }}>
           <AppBar position="static">
-            <Toolbar>
-              <IconButton edge="start" color="inherit" onClick={() => setFullOpen(false)}><CloseIcon /></IconButton>
-              <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>{form.code} — Full Table</Typography>
-            </Toolbar>
+            <Container maxWidth="xl">
+              <Toolbar disableGutters>
+                <IconButton edge="start" color="inherit" onClick={() => setFullOpen(false)}><CloseIcon /></IconButton>
+                <Typography variant="h6" sx={{ ml: 2, flex: 1 }}>{form.code} — Full Table</Typography>
+              </Toolbar>
+            </Container>
           </AppBar>
-          
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', p: { xs: 2, sm: 3 } }}>
-            <FilterDisplay filters={filters} />
-            {/* GenericList renders its own Paper, which will have the glass effect */}
-            <GenericList data={data} fields={cfg.listFields || []} mode="view" onEdit={handleEditItem} onDelete={handleDeleteItem}/>
+          <Box sx={{ flexGrow: 1, overflowY: 'auto', py: { xs: 2, sm: 3 } }}>
+            <Container maxWidth="xl">
+              <FilterDisplay filters={filters} />
+              <GenericList data={data} fields={cfg.listFields || []} mode="view" onEdit={handleEditItem} onDelete={handleDeleteItem}/>
+            </Container>
           </Box>
         </Box>
       </Dialog>
