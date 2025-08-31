@@ -1,8 +1,7 @@
 # Quarterly Report Portal for BIT Durg
 
-
-<p align="center">
-  <img src="\public\assets\logo.png" alt="BIT-DURG Banner" width="400"/>
+<p align-center">
+  <img src="frontend/public/assets/logo.png" alt="BIT-DURG Banner" width="400"/>
 </p>
 
 <p align="center">
@@ -18,10 +17,9 @@
 
 ## Table of Contents
 
-## Table of Contents
-
 - [About The Project](#about-the-project)
 - [Key Features](#-key-features)
+- [✨ Feature Showcase](#-feature-showcase)
 - [Technology Stack](#-technology-stack)
 - [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
@@ -34,45 +32,110 @@
 - [Contributing](#-contributing)
 - [License](#-license)
 
------
+---
 
 ## About The Project
 
 This portal provides a secure, role-based system for faculty to submit academic and research data, for Heads of Department (HODs) to oversee departmental submissions, and for administrators to manage the entire system and derive key analytics. The application is built with a modern, decoupled architecture, featuring a Django REST Framework backend and a React (Vite) frontend.
 
------
+---
 
-## ✨ Key Features
+## Key Features
 
 This project incorporates a range of industry-standard features with a focus on security, scalability, and user experience.
 
-  - **🔐 Role-Based Access Control (RBAC):** Three distinct user roles (**Faculty**, **HOD**, **Admin**) with tailored permissions and dashboard views.
-  - **📝 Dynamic Form System:** A highly scalable system that dynamically generates over 40 unique data submission forms from a central configuration, adhering to the DRY principle.
-  - **⚙️ Complete Admin Dashboard:** Dedicated UIs for administrators to perform full CRUD operations on user accounts and academic departments.
-  - **🔍 Advanced Filtering & Search:** Powerful filtering panels for both faculty and admins to sort and view submission data by academic session, department, or individual faculty member.
-  - **🛡️ Secure User Onboarding:**
-      - **Email Verification:** New users must verify their email via a secure, one-time link before their account is activated.
-      - **Forced Password Change:** Users are required to change their temporary, admin-provided password on their first login.
-  - **🔑 Token-Based Authentication:** Secure JWT (JSON Web Token) authentication with automated silent token refresh for a seamless user session.
-  - **🎨 Modern, Responsive UI:** A polished UI built with Material-UI that is fully responsive and supports both **light and dark modes**.
-  - **📊 Analytics & Visualization:** A dedicated analytics dashboard for admins to view aggregated data with interactive charts.
+-   **🔐 Role-Based Access Control (RBAC):** Four distinct user roles (**Faculty**, **HOD**, **Admin**, **Student**) with tailored permissions and dashboard views.
+-   **📝 Dynamic Form System:** A highly scalable system that dynamically generates over 40 unique data submission forms from a central configuration, adhering to the DRY principle.
+-   **📊 Bulk Data Management:** A template-driven **Excel import/export system** with intelligent validation to handle large datasets efficiently and safely.
+-   **⚙️ Complete Admin Dashboard:** Dedicated UIs for administrators to perform full CRUD operations on user accounts and academic departments.
+-   **🔍 Advanced Filtering & Search:** Powerful filtering panels for admins and faculty to sort submission data by academic session, department, or individual faculty member.
+-   **🛡️ Secure User Onboarding:**
+    -   **Email Verification:** New users must verify their email via a secure, one-time link before their account is activated.
+    -   **Forced Password Change:** Staff users are required to change their admin-provided password on their first login.
+-   **🔑 Secure Password Recovery:** A full self-service workflow for users to securely reset their forgotten passwords via email.
+-   **⚡ Token-Based Authentication:** Secure JWT (JSON Web Token) authentication with automated silent token refresh for a seamless user session.
+-   **🎨 Modern, Responsive UI:** A polished UI built with Material-UI that is fully responsive and supports both **light and dark modes**.
+-   **📈 Analytics & Visualization:** A dedicated analytics dashboard for admins to view aggregated data with interactive charts.
 
------
+---
 
-## 🛠️ Technology Stack
+## ✨ Feature Showcase
 
-| Area                  | Technology                                     |
-| --------------------- | ---------------------------------------------- |
-| **Backend**           | Django, Django REST Framework                  |
-| **Frontend**          | React 18, Vite                                 |
-| **Database**          | PostgreSQL                                     |
-| **UI Library**        | Material-UI (MUI) v5                           |
-| **Authentication**    | Simple JWT (JSON Web Token)                    |
-| **API Communication** | Axios (with interceptors for token management) |
-| **Form Validation**   | Yup (Client-Side), DRF Validators (Server-Side)|
-| **Data Visualization**| Recharts                                       |
+#### Role-Based Dashboards
+*The UI and available forms adapt based on whether the user is a Faculty, Student, or Admin.*
 
------
+<!-- 
+    PLACEHOLDER INSTRUCTION:
+    Take a screenshot of the main dashboard when logged in as a Faculty/HOD.
+    Replace the path below.
+-->
+![Faculty Dashboard Screenshot](path/to/your/faculty_dashboard.png)
+
+<br/>
+
+#### Centralized User Management
+*Admins have a dedicated interface to manage all user accounts, roles, and statuses.*
+
+<!-- 
+    PLACEHOLDER INSTRUCTION:
+    Take a screenshot of the User Management table in the admin panel.
+    Replace the path below.
+-->
+![User Management Screenshot](path/to/your/user_management.png)
+
+<br/>
+
+#### Interactive Analytics
+*Admins can visualize submission data with interactive charts and dynamic filters.*
+
+<!-- 
+    PLACEHOLDER INSTRUCTION:
+    Take a screenshot of the Analytics Dashboard page, showing the charts.
+    Replace the path below.
+-->
+![Analytics Dashboard Screenshot](path/to/your/analytics_dashboard.png)
+
+<br/>
+
+#### Intelligent Excel Import Wizard
+*A guided, template-driven workflow ensures data integrity during bulk uploads.*
+
+<!-- 
+    PLACEHOLDER INSTRUCTION:
+    Take a screenshot of the "Import Data" dialog box.
+    Replace the path below.
+-->
+![Excel Import Screenshot](path/to/your/excel_import_wizard.png)
+
+<br/>
+
+#### Secure Onboarding & Password Recovery
+*Users are guided through secure processes for account activation and password resets.*
+
+<!-- 
+    PLACEHOLDER INSTRUCTION:
+    Take a screenshot of either the "Force Password Change" page or the "Forgot Password" page.
+    Replace the path below.
+-->
+![Security Flow Screenshot](path/to/your/security_flow.png)
+
+---
+
+## Technology Stack
+
+| Area                   | Technology                                     |
+| ---------------------- | ---------------------------------------------- |
+| **Backend**            | Django, Django REST Framework                  |
+| **Frontend**           | React 18, Vite                                 |
+| **Database**           | PostgreSQL                                     |
+| **UI Library**         | Material-UI (MUI) v5                           |
+| **Authentication**     | Simple JWT (JSON Web Token)                    |
+| **API Communication**  | Axios (with interceptors for token management) |
+| **Form Management**    | React Hook Form, Yup, Zod                      |
+| **Data Handling**      | OpenPyXL (Backend), File-Saver, React-Dropzone |
+| **Data Visualization** | Recharts                                       |
+
+---
 
 ## 🚀 Getting Started
 
@@ -139,7 +202,7 @@ npm run dev
 
 The frontend application will now be running at `http://localhost:5173`.
 
------
+---
 
 ## 🔑 Environment Variables
 
@@ -161,7 +224,8 @@ You must create a `.env` file in the `/backend` directory. Below is a descriptio
 | `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173`       |
 | `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `your.email@gmail.com`        |
 | `EMAIL_HOST_PASSWORD` | Your Gmail App Password (not your regular password). | `your_app_password`           |
------
+
+---
 
 ## 🧪 Running Tests
 
@@ -172,7 +236,7 @@ The backend includes a suite of tests to ensure the reliability of the user auth
 python manage.py test
 ```
 
------
+---
 
 ## 🌐 API Overview
 
@@ -184,20 +248,21 @@ The backend exposes a set of RESTful endpoints for managing data.
 | `/api/register/`          | **(Admin)** Create a new user.                            |
 | `/api/admin/users/`       | **(Admin)** Manage all user accounts.                     |
 | `/api/admin/departments/` | **(Admin)** Manage academic departments.                  |
-| `/api/faculty/...`        | Endpoints for faculty to submit various report data.      |
-| `/api/analytics/...`      | **(Admin)** Endpoints for aggregated analytics and charts.|
+| `/api/data/...`           | Endpoints for faculty & students to submit report data.   |
+| `/api/analytics/...`      | **(Admin/HOD)** Endpoints for aggregated analytics.       |
 
------
+---
 
 ## 🧑‍🤝‍🧑 User Roles & Usage
 
-The application has three user roles with different capabilities:
+The application has four user roles with different capabilities:
 
-  * **Faculty:** Can log in, view the submission dashboard, and add, edit, or delete their own report records.
+  * **Student:** Can log in, view their submission dashboard, and add, edit, or delete their own S-series report records.
+  * **Faculty:** Can log in, view their submission dashboard, and add, edit, or delete their own T-series and S1.1 report records.
   * **HOD (Head of Department):** Has all the permissions of a Faculty member, but can also view all submissions from every user within their specific department.
   * **Admin:** Has full access to the system. They can view all submissions from all departments and access the administrative dashboard to manage users and departments.
 
------
+---
 
 ## 🤝 Contributing
 
@@ -210,7 +275,7 @@ Contributions to this project are welcome. Please follow these steps:
 5.  Push to the branch (`git push origin feature/YourFeature`).
 6.  Open a Pull Request.
 
------
+---
 
 ## 📄 License
 
