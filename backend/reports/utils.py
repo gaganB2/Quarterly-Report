@@ -49,10 +49,11 @@ def generate_excel_report(queryset, model_class):
         for field in fields:
             row_data.append(getattr(obj, field.name))
         
+        # This was causing an error if row_data was shorter than headers, so we use ws.append instead.
         ws.append(row_data)
         # Apply styles to data cells
         for col_num in range(1, len(headers) + 1):
-            cell = ws.cell(row=row_num, column=col_num)
+            cell = ws.cell(row=row_num + 1, column=col_num) # Adjust row index for append
             cell.alignment = cell_alignment
             cell.border = thin_border
 
@@ -80,3 +81,53 @@ def generate_excel_report(queryset, model_class):
     wb.save(response)
     return response
 
+# ==============================================================================
+# --- NEW FUNCTION FOR IMPORT TEMPLATE ---
+# ==============================================================================
+
+def generate_blank_excel_template(model_class):
+    """
+    Generates a blank, styled Excel template file with headers for a given model,
+    which users can download, fill, and re-upload.
+    """
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    model_name = model_class._meta.verbose_name.replace(' ', '_')
+    ws.title = f"Template_{model_name}"
+
+    # --- Styles ---
+    header_font = Font(name='Calibri', size=11, bold=True, color='FFFFFF')
+    header_fill = PatternFill(start_color='2F75B5', end_color='2F75B5', fill_type='solid')
+    header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    # --- Determine Headers ---
+    # We get the raw field names from the model that a user is expected to fill.
+    # We EXCLUDE fields that are automatically set by the backend (user, department)
+    # or are auto-generated (id, created_at, updated_at).
+    excluded_fields = ['id', 'user', 'department', 'created_at', 'updated_at']
+    headers = [
+        field.name for field in model_class._meta.get_fields() 
+        if field.name not in excluded_fields and not field.is_relation
+    ]
+    
+    # Write Header Row and Apply Styles
+    ws.append(headers)
+    for col_num, header_title in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+        cell.border = thin_border
+        # Set column width based on header length for better usability
+        ws.column_dimensions[get_column_letter(col_num)].width = len(header_title.replace('_', ' ')) + 8
+
+    # Create HTTP Response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    filename = f"Template_{model_name}.xlsx"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    wb.save(response)
+    return response

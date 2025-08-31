@@ -21,8 +21,6 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 
 # --- Router for Faculty & Student Data Submissions ---
-# This router handles all T-Series and S-Series forms.
-# Permissions are handled within each ViewSet.
 data_router = DefaultRouter()
 data_router.register(r't1research', T1ResearchViewSet, basename='t1research')
 data_router.register(r't1_2research', T1_2ResearchViewSet, basename='t1_2research')
@@ -75,11 +73,14 @@ public_router.register(r'departments', PublicDepartmentListViewSet, basename='pu
 urlpatterns = [
     path('', RedirectView.as_view(url='/api/schema/swagger-ui/', permanent=False), name='index'),
     path('admin/', admin.site.urls),
-    path('api/data/', include(data_router.urls)), # Consolidated data endpoint
+    path('api/data/', include(data_router.urls)),
     path('api/admin/', include(admin_router.urls)),
-    path('api/public/', include(public_router.urls)), # Public endpoint for signup page
+    path('api/public/', include(public_router.urls)),
     path('api/analytics/', include('analytics.urls')),
     path('api/reports/counts/', ReportCountsView.as_view(), name='report-counts'),
+
+    # --- NEW: URL for Excel Imports ---
+    path('api/import/<str:model_name>/', ExcelImportView.as_view(), name='excel-import'),
 
     # Auth & Profile routes
     path('api/register/', RegisterUserView.as_view(), name='register'),

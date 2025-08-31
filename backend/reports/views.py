@@ -5,11 +5,14 @@ from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from django.apps import apps
+import openpyxl
 
 from .models import *
 from .serializers import *
 from .filters import *
-from .utils import generate_excel_report
+from .utils import generate_excel_report, generate_blank_excel_template
 from users.models import Profile
 from .permissions import IsStudent, IsNotStudent
 
@@ -20,7 +23,7 @@ from .permissions import IsStudent, IsNotStudent
 class BaseReportViewSet(viewsets.ModelViewSet):
     """
     A base ViewSet that provides common queryset logic and now includes a
-    new action for exporting data to Excel.
+    new action for exporting data to Excel and downloading an import template.
     """
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
@@ -52,6 +55,15 @@ class BaseReportViewSet(viewsets.ModelViewSet):
         """
         filtered_queryset = self.filter_queryset(self.get_queryset())
         return generate_excel_report(filtered_queryset, self.queryset.model)
+
+    @action(detail=False, methods=['get'], url_path='download-template')
+    def download_template(self, request, *args, **kwargs):
+        """
+        Generates and returns a blank, styled Excel template for the specific model.
+        This is called by the frontend's "Download Template" button.
+        """
+        model_class = self.queryset.model
+        return generate_blank_excel_template(model_class)
 
 # =============================================================================
 # 2. DYNAMIC VIEWSET FACTORY
@@ -129,13 +141,7 @@ class PublicDepartmentListViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 class ReportCountsView(APIView):
-    """
-    Calculates and returns the number of submissions for each report type,
-    respecting the user's role and any applied filters.
-    """
     permission_classes = [permissions.IsAuthenticated]
-
-    # Map form codes from the frontend to the backend Django models
     MODEL_MAP = {
         'T1.1': T1_ResearchArticle, 'T1.2': T1_2ResearchArticle,
         'T2.1': T2_1WorkshopAttendance, 'T2.2': T2_2WorkshopOrganized,
@@ -160,14 +166,12 @@ class ReportCountsView(APIView):
         except Profile.DoesNotExist:
             return Response({'counts': {}}, status=403)
 
-        # 1. Build a base filter based on user role
         base_filters = {}
         if profile.role == Profile.Role.HOD:
             base_filters['department'] = profile.department
         elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]:
             base_filters['user'] = user
 
-        # 2. Add query parameter filters from the frontend
         query_params = request.query_params
         if 'year' in query_params and query_params['year']:
             base_filters['year'] = query_params['year']
@@ -176,12 +180,79 @@ class ReportCountsView(APIView):
         if 'department' in query_params and query_params['department']:
              base_filters['department_id'] = query_params['department']
         
-        # 3. Iterate over the models and get counts
         counts = {}
         for form_code, model_class in self.MODEL_MAP.items():
-            # Apply the combined filters to each model and get the count
             count = model_class.objects.filter(**base_filters).count()
             counts[form_code] = count
             
-        # 4. Return the data in the format the frontend expects
         return Response({'counts': counts})
+
+# --- FINALIZED: GENERIC EXCEL IMPORT VIEW ---
+class ExcelImportView(APIView):
+    """
+    A generic view to handle Excel file imports for any report model.
+    It performs row-by-row validation and provides detailed feedback.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, model_name, *args, **kwargs):
+        file = request.FILES.get('file')
+        if not file:
+            return Response({"error": "No Excel file provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            model_class = apps.get_model('reports', model_name)
+            serializer_name = f"{model_class.__name__}Serializer"
+            serializer_class = globals()[serializer_name]
+        except (LookupError, KeyError):
+            return Response({"error": f"Invalid model name '{model_name}'. Please ensure it is cased correctly."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(file, data_only=True)
+            sheet = wb.active
+        except Exception as e:
+            return Response({"error": f"Failed to read Excel file: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        header_row = [cell.value for cell in sheet[1]]
+        
+        expected_headers = [
+            field.name for field in model_class._meta.get_fields() 
+            if field.name not in ['id', 'user', 'department', 'created_at', 'updated_at'] and not field.is_relation
+        ]
+
+        if header_row != expected_headers:
+            return Response({
+                "error": "Invalid file format. The column headers do not match the required template. Please download the template and try again."
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        success_count = 0
+        error_count = 0
+        errors = []
+
+        for row_index in range(2, sheet.max_row + 1):
+            row_data = {header_row[i]: sheet.cell(row=row_index, column=i + 1).value for i in range(len(header_row))}
+            
+            serializer = serializer_class(data=row_data, context={'request': request})
+            
+            if serializer.is_valid():
+                try:
+                    serializer.save()
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    errors.append({
+                        "row_number": row_index,
+                        "error_message": {"database_error": str(e)}
+                    })
+            else:
+                error_count += 1
+                errors.append({
+                    "row_number": row_index,
+                    "error_message": serializer.errors
+                })
+
+        return Response({
+            "success_count": success_count,
+            "error_count": error_count,
+            "errors": errors
+        }, status=status.HTTP_200_OK)
