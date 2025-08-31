@@ -1,5 +1,4 @@
 // src/pages/StudentLoginPage.jsx
-
 import React, { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -39,15 +38,11 @@ export default function StudentLoginPage() {
     try {
       const loggedInUser = await login(creds.username, creds.password);
 
-      // Ensure the user has the 'Student' role.
       if (loggedInUser.role !== 'Student') {
         setLoginError("This login is for students only. Please use the main login page for other roles.");
         return; 
       }
       
-      // FIX: Removed the incorrect check for `password_changed`.
-      // Students set their own password, so they are never forced to change it.
-      // After a successful login, they are always sent to their dashboard.
       navigate("/student/dashboard");
 
     } catch (error) {
@@ -144,6 +139,12 @@ export default function StudentLoginPage() {
                 ),
               }}
             />
+
+            <Box sx={{ textAlign: 'right', width: '100%', mt: -1, mb: 1 }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                Forgot Password?
+              </Link>
+            </Box>
 
             <Button
               type="submit"

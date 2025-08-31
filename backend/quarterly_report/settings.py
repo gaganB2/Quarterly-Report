@@ -109,7 +109,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/minute',
-        'user': '1000/minute'
+        'user': '1000/minute',
+        'password-reset': '5/hour'
     }
 }
 
@@ -160,6 +161,8 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+# PASSWORD_RESET_TIMEOUT = 3600  # Sets timeout to 1 hour (in seconds)
 
 # --- Email Configuration ---
 # Use console backend for development to see emails printed to the terminal

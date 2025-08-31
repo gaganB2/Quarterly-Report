@@ -12,7 +12,9 @@ from users.views import (
     UserManagementViewSet,
     CustomTokenObtainPairView,
     VerifyEmailView,
-    SetInitialPasswordView
+    SetInitialPasswordView,
+    RequestPasswordResetView,
+    ConfirmPasswordResetView,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -87,6 +89,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/verify-email/', VerifyEmailView.as_view(), name='verify-email'),
     path('api/set-password/', SetInitialPasswordView.as_view(), name='set-initial-password'),
+    path('api/password-reset/request/', RequestPasswordResetView.as_view(), name='password-reset-request'),
+    path('api/password-reset/confirm/', ConfirmPasswordResetView.as_view(), name='password-reset-confirm'),
 
     # API DOCUMENTATION URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

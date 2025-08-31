@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from decouple import config
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from rest_framework import status, permissions, generics, viewsets
 from rest_framework.response import Response
@@ -157,3 +159,84 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         instance.is_active = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# ==============================================================================
+# --- FINALIZED PASSWORD RESET VIEWS ---
+# ==============================================================================
+
+class RequestPasswordResetView(APIView):
+    """
+    Handles the first step of the password reset process.
+    Takes an email, and if it exists, sends a secure reset link.
+    """
+    permission_classes = [permissions.AllowAny]
+    throttle_scope = 'password-reset'
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email address is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            user = None
+
+        if user:
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            frontend_url = config('FRONTEND_BASE_URL', 'http://localhost:5173')
+            reset_url = f"{frontend_url}/reset-password/{uid}/{token}/"
+
+            email_body = render_to_string('password_reset_email.txt', {
+                'user': user,
+                'reset_url': reset_url,
+            })
+            
+            send_mail(
+                "Password Reset Request for QR Portal",
+                email_body,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                fail_silently=False,
+            )
+        
+        return Response({"message": "If an account with that email exists, a password reset link has been sent."}, status=status.HTTP_200_OK)
+
+class ConfirmPasswordResetView(APIView):
+    """
+    Handles the final step of the password reset.
+    Validates the token and UID, then sets the new password.
+    """
+    permission_classes = [permissions.AllowAny]
+    throttle_scope = 'password-reset'
+
+    def post(self, request, *args, **kwargs):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        password = request.data.get('password')
+
+        if not all([uidb64, token, password]):
+            return Response({"error": "UID, token, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is None or not default_token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired password reset link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            validate_password(password, user)
+        except ValidationError as e:
+            return Response({"error": list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(password)
+        if hasattr(user, 'profile') and user.profile.password_changed is False:
+            user.profile.password_changed = True
+            user.profile.save()
+        user.save()
+        
+        return Response({"message": "Password has been reset successfully. You can now log in."}, status=status.HTTP_200_OK)

@@ -1,8 +1,6 @@
 // src/pages/LoginPage.jsx
-// Modern, minimal, and premium login page design
-
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   Box,
@@ -21,6 +19,7 @@ import {
   useTheme,
   useMediaQuery,
   Fade,
+  Link,
 } from "@mui/material";
 import {
   Visibility,
@@ -39,7 +38,6 @@ import logo from "/assets/logo.png";
 const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
 
-// Minimal floating elements
 const BackgroundElements = () => (
   <Box
     sx={{
@@ -52,7 +50,6 @@ const BackgroundElements = () => (
       zIndex: 0,
     }}
   >
-    {/* Subtle geometric shapes */}
     <MotionBox
       sx={{
         position: "absolute",
@@ -128,9 +125,8 @@ export default function LoginPage() {
     try {
       const loggedInUser = await login(creds.username, creds.password);
 
-      // Check if the user needs to change their password
       if (loggedInUser.password_changed === false) {
-        navigate("/force-password-change"); // Redirect to the new page
+        navigate("/force-password-change");
       } else if (loggedInUser.role === "Admin") {
         navigate("/admin/users");
       } else {
@@ -139,7 +135,6 @@ export default function LoginPage() {
       
     } catch (error) {
       console.error("Login failed:", error);
-      // Check the specific error message from the backend
       const errorDetail = error.response?.data?.detail;
       if (errorDetail && errorDetail.includes("No active account")) {
         setLoginError(
@@ -208,7 +203,6 @@ export default function LoginPage() {
             minHeight: { xs: "auto", lg: "80vh" },
           }}
         >
-          {/* Left Section - Minimal Brand */}
           <MotionBox
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -220,7 +214,6 @@ export default function LoginPage() {
               textAlign: { xs: "center", lg: "left" },
             }}
           >
-            {/* Clean Logo Section */}
             <Box>
               <MotionBox
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -314,7 +307,6 @@ export default function LoginPage() {
               </Typography>
             </Box>
 
-            {/* Minimal Feature Pills */}
             {!isMobile && (
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 <Chip
@@ -342,8 +334,6 @@ export default function LoginPage() {
               </Box>
             )}
           </MotionBox>
-
-          {/* Right Section - Clean Login Form */}
           <MotionBox
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -363,7 +353,6 @@ export default function LoginPage() {
                 boxShadow: "0 20px 60px rgba(0, 0, 0, 0.1)",
               }}
             >
-              {/* Header */}
               <Box sx={{ mb: 4, textAlign: "center" }}>
                 <Typography
                   variant="h5"
@@ -376,8 +365,6 @@ export default function LoginPage() {
                   Sign in to your account
                 </Typography>
               </Box>
-
-              {/* Minimal Role Tabs */}
               <Box sx={{ mb: 4 }}>
                 <Box
                   sx={{
@@ -421,10 +408,8 @@ export default function LoginPage() {
                   ))}
                 </Box>
               </Box>
-
-              {/* Clean Form */}
               <Stack
-                spacing={3}
+                spacing={2}
                 component="form"
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -448,7 +433,6 @@ export default function LoginPage() {
                     </Fade>
                   )}
                 </AnimatePresence>
-
                 <TextField
                   name="username"
                   label={role === "faculty" ? "Faculty ID" : "Admin Username"}
@@ -490,7 +474,6 @@ export default function LoginPage() {
                     },
                   }}
                 />
-
                 <TextField
                   name="password"
                   label="Password"
@@ -548,7 +531,13 @@ export default function LoginPage() {
                     },
                   }}
                 />
-
+                
+                <Box sx={{ textAlign: 'right', width: '100%', mt: -1, mb: 1 }}>
+                  <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ fontWeight: 500 }}>
+                    Forgot Password?
+                  </Link>
+                </Box>
+                
                 <Button
                   type="submit"
                   variant="contained"
@@ -587,8 +576,6 @@ export default function LoginPage() {
                   )}
                 </Button>
               </Stack>
-
-              {/* Footer */}
               <Box sx={{ mt: 4, textAlign: "center" }}>
                 <Typography
                   variant="caption"

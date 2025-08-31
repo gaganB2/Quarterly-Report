@@ -16,8 +16,25 @@ export default function PublicRoute({ children }) {
 
   // If a user object exists, they are logged in.
   if (user) {
-    // Redirect admins to their dashboard, others to the faculty homepage.
-    const redirectTo = user.role === 'Admin' ? '/admin/users' : '/home';
+    let redirectTo = '/home'; // Default redirect for Faculty/HOD
+
+    // Use a switch statement for clear, explicit routing based on role.
+    switch (user.role) {
+      case 'Admin':
+        redirectTo = '/admin/users';
+        break;
+      case 'Student':
+        redirectTo = '/student/dashboard'; // THIS IS THE CRITICAL FIX
+        break;
+      case 'Faculty':
+      case 'HOD':
+        redirectTo = '/home';
+        break;
+      default:
+        redirectTo = '/login'; // Fallback to login if role is unknown
+        break;
+    }
+    
     return <Navigate to={redirectTo} replace />;
   }
 

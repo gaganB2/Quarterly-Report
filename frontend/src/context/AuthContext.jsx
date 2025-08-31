@@ -10,17 +10,16 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  // Start in a loading state to prevent premature rendering
   const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    delete apiClient.defaults.headers.common["Authorization"];
+    // No need to delete from apiClient defaults, the interceptor handles it.
   }, []);
-
   
-  // Allows other parts of the app to update the user state after an action, like changing a password.
   const updateUser = useCallback((updatedUserData) => {
     setUser(prevUser => ({ ...prevUser, ...updatedUserData }));
   }, []);
@@ -28,25 +27,38 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       const accessToken = localStorage.getItem("accessToken");
-      const refreshToken = localStorage.getItem("refreshToken");
 
-      if (accessToken && refreshToken) {
-        try {
-          const decodedToken = jwtDecode(accessToken);
-          if (decodedToken.exp * 1000 < Date.now()) {
-            console.log("Access token expired, interceptor will refresh.");
-          }
-          
-          const response = await apiClient.get("/api/profile/");
-          setUser(response.data);
-
-        } catch (error) {
-          console.error("Failed to initialize auth, logging out.", error);
-          logout();
-        }
+      // If there's no token, we know the user is not logged in.
+      // Stop loading and render the app.
+      if (!accessToken) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      
+      // If a token exists, try to validate it and fetch the user profile.
+      try {
+        const decodedToken = jwtDecode(accessToken);
+        // Check if token is expired. The interceptor will handle the refresh,
+        // but this check is good practice.
+        if (decodedToken.exp * 1000 < Date.now()) {
+          console.log("Access token expired, interceptor will handle refresh.");
+        }
+        
+        // The apiClient will automatically handle token refresh if needed.
+        const response = await apiClient.get("/api/profile/");
+        setUser(response.data);
+
+      } catch (error) {
+        // If profile fetch fails even after a refresh attempt, the refresh token is bad.
+        // Log the user out completely.
+        console.error("Auth initialization failed. Logging out.", error);
+        logout();
+      } finally {
+        // CRITICAL: Ensure loading is set to false in all cases.
+        setLoading(false);
+      }
     };
+
     initializeAuth();
   }, [logout]);
 
@@ -62,7 +74,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
       setUser(userData);
-      apiClient.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       
       return userData;
     } catch (error) {
@@ -71,15 +82,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // --- EXPOSE THE NEW FUNCTION IN THE CONTEXT VALUE ---
   const value = {
     user,
     loading,
     login,
     logout,
-    updateUser, // Add the new function here
+    updateUser,
   };
   
+  // While the initial auth check is running, show a full-screen loader.
+  // This prevents any other part of the app from rendering with an incomplete auth state.
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>

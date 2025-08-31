@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Box, useTheme, alpha } from '@mui/material'; // Import alpha for color manipulation
+import { Box, useTheme, alpha } from '@mui/material';
 
 // Components
 import Topbar from './components/Topbar';
@@ -18,6 +18,8 @@ import ForcePasswordChangePage from './pages/ForcePasswordChangePage';
 import StudentLoginPage from './pages/StudentLoginPage';
 import StudentSignupPage from './pages/StudentSignupPage';
 import StudentDashboard from './pages/StudentDashboard';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Route protection
 import PrivateRoute from './routes/PrivateRoute';
@@ -29,17 +31,15 @@ export default function App() {
   const location = useLocation();
   const theme = useTheme();
 
-  const isPublicAuthPage = ['/', '/login', '/login/student', '/signup'].includes(location.pathname);
+  const isPublicAuthPage = ['/', '/login', '/login/student', '/signup', '/forgot-password'].includes(location.pathname);
   const isEmailVerification = location.pathname.startsWith('/verify-email');
-  const isPublicPage = isPublicAuthPage || isEmailVerification;
+  const isPasswordReset = location.pathname.startsWith('/reset-password');
+  const isPublicPage = isPublicAuthPage || isEmailVerification || isPasswordReset;
 
-  // --- THIS IS THE UI ENHANCEMENT ---
-  // A more vibrant, multi-layered radial gradient background.
   const backgroundStyles = {
     minHeight: '100vh',
     width: '100%',
-    backgroundColor: theme.palette.background.default, // Fallback color
-    // This creates soft, colored glows at the corners of the screen.
+    backgroundColor: theme.palette.background.default,
     backgroundImage: `
       radial-gradient(at 20% 25%, ${alpha(theme.palette.primary.main, 0.15)} 0px, transparent 50%),
       radial-gradient(at 80% 20%, ${alpha(theme.palette.success.main, 0.15)} 0px, transparent 50%),
@@ -55,7 +55,6 @@ export default function App() {
       {!isPublicPage && <Topbar />}
       <Box sx={!isPublicPage ? { pt: { xs: 8, md: 10 } } : {}}>
         <Routes>
-          {/* --- All Route components remain the same --- */}
           <Route path="/" element={<PublicRoute><WelcomePage /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
           <Route path="/login/student" element={<PublicRoute><StudentLoginPage /></PublicRoute>} />
@@ -67,6 +66,8 @@ export default function App() {
           <Route path="/admin/departments" element={<AdminRoute><DepartmentManagement /></AdminRoute>} />
           <Route path="/admin/analytics" element={<AdminRoute><AnalyticsDashboard /></AdminRoute>} />
           <Route path="/student/dashboard" element={<StudentRoute><StudentDashboard /></StudentRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+          <Route path="/reset-password/:uid/:token" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>
