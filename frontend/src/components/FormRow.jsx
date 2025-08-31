@@ -4,32 +4,35 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   TableRow, TableCell, Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
   IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha, Container,
+  DialogTitle, Tooltip
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { FileDownload as DownloadIcon, UploadFile as UploadIcon } from '@mui/icons-material';
 import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
 import GenericForm from "./GenericForm";
 import { motion } from "framer-motion";
+import { saveAs } from 'file-saver';
+import { useSnackbar } from 'notistack';
+import ImportDialog from "./ImportDialog"; // --- Import the real dialog ---
 
-// --- THIS IS THE ANIMATION LOGIC ---
 const rowVariants = {
   hidden: { 
     opacity: 0,
-    y: 10, // Start 10px below its final position
+    y: 10,
   },
-  visible: (i) => ({ // The (i) is the custom index we will pass
+  visible: (i) => ({
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.05, // Calculate the delay based on the row's index
+      delay: i * 0.05,
       duration: 0.3,
       ease: "easeOut",
     },
   }),
 };
 
-// Framer Motion works best when animating a direct motion component.
 const MotionTableRow = motion(TableRow);
 
 const PREVIEW_COLUMN_LIMIT = 5;
@@ -61,12 +64,14 @@ const FilterDisplay = ({ filters }) => {
 
 export default function FormRow({ form, idx, filters, isActive, onToggleActive, count, isLoadingCount }) {
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
   const [mode, setMode] = useState("add");
   const [data, setData] = useState([]);
   const [editData, setEditData] = useState(null);
   const [fullOpen, setFullOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isImportOpen, setImportOpen] = useState(false);
 
   const cfg = formConfig[form.code];
   if (!cfg || !cfg.endpoint) {
@@ -77,7 +82,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     setIsLoading(true);
     setError(null);
     const params = new URLSearchParams(filters).toString();
-    const url = `${cfg.endpoint}?${params}`;
+    const url = `/${cfg.endpoint}?${params}`;
     try {
       const res = await apiClient.get(url);
       setData(res.data.results || []);
@@ -86,7 +91,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     } finally {
       setIsLoading(false);
     }
-  }, [form.code, cfg.endpoint, filters]);
+  }, [cfg.endpoint, filters]);
 
   useEffect(() => {
     if (isActive && ['view', 'edit', 'delete'].includes(mode)) {
@@ -112,7 +117,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
 
   const handleDeleteItem = async (item) => {
     try {
-      await apiClient.delete(`${cfg.endpoint}${item.id}/`);
+      await apiClient.delete(`/${cfg.endpoint}${item.id}/`);
       await loadData();
     } catch (err) {
        setError("Failed to delete the entry. Please try again.");
@@ -120,6 +125,28 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   };
 
   const handleSuccess = () => { onToggleActive(form.code); };
+
+  const handleExport = async () => {
+    enqueueSnackbar("Generating your Excel report...", { variant: 'info' });
+    try {
+        const params = new URLSearchParams(filters).toString();
+        const url = `/${cfg.endpoint}export-excel/?${params}`;
+        const response = await apiClient.get(url, { responseType: 'blob' });
+        
+        const contentDisposition = response.headers['content-disposition'];
+        let filename = `Report_${form.code}.xlsx`;
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+            if (filenameMatch && filenameMatch.length === 2)
+                filename = filenameMatch[1];
+        }
+        
+        saveAs(response.data, filename);
+    } catch (error) {
+        console.error("Failed to export data:", error);
+        enqueueSnackbar("Failed to generate report. Please try again.", { variant: 'error' });
+    }
+  };
 
   const renderPanelContent = () => {
     if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
@@ -196,11 +223,20 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
             ))}
           </Box>
         </TableCell>
-        <TableCell align="center" sx={{ pr: 3.5, display: 'flex', gap: 1, justifyContent: 'center' }}>
-          {renderActionButton("add", "Add", "success")}
-          {renderActionButton("view", "View", "primary")}
-          {renderActionButton("edit", "Edit", "warning")}
-          {renderActionButton("delete", "Delete", "error")}
+        <TableCell align="center" sx={{ pr: 3.5 }}>
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
+            {renderActionButton("add", "Add", "success")}
+            {renderActionButton("view", "View", "primary")}
+            {renderActionButton("edit", "Edit", "warning")}
+            {renderActionButton("delete", "Delete", "error")}
+            
+            <Tooltip title="Import data from Excel">
+              <Button size="small" startIcon={<UploadIcon />} onClick={() => setImportOpen(true)}>Import</Button>
+            </Tooltip>
+            <Tooltip title="Export data to Excel">
+              <Button size="small" startIcon={<DownloadIcon />} onClick={handleExport}>Export</Button>
+            </Tooltip>
+          </Box>
         </TableCell>
       </MotionTableRow>
       
@@ -232,6 +268,17 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
           </Box>
         </Box>
       </Dialog>
+      
+      <ImportDialog
+        open={isImportOpen}
+        onClose={() => setImportOpen(false)}
+        formCode={form.code}
+        formTitle={form.title}
+        onSuccess={() => {
+          setImportOpen(false);
+          loadData();
+        }}
+      />
     </React.Fragment>
   );
 }
