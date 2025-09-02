@@ -69,7 +69,7 @@ This project incorporates a range of industry-standard features with a focus on 
     Take a screenshot of the main dashboard when logged in as a Faculty/HOD.
     Replace the path below.
 -->
-![Faculty Dashboard Screenshot](path/to/your/faculty_dashboard.png)
+![Faculty Dashboard Screenshot](frontend\src\assets\Screenshot\faculty_dashboard.png)
 
 <br/>
 
@@ -81,7 +81,7 @@ This project incorporates a range of industry-standard features with a focus on 
     Take a screenshot of the User Management table in the admin panel.
     Replace the path below.
 -->
-![User Management Screenshot](path/to/your/user_management.png)
+![User Management Screenshot](frontend\src\assets\Screenshot\user_management.png)
 
 <br/>
 
@@ -93,7 +93,7 @@ This project incorporates a range of industry-standard features with a focus on 
     Take a screenshot of the Analytics Dashboard page, showing the charts.
     Replace the path below.
 -->
-![Analytics Dashboard Screenshot](path/to/your/analytics_dashboard.png)
+![Analytics Dashboard Screenshot](frontend\src\assets\Screenshot\analytics_dashboard.png)
 
 <br/>
 
@@ -105,7 +105,7 @@ This project incorporates a range of industry-standard features with a focus on 
     Take a screenshot of the "Import Data" dialog box.
     Replace the path below.
 -->
-![Excel Import Screenshot](path/to/your/excel_import_wizard.png)
+![Excel Import Screenshot](frontend\src\assets\Screenshot\excel_import_wizard.png)
 
 <br/>
 
@@ -117,7 +117,7 @@ This project incorporates a range of industry-standard features with a focus on 
     Take a screenshot of either the "Force Password Change" page or the "Forgot Password" page.
     Replace the path below.
 -->
-![Security Flow Screenshot](path/to/your/security_flow.png)
+![Security Flow Screenshot](frontend\src\assets\Screenshot\forgot_password.png)
 
 ---
 

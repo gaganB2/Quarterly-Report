@@ -10,7 +10,7 @@ const sharedThemeConfig = {
     h6: { fontWeight: 600 },
   },
   shape: {
-    borderRadius: 16, // A slightly larger radius for a softer, modern look
+    borderRadius: 16,
   },
 };
 
@@ -25,23 +25,17 @@ export const lightTheme = createTheme({
     error: { main: '#dc3545' },
     background: {
       default: '#f4f7fa',
-      // --- FIX: Softer, off-white glass color ---
       paper: 'rgba(255, 255, 255, 0.65)', 
     },
     text: { primary: '#1a2027', secondary: '#6c757d' },
   },
   components: {
-    // --- The Core of the Glassmorphism Effect ---
     MuiPaper: {
       styleOverrides: {
         root: {
-          // Fallback for older browsers
           backgroundColor: alpha('#ffffff', 0.6), 
-          // The blur effect
           backdropFilter: 'blur(24px) saturate(180%)',
-          // A subtle border to help the "glass" stand out
           border: '1px solid rgba(209, 213, 219, 0.3)',
-          // --- ENHANCEMENT: A more complex shadow for a "deep" floating effect ---
           boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.1)',
         },
       },
@@ -53,6 +47,8 @@ export const lightTheme = createTheme({
           backdropFilter: 'blur(10px)',
           boxShadow: 'none',
           borderBottom: '1px solid rgba(209, 213, 219, 0.3)',
+          // --- ADD THIS LINE TO FIX THE TEXT COLOR ---
+          color: '#1a2027', 
         },
       },
     },
@@ -70,7 +66,6 @@ export const darkTheme = createTheme({
     error: { main: '#f46a6a' },
     background: {
       default: '#121212',
-      // --- FIX: Softer, off-black glass color ---
       paper: 'rgba(30, 30, 30, 0.75)',
     },
     text: { primary: '#ffffff', secondary: '#adb5bd' },
@@ -93,6 +88,8 @@ export const darkTheme = createTheme({
           backdropFilter: 'blur(10px)',
           boxShadow: 'none',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          // --- ADD THIS LINE TO FIX THE TEXT COLOR ---
+          color: '#ffffff',
         },
       },
     },
