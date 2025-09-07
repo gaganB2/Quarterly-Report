@@ -15,7 +15,7 @@ import GenericForm from "./GenericForm";
 import { motion } from "framer-motion";
 import { saveAs } from 'file-saver';
 import { useSnackbar } from 'notistack';
-import ImportDialog from "./ImportDialog"; // --- Import the real dialog ---
+import ImportDialog from "./ImportDialog";
 
 const rowVariants = {
   hidden: { 
@@ -62,7 +62,7 @@ const FilterDisplay = ({ filters }) => {
   );
 };
 
-export default function FormRow({ form, idx, filters, isActive, onToggleActive, count, isLoadingCount }) {
+export default function FormRow({ form, idx, filters, isActive, onToggleActive, count, isLoadingCount, refreshCounts }) {
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
   const [mode, setMode] = useState("add");
@@ -118,13 +118,17 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   const handleDeleteItem = async (item) => {
     try {
       await apiClient.delete(`/${cfg.endpoint}${item.id}/`);
-      await loadData();
+      loadData();
+      refreshCounts(); // Refresh counts after delete
     } catch (err) {
        setError("Failed to delete the entry. Please try again.");
     }
   };
 
-  const handleSuccess = () => { onToggleActive(form.code); };
+  const handleSuccess = () => {
+    onToggleActive(form.code);
+    refreshCounts(); // Refresh counts after add/edit
+  };
 
   const handleExport = async () => {
     enqueueSnackbar("Generating your Excel report...", { variant: 'info' });
@@ -274,9 +278,9 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
         onClose={() => setImportOpen(false)}
         formCode={form.code}
         formTitle={form.title}
-        onSuccess={() => {
-          setImportOpen(false);
+        onImportSuccess={() => {
           loadData();
+          refreshCounts();
         }}
       />
     </React.Fragment>

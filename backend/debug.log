@@ -1203,3 +1203,75 @@ Traceback (most recent call last):
     assert field_name not in self._declared_fields, (
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: Cannot both declare the field 'student_name' and include it in the ReportSerializer 'exclude' option. Remove the field or, if inherited from a parent serializer, disable with `student_name = None`.
+ERROR 2025-09-06 22:22:25,636 log Internal Server Error: /api/data/t1research/download-template/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\views.py", line 66, in download_template
+    return generate_blank_excel_template(model_class)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\utils.py", line 114, in generate_blank_excel_template
+    ws_data.conditional_formatting.add(cell_range, Rule(type="isBlank", dxf=dxf, stopIfTrue=True))
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\openpyxl\formatting\rule.py", line 194, in __init__
+    self.type = type
+    ^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\openpyxl\descriptors\base.py", line 132, in __set__
+    raise ValueError(self.__doc__)
+ValueError: Value must be one of {'notContainsBlanks', 'timePeriod', 'cellIs', 'beginsWith', 'colorScale', 'dataBar', 'containsText', 'endsWith', 'top10', 'containsBlanks', 'notContainsErrors', 'iconSet', 'uniqueValues', 'aboveAverage', 'containsErrors', 'notContainsText', 'duplicateValues', 'expression'}
+ERROR 2025-09-06 22:30:06,601 log Internal Server Error: /api/data/t1research/download-template/
+Traceback (most recent call last):
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\viewsets.py", line 125, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 515, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 475, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 486, in raise_uncaught_exception
+    raise exc
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\views.py", line 66, in download_template
+    return generate_blank_excel_template(model_class)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\reports\utils.py", line 175, in generate_blank_excel_template
+    ws_data.conditional_formatting.add(cell_range, Rule(type="isBlank", dxf=dxf, stopIfTrue=True))
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\openpyxl\formatting\rule.py", line 194, in __init__
+    self.type = type
+    ^^^^^^^^^
+  File "G:\professional life\projects\Final sem project\Quarterly Report\backend\env\Lib\site-packages\openpyxl\descriptors\base.py", line 132, in __set__
+    raise ValueError(self.__doc__)
+ValueError: Value must be one of {'dataBar', 'uniqueValues', 'duplicateValues', 'beginsWith', 'expression', 'cellIs', 'colorScale', 'endsWith', 'containsBlanks', 'top10', 'notContainsBlanks', 'containsErrors', 'containsText', 'notContainsErrors', 'timePeriod', 'aboveAverage', 'iconSet', 'notContainsText'}

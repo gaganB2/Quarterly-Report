@@ -8,11 +8,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.apps import apps
 import openpyxl
+from datetime import datetime
 
 from .models import *
 from .serializers import *
 from .filters import *
-from .utils import generate_excel_report, generate_blank_excel_template
+from .utils import generate_excel_report, generate_blank_excel_template, get_importable_headers
 from users.models import Profile
 from .permissions import IsStudent, IsNotStudent
 
@@ -21,47 +22,22 @@ from .permissions import IsStudent, IsNotStudent
 # =============================================================================
 
 class BaseReportViewSet(viewsets.ModelViewSet):
-    """
-    A base ViewSet that provides common queryset logic and now includes a
-    new action for exporting data to Excel and downloading an import template.
-    """
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-
     def get_queryset(self):
-        """
-        Dynamically filters the queryset based on the user's role.
-        """
         queryset = self.queryset.select_related('user__profile', 'department')
-        try:
-            profile = self.request.user.profile
-        except Profile.DoesNotExist:
-            return queryset.none()
-
-        if profile.role == Profile.Role.ADMIN:
-            return queryset.order_by('-created_at')
-        elif profile.role == Profile.Role.HOD:
-            return queryset.filter(department=profile.department).order_by('-created_at')
-        elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]:
-            return queryset.filter(user=self.request.user).order_by('-created_at')
-        
+        try: profile = self.request.user.profile
+        except Profile.DoesNotExist: return queryset.none()
+        if profile.role == Profile.Role.ADMIN: return queryset.order_by('-created_at')
+        elif profile.role == Profile.Role.HOD: return queryset.filter(department=profile.department).order_by('-created_at')
+        elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]: return queryset.filter(user=self.request.user).order_by('-created_at')
         return queryset.none()
-
     @action(detail=False, methods=['get'], url_path='export-excel')
     def export_excel(self, request, *args, **kwargs):
-        """
-        An action to export the filtered queryset data to an Excel file.
-        This respects all applied filters (year, quarter, department, etc.).
-        """
         filtered_queryset = self.filter_queryset(self.get_queryset())
         return generate_excel_report(filtered_queryset, self.queryset.model)
-
     @action(detail=False, methods=['get'], url_path='download-template')
     def download_template(self, request, *args, **kwargs):
-        """
-        Generates and returns a blank, styled Excel template for the specific model.
-        This is called by the frontend's "Download Template" button.
-        """
         model_class = self.queryset.model
         return generate_blank_excel_template(model_class)
 
@@ -70,24 +46,18 @@ class BaseReportViewSet(viewsets.ModelViewSet):
 # =============================================================================
 
 def create_report_viewset(model_class, ser_class, filt_class, is_student_form=False):
-    """
-    A factory function that dynamically creates a ViewSet class.
-    """
     custom_permissions = [IsStudent] if is_student_form else [IsNotStudent]
-
     class ReportViewSet(BaseReportViewSet):
         queryset = model_class.objects.all()
         serializer_class = ser_class
         filterset_class = filt_class
         permission_classes = BaseReportViewSet.permission_classes + custom_permissions
-
     return ReportViewSet
 
 # =============================================================================
 # 3. GENERATED VIEWSETS
 # =============================================================================
 
-# --- Teacher ViewSets ---
 T1ResearchViewSet = create_report_viewset(T1_ResearchArticle, T1ResearchSerializer, T1ResearchArticleFilter)
 T1_2ResearchViewSet = create_report_viewset(T1_2ResearchArticle, T1_2ResearchSerializer, T1_2ResearchArticleFilter)
 T2_1WorkshopAttendanceViewSet = create_report_viewset(T2_1WorkshopAttendance, T2_1WorkshopAttendanceSerializer, T2_1WorkshopAttendanceFilter)
@@ -109,8 +79,6 @@ T6_3AwardViewSet = create_report_viewset(T6_3Award, T6_3AwardSerializer, T6_3Awa
 T6_4ResourcePersonViewSet = create_report_viewset(T6_4ResourcePerson, T6_4ResourcePersonSerializer, T6_4ResourcePersonFilter)
 T6_5AICTEInitiativeViewSet = create_report_viewset(T6_5AICTEInitiative, T6_5AICTEInitiativeSerializer, T6_5AICTEInitiativeFilter)
 T7_1ProgramOrganizedViewSet = create_report_viewset(T7_1ProgramOrganized, T7_1ProgramOrganizedSerializer, T7_1ProgramOrganizedFilter)
-
-# --- Student ViewSets ---
 S1_1TheorySubjectDataViewSet = create_report_viewset(S1_1TheorySubjectData, S1_1TheorySubjectDataSerializer, S1_1TheorySubjectDataFilter, is_student_form=True)
 S2_1StudentArticleViewSet = create_report_viewset(S2_1StudentArticle, S2_1StudentArticleSerializer, S2_1StudentArticleFilter, is_student_form=True)
 S2_2StudentConferencePaperViewSet = create_report_viewset(S2_2StudentConferencePaper, S2_2StudentConferencePaperSerializer, S2_2StudentConferencePaperFilter, is_student_form=True)
@@ -142,70 +110,57 @@ class PublicDepartmentListViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ReportCountsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-    MODEL_MAP = {
-        'T1.1': T1_ResearchArticle, 'T1.2': T1_2ResearchArticle,
-        'T2.1': T2_1WorkshopAttendance, 'T2.2': T2_2WorkshopOrganized,
-        'T3.1': T3_1BookPublication, 'T3.2': T3_2ChapterPublication,
-        'T4.1': T4_1EditorialBoard, 'T4.2': T4_2ReviewerDetails, 'T4.3': T4_3CommitteeMembership,
-        'T5.1': T5_1PatentDetails, 'T5.2': T5_2SponsoredProject, 'T5.3': T5_3ConsultancyProject,
-        'T5.4': T5_4CourseDevelopment, 'T5.5': T5_5LabEquipmentDevelopment, 'T5.6': T5_6ResearchGuidance,
-        'T6.1': T6_1CertificationCourse, 'T6.2': T6_2ProfessionalBodyMembership, 'T6.3': T6_3Award,
-        'T6.4': T6_4ResourcePerson, 'T6.5': T6_5AICTEInitiative,
-        'T7.1': T7_1ProgramOrganized,
-        'S1.1': S1_1TheorySubjectData,
-        'S2.1': S2_1StudentArticle, 'S2.2': S2_2StudentConferencePaper, 'S2.3': S2_3StudentSponsoredProject,
-        'S3.1': S3_1CompetitionParticipation, 'S3.2': S3_2DeptProgram,
-        'S4.1': S4_1StudentExamQualification, 'S4.2': S4_2CampusRecruitment, 'S4.3': S4_3GovtPSUSelection, 'S4.4': S4_4PlacementHigherStudies,
-        'S5.1': S5_1StudentCertificationCourse, 'S5.2': S5_2VocationalTraining, 'S5.3': S5_3SpecialMentionAchievement, 'S5.4': S5_4StudentEntrepreneurship,
-    }
-
+    MODEL_MAP = {'T1.1': T1_ResearchArticle, 'T1.2': T1_2ResearchArticle, 'T2.1': T2_1WorkshopAttendance, 'T2.2': T2_2WorkshopOrganized, 'T3.1': T3_1BookPublication, 'T3.2': T3_2ChapterPublication, 'T4.1': T4_1EditorialBoard, 'T4.2': T4_2ReviewerDetails, 'T4.3': T4_3CommitteeMembership, 'T5.1': T5_1PatentDetails, 'T5.2': T5_2SponsoredProject, 'T5.3': T5_3ConsultancyProject, 'T5.4': T5_4CourseDevelopment, 'T5.5': T5_5LabEquipmentDevelopment, 'T5.6': T5_6ResearchGuidance, 'T6.1': T6_1CertificationCourse, 'T6.2': T6_2ProfessionalBodyMembership, 'T6.3': T6_3Award, 'T6.4': T6_4ResourcePerson, 'T6.5': T6_5AICTEInitiative, 'T7.1': T7_1ProgramOrganized, 'S1.1': S1_1TheorySubjectData, 'S2.1': S2_1StudentArticle, 'S2.2': S2_2StudentConferencePaper, 'S2.3': S2_3StudentSponsoredProject, 'S3.1': S3_1CompetitionParticipation, 'S3.2': S3_2DeptProgram, 'S4.1': S4_1StudentExamQualification, 'S4.2': S4_2CampusRecruitment, 'S4.3': S4_3GovtPSUSelection, 'S4.4': S4_4PlacementHigherStudies, 'S5.1': S5_1StudentCertificationCourse, 'S5.2': S5_2VocationalTraining, 'S5.3': S5_3SpecialMentionAchievement, 'S5.4': S5_4StudentEntrepreneurship, }
     def get(self, request, *args, **kwargs):
         user = request.user
-        try:
-            profile = user.profile
-        except Profile.DoesNotExist:
-            return Response({'counts': {}}, status=403)
-
+        try: profile = user.profile
+        except Profile.DoesNotExist: return Response({'counts': {}}, status=403)
         base_filters = {}
-        if profile.role == Profile.Role.HOD:
-            base_filters['department'] = profile.department
-        elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]:
-            base_filters['user'] = user
-
+        if profile.role == Profile.Role.HOD: base_filters['department'] = profile.department
+        elif profile.role in [Profile.Role.FACULTY, Profile.Role.STUDENT]: base_filters['user'] = user
         query_params = request.query_params
-        if 'year' in query_params and query_params['year']:
-            base_filters['year'] = query_params['year']
-        if 'session' in query_params and query_params['session']:
-            base_filters['quarter'] = query_params['session']
-        if 'department' in query_params and query_params['department']:
-             base_filters['department_id'] = query_params['department']
-        
+        if 'year' in query_params and query_params['year']: base_filters['year'] = query_params['year']
+        if 'session' in query_params and query_params['session']: base_filters['quarter'] = query_params['session']
+        if 'department' in query_params and query_params['department']: base_filters['department_id'] = query_params['department']
         counts = {}
         for form_code, model_class in self.MODEL_MAP.items():
             count = model_class.objects.filter(**base_filters).count()
             counts[form_code] = count
-            
         return Response({'counts': counts})
 
-# --- FINALIZED: GENERIC EXCEL IMPORT VIEW ---
 class ExcelImportView(APIView):
-    """
-    A generic view to handle Excel file imports for any report model.
-    It performs row-by-row validation and provides detailed feedback.
-    """
     permission_classes = [permissions.IsAuthenticated]
+    MODEL_SERIALIZER_MAP = {
+        T1_ResearchArticle: T1ResearchSerializer, T1_2ResearchArticle: T1_2ResearchSerializer, T2_1WorkshopAttendance: T2_1WorkshopAttendanceSerializer,
+        T2_2WorkshopOrganized: T2_2WorkshopOrganizedSerializer, T3_1BookPublication: T3_1BookPublicationSerializer, T3_2ChapterPublication: T3_2ChapterPublicationSerializer,
+        T4_1EditorialBoard: T4_1EditorialBoardSerializer, T4_2ReviewerDetails: T4_2ReviewerDetailsSerializer, T4_3CommitteeMembership: T4_3CommitteeMembershipSerializer,
+        T5_1PatentDetails: T5_1PatentDetailsSerializer, T5_2SponsoredProject: T5_2SponsoredProjectSerializer, T5_3ConsultancyProject: T5_3ConsultancyProjectSerializer,
+        T5_4CourseDevelopment: T5_4CourseDevelopmentSerializer, T5_5LabEquipmentDevelopment: T5_5LabEquipmentDevelopmentSerializer, T5_6ResearchGuidance: T5_6ResearchGuidanceSerializer,
+        T6_1CertificationCourse: T6_1CertificationCourseSerializer, T6_2ProfessionalBodyMembership: T6_2ProfessionalBodyMembershipSerializer, T6_3Award: T6_3AwardSerializer,
+        T6_4ResourcePerson: T6_4ResourcePersonSerializer, T6_5AICTEInitiative: T6_5AICTEInitiativeSerializer, T7_1ProgramOrganized: T7_1ProgramOrganizedSerializer,
+        S1_1TheorySubjectData: S1_1TheorySubjectDataSerializer, S2_1StudentArticle: S2_1StudentArticleSerializer, S2_2StudentConferencePaper: S2_2StudentConferencePaperSerializer,
+        S2_3StudentSponsoredProject: S2_3StudentSponsoredProjectSerializer, S3_1CompetitionParticipation: S3_1CompetitionParticipationSerializer, S3_2DeptProgram: S3_2DeptProgramSerializer,
+        S4_1StudentExamQualification: S4_1StudentExamQualificationSerializer, S4_2CampusRecruitment: S4_2CampusRecruitmentSerializer, S4_3GovtPSUSelection: S4_3GovtPSUSelectionSerializer,
+        S4_4PlacementHigherStudies: S4_4PlacementHigherStudiesSerializer, S5_1StudentCertificationCourse: S5_1StudentCertificationCourseSerializer, S5_2VocationalTraining: S5_2VocationalTrainingSerializer,
+        S5_3SpecialMentionAchievement: S5_3SpecialMentionAchievementSerializer, S5_4StudentEntrepreneurship: S5_4StudentEntrepreneurshipSerializer,
+    }
+
+    def _clean_value(self, value, field_name):
+        date_char_fields = ['publication_month_year']
+        if field_name in date_char_fields and isinstance(value, datetime):
+            return value.strftime('%m/%Y')
+        return value
 
     def post(self, request, model_name, *args, **kwargs):
         file = request.FILES.get('file')
-        if not file:
-            return Response({"error": "No Excel file provided."}, status=status.HTTP_400_BAD_REQUEST)
+        if not file: return Response({"error": "No Excel file provided."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             model_class = apps.get_model('reports', model_name)
-            serializer_name = f"{model_class.__name__}Serializer"
-            serializer_class = globals()[serializer_name]
+            serializer_class = self.MODEL_SERIALIZER_MAP.get(model_class)
+            if not serializer_class: raise KeyError
         except (LookupError, KeyError):
-            return Response({"error": f"Invalid model name '{model_name}'. Please ensure it is cased correctly."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": f"Invalid model name '{model_name}' or it is not configured for import."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             wb = openpyxl.load_workbook(file, data_only=True)
@@ -215,22 +170,15 @@ class ExcelImportView(APIView):
 
         header_row = [cell.value for cell in sheet[1]]
         
-        expected_headers = [
-            field.name for field in model_class._meta.get_fields() 
-            if field.name not in ['id', 'user', 'department', 'created_at', 'updated_at'] and not field.is_relation
-        ]
+        expected_headers = get_importable_headers(model_class)
 
         if header_row != expected_headers:
-            return Response({
-                "error": "Invalid file format. The column headers do not match the required template. Please download the template and try again."
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid file format. The column headers do not match the required template. Please download a fresh template and try again."}, status=status.HTTP_400_BAD_REQUEST)
         
-        success_count = 0
-        error_count = 0
-        errors = []
+        success_count, error_count, errors = 0, 0, []
 
         for row_index in range(2, sheet.max_row + 1):
-            row_data = {header_row[i]: sheet.cell(row=row_index, column=i + 1).value for i in range(len(header_row))}
+            row_data = {header_row[i]: self._clean_value(sheet.cell(row=row_index, column=i + 1).value, header_row[i]) for i in range(len(header_row))}
             
             serializer = serializer_class(data=row_data, context={'request': request})
             
@@ -240,19 +188,9 @@ class ExcelImportView(APIView):
                     success_count += 1
                 except Exception as e:
                     error_count += 1
-                    errors.append({
-                        "row_number": row_index,
-                        "error_message": {"database_error": str(e)}
-                    })
+                    errors.append({"row_number": row_index, "error_message": {"database_error": str(e)}})
             else:
                 error_count += 1
-                errors.append({
-                    "row_number": row_index,
-                    "error_message": serializer.errors
-                })
+                errors.append({"row_number": row_index, "error_message": serializer.errors})
 
-        return Response({
-            "success_count": success_count,
-            "error_count": error_count,
-            "errors": errors
-        }, status=status.HTTP_200_OK)
+        return Response({"success_count": success_count, "error_count": error_count, "errors": errors}, status=status.HTTP_200_OK)

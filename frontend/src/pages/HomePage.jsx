@@ -1,6 +1,6 @@
 // src/pages/HomePage.jsx
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Container,
   Box,
@@ -22,6 +22,34 @@ export default function HomePage() {
   const [formCounts, setFormCounts] = useState({});
   const [countsLoading, setCountsLoading] = useState(false);
 
+  const fetchCounts = useCallback(async () => {
+    setCountsLoading(true);
+    try {
+      // Create a new URLSearchParams object from the current filters
+      const activeFilters = Object.fromEntries(
+        Object.entries(filters).filter(([, value]) => value !== '')
+      );
+      const params = new URLSearchParams(activeFilters).toString();
+      const url = `/api/reports/counts/?${params}`;
+      const response = await apiClient.get(url);
+      setFormCounts(response.data.counts || {});
+    } catch (error) {
+      console.error("Failed to fetch report counts:", error);
+      enqueueSnackbar("Could not load submission counts.", { variant: "error" });
+      setFormCounts({});
+    } finally {
+      setCountsLoading(false);
+    }
+  }, [filters, enqueueSnackbar]);
+
+  useEffect(() => {
+    fetchCounts();
+  }, [fetchCounts]);
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+  
   const visibleSections = useMemo(() => {
     if (!user) return [];
     switch (user.role) {
@@ -35,30 +63,6 @@ export default function HomePage() {
     }
   }, [user]);
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      setCountsLoading(true);
-      try {
-        const params = new URLSearchParams(filters).toString();
-        const url = `/api/reports/counts/?${params}`;
-        const response = await apiClient.get(url);
-        setFormCounts(response.data.counts || {});
-      } catch (error) {
-        console.error("Failed to fetch report counts:", error);
-        enqueueSnackbar("Could not load submission counts.", { variant: "error" });
-        setFormCounts({});
-      } finally {
-        setCountsLoading(false);
-      }
-    };
-    fetchCounts();
-  }, [filters, enqueueSnackbar]);
-
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-  };
-  
-  // This logic correctly selects the filter panel component based on the user's role.
   const FilterComponent = user?.role === 'Admin' 
     ? <AdminFilterPanel onFilterChange={handleFilterChange} /> 
     : <FacultyFilterPanel onFilterChange={handleFilterChange} />;
@@ -68,14 +72,13 @@ export default function HomePage() {
       <Container maxWidth="xl">
         <Grid container>
           <Grid item xs={12}>
-            {/* The HomePage is now extremely simple. It just passes the correct */}
-            {/* data and the correct FilterPanel component down to FormTable. */}
             <FormTable
               filters={filters}
               formCounts={formCounts}
               countsLoading={countsLoading}
               visibleSections={visibleSections}
               FilterPanel={FilterComponent} 
+              refreshCounts={fetchCounts}
             />
           </Grid>
         </Grid>

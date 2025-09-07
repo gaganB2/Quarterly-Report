@@ -1,6 +1,6 @@
 # Quarterly Report Portal for BIT Durg
 
-<p align-center">
+<p align="center">
   <img src="frontend/public/assets/logo.png" alt="BIT-DURG Banner" width="400"/>
 </p>
 
@@ -23,8 +23,9 @@
 - [Technology Stack](#-technology-stack)
 - [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
-  - [Backend Setup](#1-backend-setup)
-  - [Frontend Setup](#2-frontend-setup)
+  - [1. Database Setup (First Time Only)](#1-database-setup-first-time-only)
+  - [2. Backend Setup](#2-backend-setup)
+  - [3. Frontend Setup](#3-frontend-setup)
 - [Environment Variables](#-environment-variables)
 - [Running Tests](#-running-tests)
 - [API Overview](#-api-overview)
@@ -64,11 +65,6 @@ This project incorporates a range of industry-standard features with a focus on 
 #### Role-Based Dashboards
 *The UI and available forms adapt based on whether the user is a Faculty, Student, or Admin.*
 
-<!-- 
-    PLACEHOLDER INSTRUCTION:
-    Take a screenshot of the main dashboard when logged in as a Faculty/HOD.
-    Replace the path below.
--->
 ![Faculty Dashboard Screenshot](./frontend/src/assets/Screenshot/faculty_dashboard.png)
 
 <br/>
@@ -76,11 +72,6 @@ This project incorporates a range of industry-standard features with a focus on 
 #### Centralized User Management
 *Admins have a dedicated interface to manage all user accounts, roles, and statuses.*
 
-<!-- 
-    PLACEHOLDER INSTRUCTION:
-    Take a screenshot of the User Management table in the admin panel.
-    Replace the path below.
--->
 ![User Management Screenshot](./frontend/src/assets/Screenshot/user_management.png)
 
 <br/>
@@ -88,11 +79,6 @@ This project incorporates a range of industry-standard features with a focus on 
 #### Interactive Analytics
 *Admins can visualize submission data with interactive charts and dynamic filters.*
 
-<!-- 
-    PLACEHOLDER INSTRUCTION:
-    Take a screenshot of the Analytics Dashboard page, showing the charts.
-    Replace the path below.
--->
 ![Analytics Dashboard Screenshot](./frontend/src/assets/Screenshot/analytics_dashboard.png)
 
 <br/>
@@ -100,11 +86,6 @@ This project incorporates a range of industry-standard features with a focus on 
 #### Intelligent Excel Import Wizard
 *A guided, template-driven workflow ensures data integrity during bulk uploads.*
 
-<!-- 
-    PLACEHOLDER INSTRUCTION:
-    Take a screenshot of the "Import Data" dialog box.
-    Replace the path below.
--->
 ![Excel Import Screenshot](./frontend/src/assets/Screenshot/excel_import_wizard.png)
 
 <br/>
@@ -112,12 +93,7 @@ This project incorporates a range of industry-standard features with a focus on 
 #### Secure Onboarding & Password Recovery
 *Users are guided through secure processes for account activation and password resets.*
 
-<!-- 
-    PLACEHOLDER INSTRUCTION:
-    Take a screenshot of either the "Force Password Change" page or the "Forgot Password" page.
-    Replace the path below.
--->
-![Security Flow Screenshot](./frontend/src/assets/Screenshot/forgot_password.png)
+![Security Flow Screenshot](./frontend/src/assets/Screenshot/security_flow.png)
 
 ---
 
@@ -145,17 +121,49 @@ To get the project running locally, you will need to set up the backend and fron
 
 Make sure you have the following software installed on your machine:
 
-  * **Python** (3.8 or newer)
-  * **Node.js** (v18 or newer) & **npm**
-  * **PostgreSQL** (v12 or newer)
+  * **Git** for cloning the repository.
+  * **Python** (3.8 or newer).
+  * **Node.js** (v18 or newer) & **npm**.
+  * **PostgreSQL** (v12 or newer).
 
-### 1\. Backend Setup
+### 1\. Database Setup (First Time Only)
 
-First, set up the Django API server.
+Before running the backend, you must create the database and a dedicated user in PostgreSQL.
+
+1.  Open your terminal or command prompt and start the PostgreSQL interactive terminal by running:
+    ```bash
+    psql -U postgres
+    ```
+    You may be prompted for the password for the `postgres` superuser.
+
+2.  Inside the `psql` shell (e.g., `postgres=#`), run the following SQL commands. **Remember to replace `'your_secure_password'` with the actual password you will use in your `.env` file.**
+
+    ```sql
+    -- Create the database for the project.
+    CREATE DATABASE quarterly_report_db;
+
+    -- Create a new user (role) for the application.
+    CREATE USER qr_user WITH PASSWORD 'your_secure_password';
+
+    -- Grant the new user all permissions on the new database.
+    GRANT ALL PRIVILEGES ON DATABASE quarterly_report_db TO qr_user;
+
+    -- Set recommended default settings for the user.
+    ALTER ROLE qr_user SET client_encoding TO 'utf8';
+    ALTER ROLE qr_user SET default_transaction_isolation TO 'read committed';
+    ALTER ROLE qr_user SET timezone TO 'UTC';
+    ```
+
+3.  Once complete, exit the `psql` shell by typing `\q` and pressing Enter.
+
+### 2\. Backend Setup
+
+Now, set up the Django API server.
 
 ```bash
-# 1. Navigate to the backend directory
-cd backend
+# 1. Clone the repository and navigate to the backend directory
+git clone <your-repository-url>
+cd <repository-folder>/backend
 
 # 2. Create and activate a virtual environment
 python -m venv env
@@ -165,14 +173,13 @@ source env/bin/activate  # On Windows: env\Scripts\activate
 pip install -r requirements.txt
 
 # 4. Set up the environment file
-# Rename .env.example to .env and fill in your details
 cp .env.example .env
+# IMPORTANT: Edit the .env file with your actual database credentials from Step 1.
 
 # 5. Run database migrations to create the tables
-python manage.py makemigrations
 python manage.py migrate
 
-# 6. Create a superuser to access the admin panel and create other users
+# 6. Create a superuser to access the admin panel
 python manage.py createsuperuser
 
 # 7. Start the server
@@ -181,19 +188,18 @@ python manage.py runserver
 
 The backend API will now be running at `http://127.0.0.1:8000`.
 
-### 2\. Frontend Setup
+### 3\. Frontend Setup
 
-In a new terminal, set up the React client.
+In a **new terminal**, set up the React client.
 
 ```bash
-# 1. Navigate to the frontend directory
-cd frontend
+# 1. Navigate to the frontend directory from the project root
+cd <repository-folder>/frontend
 
 # 2. Install dependencies
 npm install
 
-# 3. Set up the environment file (if needed, defaults are provided)
-# Rename .env.example to .env
+# 3. Set up the environment file (optional, defaults are provided)
 cp .env.example .env
 
 # 4. Start the development server
@@ -217,8 +223,8 @@ You must create a `.env` file in the `/backend` directory. Below is a descriptio
 | `DEBUG`               | Django debug mode. Set to `False` in production.     | `True`                        |
 | `ALLOWED_HOSTS`       | Hosts/domains the Django app can serve.              | `127.0.0.1,localhost`         |
 | `DB_NAME`             | Your PostgreSQL database name.                       | `quarterly_report_db`         |
-| `DB_USER`             | Your PostgreSQL username.                            | `postgres`                    |
-| `DB_PASSWORD`         | Your PostgreSQL password.                            | `db_password`                 |
+| `DB_USER`             | Your PostgreSQL username.                            | `qr_user`                     |
+| `DB_PASSWORD`         | Your PostgreSQL password.                            | `your_secure_password`        |
 | `DB_HOST`             | Database host.                                       | `localhost`                   |
 | `DB_PORT`             | Database port.                                       | `5432`                        |
 | `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173`       |
@@ -242,14 +248,20 @@ python manage.py test
 
 The backend exposes a set of RESTful endpoints for managing data.
 
-| Endpoint                  | Description                                               |
-| ------------------------- | --------------------------------------------------------- |
-| `/api/token/`             | Authenticate a user and receive JWT tokens.               |
-| `/api/register/`          | **(Admin)** Create a new user.                            |
-| `/api/admin/users/`       | **(Admin)** Manage all user accounts.                     |
-| `/api/admin/departments/` | **(Admin)** Manage academic departments.                  |
-| `/api/data/...`           | Endpoints for faculty & students to submit report data.   |
-| `/api/analytics/...`      | **(Admin/HOD)** Endpoints for aggregated analytics.       |
+| Endpoint                                 | Description                                               |
+| ---------------------------------------- | --------------------------------------------------------- |
+| `/api/token/`                            | Authenticate a user and receive JWT tokens.               |
+| `/api/register/`                         | **(Admin)** Create a new staff/student user.              |
+| `/api/student/register/`                 | **(Public)** Allows students to self-register.            |
+| `/api/password-reset/request/`           | **(Public)** Request a password reset email.              |
+| `/api/password-reset/confirm/`           | **(Public)** Confirm a password reset with a token.       |
+| `/api/admin/users/`                      | **(Admin)** Manage all user accounts.                     |
+| `/api/admin/departments/`                | **(Admin)** Manage academic departments.                  |
+| `/api/data/{form}/`                      | Endpoints for CRUD on report data.                        |
+| `/api/data/{form}/export-excel/`         | Export filtered data for a form to `.xlsx`.               |
+| `/api/data/{form}/download-template/`    | Download a blank, validated template for a form.          |
+| `/api/import/{model_name}/`              | **(User)** Upload a completed `.xlsx` template.           |
+| `/api/analytics/department-submissions/` | **(Admin/HOD)** Get aggregated analytics data for charts. |
 
 ---
 
@@ -279,4 +291,4 @@ Contributions to this project are welcome. Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This will be updated soon!

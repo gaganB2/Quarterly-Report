@@ -15,11 +15,8 @@ import {
 } from "@mui/material";
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
-// --- LINE REMOVED --- The 'motion' import from framer-motion is no longer needed here.
 
-// --- BLOCK REMOVED --- The 'tableContainerVariants' object is removed as the animation logic is being moved to the child.
-
-export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp, FilterPanel }) {
+export default function FormTable({ filters, formCounts, countsLoading, visibleSections: visibleSectionsProp, FilterPanel, refreshCounts }) {
   const visibleSections = visibleSectionsProp || formSections;
   const [activeForm, setActiveForm] = useState(null);
 
@@ -54,7 +51,6 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
             </TableRow>
           </TableHead>
           
-          {/* --- FIX: The <motion.tbody> has been replaced with a standard <tbody> --- */}
           <TableBody>
             {visibleSections.map((f, i) => {
               const isActive = activeForm === f.code;
@@ -70,6 +66,7 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
                   onToggleActive={handleToggleActive}
                   count={count}
                   isLoadingCount={countsLoading}
+                  refreshCounts={refreshCounts}
                 />
               );
             })}
