@@ -3,13 +3,9 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   Container,
-  Paper,
   Typography,
   Box,
   Divider,
-  Breadcrumbs,
-  Link,
-  useTheme,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { formSections } from '../config/formConfig';
@@ -20,24 +16,18 @@ import apiClient from '../api/axios';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
-  const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
-  // --- THIS IS THE NEW LOGIC FOR COUNTING ---
   const [formCounts, setFormCounts] = useState({});
   const [countsLoading, setCountsLoading] = useState(false);
 
-  // Filter the form sections to show only student-specific forms
   const studentForms = useMemo(() => {
     return formSections.filter(section => section.code.startsWith('S') && section.code !== 'S1.1');
   }, []);
 
-  // Fetch the counts for the student's submissions
   const fetchCounts = useCallback(async () => {
     setCountsLoading(true);
     try {
-      // For students, we fetch counts without any filters.
-      // The backend will automatically scope this to the logged-in user.
       const url = `/api/reports/counts/`;
       const response = await apiClient.get(url);
       setFormCounts(response.data.counts || {});
@@ -53,7 +43,6 @@ export default function StudentDashboard() {
   useEffect(() => {
     fetchCounts();
   }, [fetchCounts]);
-  // --- END OF NEW LOGIC ---
 
   return (
     <Box sx={{ py: 4 }}>
@@ -63,30 +52,26 @@ export default function StudentDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Paper sx={{ p: { xs: 2, sm: 4 } }}>
-            <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
-              <Link underline="hover" color="inherit" href="/login/student">
-                Login
-              </Link>
-              <Typography color="text.primary">Dashboard</Typography>
-            </Breadcrumbs>
-
-            <Typography variant="h4" component="h1" fontWeight={700} gutterBottom>
+          {/* --- FIX: Use Box instead of Paper for a cleaner, integrated look --- */}
+          <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            <Typography variant="h4" component="h1" fontWeight={800} gutterBottom>
               Welcome, {user?.full_name || 'Student'}!
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              This is your personal dashboard. Please use the sections below to submit your quarterly reports.
+            <Typography variant="h6" color="text.secondary" sx={{ mb: 3, fontWeight: 400 }}>
+              This is your personal dashboard. Please use the sections below to submit your reports.
             </Typography>
             <Divider sx={{ mb: 3 }} />
 
-            {/* The FormTable now receives the real count data */}
+            {/* --- FIX: Pass the correct props to the refactored FormTable --- */}
             <FormTable
-              filters={{}} 
+              filters={{}} // Students don't have filters
               formCounts={formCounts}
               countsLoading={countsLoading}
               visibleSections={studentForms}
+              FilterPanel={null} // Pass null as there is no filter panel
+              refreshCounts={fetchCounts}
             />
-          </Paper>
+          </Box>
         </motion.div>
       </Container>
     </Box>

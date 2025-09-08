@@ -2,12 +2,16 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
-  IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha, Container,
+  Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar, IconButton,
+  Typography, Chip, useTheme, CircularProgress, Alert, alpha, Container,
   DialogTitle, Tooltip, Paper, Grid, Stack
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { FileDownload as DownloadIcon, UploadFile as UploadIcon } from '@mui/icons-material';
+import { 
+  Close as CloseIcon, 
+  FileDownload as DownloadIcon, 
+  UploadFile as UploadIcon,
+  Add as AddIcon
+} from '@mui/icons-material';
 import apiClient from "../api/axios";
 import { formConfig } from "../config/formConfig";
 import GenericList from "./GenericList";
@@ -21,7 +25,7 @@ const rowVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i) => ({
     opacity: 1, y: 0,
-    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   }),
 };
 
@@ -64,13 +68,10 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   const [isImportOpen, setImportOpen] = useState(false);
 
   const cfg = formConfig[form.code];
-  if (!cfg || !cfg.endpoint) {
-    return null;
-  }
+  if (!cfg || !cfg.endpoint) return null;
 
   const loadData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true); setError(null);
     const params = new URLSearchParams(filters).toString();
     const url = `/${cfg.endpoint}?${params}`;
     try {
@@ -84,14 +85,8 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   }, [cfg.endpoint, filters]);
 
   useEffect(() => {
-    if (isActive && ['view', 'edit', 'delete'].includes(mode)) {
-      loadData();
-    }
-    if (!isActive) {
-      setData([]);
-      setError(null);
-      setEditData(null);
-    }
+    if (isActive && ['view', 'edit', 'delete'].includes(mode)) loadData();
+    if (!isActive) { setData([]); setError(null); setEditData(null); }
   }, [isActive, mode, loadData]);
 
   const handleOpen = (newMode) => {
@@ -166,23 +161,12 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     }
     return null;
   };
-
-  const renderActionButton = (btnMode, label, color = "primary", variant = "text") => {
-    const active = isActive && mode === btnMode;
-    const isCollapse = active && ['add', 'view', 'edit', 'delete'].includes(btnMode);
-    return (
-      <Button
-        size="small" onClick={() => handleOpen(btnMode)}
-        sx={{ minWidth: 64, fontWeight: 600, borderRadius: '50px' }}
-        variant={active ? "contained" : variant}
-        color={isCollapse ? color : "inherit"}
-        {...(btnMode === 'add' && { color: 'success' })}
-        {...(btnMode === 'edit' && { color: 'warning' })}
-        {...(btnMode === 'delete' && { color: 'error' })}
-      >
-        {isCollapse ? "Collapse" : label}
-      </Button>
-    );
+  
+  const actionButtonStyles = {
+    fontWeight: 600,
+    textTransform: 'none',
+    borderRadius: '50px',
+    px: 2.5
   };
 
   return (
@@ -190,49 +174,57 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
       <MotionPaper
         key={form.code}
         variants={rowVariants}
-        initial="hidden"
-        animate="visible"
         custom={idx}
         sx={{
-          p: 2,
-          mb: 2,
-          borderRadius: 3,
-          backgroundColor: 'background.level1',
+          p: {xs: 2, sm: 2.5},
+          backgroundColor: alpha(theme.palette.background.paper, 0.7),
+          backdropFilter: 'blur(12px)',
+          borderRadius: 4,
           border: '1px solid',
-          borderColor: 'divider',
-          boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)',
-          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-2px)',
-            boxShadow: '0 8px 24px 0 rgba(0,0,0,0.07)',
-          },
+          borderColor: alpha(theme.palette.divider, 0.2),
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
         }}
       >
-        <Grid container alignItems="center" spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <Typography sx={{ color: 'text.secondary', fontWeight: 'bold' }}>{idx + 1}</Typography>
-              <Typography variant="body1" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
-                {form.code} — {form.title}
+        <Grid container alignItems="center" spacing={2} wrap="wrap">
+          <Grid item xs={12} sm>
+            <Stack direction="row" alignItems="center" spacing={2.5}>
+              <Typography sx={{ color: 'text.secondary', fontWeight: 600, fontSize: '1rem', minWidth: '24px' }}>
+                {idx + 1}
               </Typography>
+              <Box>
+                <Typography sx={{ 
+                  fontWeight: 800, 
+                  fontSize: '1.25rem', 
+                  background: 'linear-gradient(45deg, #4A00E0, #8B5CF6)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  {form.code}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  {form.title}
+                </Typography>
+              </Box>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Stack direction="row" alignItems="center" justifyContent={{ xs: 'flex-start', md: 'flex-end' }} spacing={1} flexWrap="wrap">
-              {isLoadingCount ? (<CircularProgress size={24} />) : (<Chip label={count ?? 0} color={count > 0 ? "primary" : "default"} />)}
-              <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-              {renderActionButton("add", "Add", "success")}
-              {renderActionButton("view", "View", "primary")}
-              {renderActionButton("edit", "Edit", "warning")}
-              {renderActionButton("delete", "Delete", "error")}
-              <Tooltip title="Import data from Excel"><IconButton size="small" onClick={() => setImportOpen(true)}><UploadIcon /></IconButton></Tooltip>
-              <Tooltip title="Export data to Excel"><IconButton size="small" onClick={handleExport}><DownloadIcon /></IconButton></Tooltip>
+
+          <Grid item xs={12} sm="auto">
+            <Stack direction="row" alignItems="center" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }} spacing={1} flexWrap="wrap">
+              {isLoadingCount ? <CircularProgress size={24} /> : (
+                <Chip label={count ?? 0} variant={count > 0 ? 'filled' : 'outlined'} color={count > 0 ? "primary" : "default"} sx={{fontWeight: 700, mr: 1}}/>
+              )}
+              <Button onClick={() => handleOpen('add')} variant="contained" color="primary" sx={actionButtonStyles}>Add</Button>
+              <Button onClick={() => handleOpen('view')} sx={actionButtonStyles}>View</Button>
+              <Button onClick={() => handleOpen('edit')} color="warning" sx={{...actionButtonStyles, minWidth: 'auto', px: 2}}>Edit</Button>
+              <Button onClick={() => handleOpen('delete')} color="error" sx={{...actionButtonStyles, minWidth: 'auto', px: 2}}>Delete</Button>
+              <Tooltip title="Import from Excel"><IconButton onClick={() => setImportOpen(true)}><UploadIcon /></IconButton></Tooltip>
+              <Tooltip title="Export to Excel"><IconButton onClick={handleExport}><DownloadIcon /></IconButton></Tooltip>
             </Stack>
           </Grid>
         </Grid>
 
         <Collapse in={isActive} timeout="auto" unmountOnExit>
-          <Box sx={{ mt: 2, p: 2, borderRadius: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
+          <Box sx={{ mt: 2, pt: 2.5, borderTop: 1, borderColor: 'divider' }}>
             {renderPanelContent()}
           </Box>
         </Collapse>

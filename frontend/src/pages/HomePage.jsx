@@ -57,7 +57,8 @@ export default function HomePage() {
         return formSections;
       case 'HOD':
       case 'Faculty':
-        return formSections.filter(section => section.code.startsWith('T') || section.code === 'S1.1');
+        // --- FIX: Removed the S1.1 form from the Faculty/HOD view ---
+        return formSections.filter(section => section.code.startsWith('T'));
       default:
         return [];
     }

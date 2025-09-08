@@ -1,6 +1,6 @@
 // src/config/formConfig.jsx
 import React from "react";
-import { Link as MuiLink } from '@mui/material'; // Renamed to avoid conflict
+import { Link as MuiLink } from "@mui/material"; // Renamed to avoid conflict
 import T1_1Form from "../components/T1_1Form";
 import T1_2Form from "../components/T1_2Form";
 import T2_1Form from "../components/T2_1Form";
@@ -41,11 +41,11 @@ export const formSections = [
   {
     code: "T1.1",
     title:
-      "T1.1: Details of the Published Research Articles/Papers in Journals/Periodicals",
+      "Details of the Published Research Articles/Papers in Journals/Periodicals",
   },
   {
     code: "T1.2",
-    title: "T1.2: Details of the Paper Publication in Conferences",
+    title: "Details of the Paper Publication in Conferences",
   },
   {
     code: "T2.1",
@@ -77,7 +77,7 @@ export const formSections = [
   { code: "T6.4", title: "Students Qualified GATE/NET/GMAT/etc." },
   { code: "T6.5", title: "Hackathons / Technical Competitions" },
   { code: "T7.1", title: "Startups / Entrepreneurship Initiatives" },
-  { code: "S1.1", title: "S1.1: Theory Subject Data" },
+  { code: "S1.1", title: "Theory Subject Data" },
   {
     code: "S2.1",
     title:
@@ -98,15 +98,42 @@ export const formSections = [
     title:
       "S3.1: Details of the Competitions Organized/Participation by the Students",
   },
-  { code: "S3.2", title: "S3.2: Details of the Programme Organized by the Department for the Students" },
+  {
+    code: "S3.2",
+    title:
+      "S3.2: Details of the Programme Organized by the Department for the Students",
+  },
   { code: "S4.1", title: "S4.1: Details of the Students Qualified GATE" },
-  { code: "S4.2", title: "S4.2: Details of the Students selected in Campus Recruitment" },
-  { code: "S4.3", title: "S4.3: Details of the Students selected in Government/Public Sector Units" },
-  { code: "S4.4", title: "S4.4: Complete Details of the Students selected in Companies and Higher Studies" },
-  { code: "S5.1", title: "S5.1: Details of Certification Courses completed by the Students" },
-  { code: "S5.2", title: "S5.2: Details of the vocational training/workshop/industrial visit" },
-  { code: "S5.3", title: "S5.3: Details of Special Mention achievements/Awards Received" },
-  { code: "S5.4", title: "S5.4: Details of students established as Entrepreneurs" },
+  {
+    code: "S4.2",
+    title: "S4.2: Details of the Students selected in Campus Recruitment",
+  },
+  {
+    code: "S4.3",
+    title:
+      "S4.3: Details of the Students selected in Government/Public Sector Units",
+  },
+  {
+    code: "S4.4",
+    title:
+      "S4.4: Complete Details of the Students selected in Companies and Higher Studies",
+  },
+  {
+    code: "S5.1",
+    title: "S5.1: Details of Certification Courses completed by the Students",
+  },
+  {
+    code: "S5.2",
+    title: "S5.2: Details of the vocational training/workshop/industrial visit",
+  },
+  {
+    code: "S5.3",
+    title: "S5.3: Details of Special Mention achievements/Awards Received",
+  },
+  {
+    code: "S5.4",
+    title: "S5.4: Details of students established as Entrepreneurs",
+  },
 ];
 
 export const formConfig = {
@@ -128,12 +155,39 @@ export const formConfig = {
       { label: "ISSN Number", key: "issn_number" },
       { label: "Impact Factor", key: "impact_factor" },
       { label: "Publisher", key: "publisher" },
-      { label: "WOS (ESCI, SCIE…)", key: "indexing_wos", render: (i) => (i.indexing_wos ? "✔︎" : "") },
-      { label: "Scopus", key: "indexing_scopus", render: (i) => (i.indexing_scopus ? "✔︎" : "") },
-      { label: "UGC Care 1", key: "indexing_ugc", render: (i) => (i.indexing_ugc ? "✔︎" : "") },
+      {
+        label: "WOS (ESCI, SCIE…)",
+        key: "indexing_wos",
+        render: (i) => (i.indexing_wos ? "✔︎" : ""),
+      },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (i) => (i.indexing_scopus ? "✔︎" : ""),
+      },
+      {
+        label: "UGC Care 1",
+        key: "indexing_ugc",
+        render: (i) => (i.indexing_ugc ? "✔︎" : ""),
+      },
       { label: "Other (Referred Journal)", key: "indexing_other" },
       { label: "DOI", key: "doi" },
-      { label: "Google Drive Link", key: "google_drive_link", render: (i) => i.google_drive_link ? (<MuiLink href={i.google_drive_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link",
+        key: "google_drive_link",
+        render: (i) =>
+          i.google_drive_link ? (
+            <MuiLink
+              href={i.google_drive_link}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -152,13 +206,32 @@ export const formConfig = {
       { label: "Publisher", key: "publisher" },
       { label: "Page No", key: "page_no" },
       { label: "Month & Year", key: "publication_month_year" },
-      { label: "Scopus", key: "indexing_scopus", render: (i) => (i.indexing_scopus ? "✔︎" : "") },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (i) => (i.indexing_scopus ? "✔︎" : ""),
+      },
       { label: "Other Indexing", key: "indexing_other" },
       { label: "Conference Status", key: "conference_status" },
       { label: "Conference Mode", key: "conference_mode" },
-      { label: "Registration Fee Reimbursed", key: "registration_fee_reimbursed", render: (i) => (i.registration_fee_reimbursed ? "✔︎" : "") },
+      {
+        label: "Registration Fee Reimbursed",
+        key: "registration_fee_reimbursed",
+        render: (i) => (i.registration_fee_reimbursed ? "✔︎" : ""),
+      },
       { label: "Special Leave Dates", key: "special_leave_dates" },
-      { label: "Certificate Link", key: "certificate_link", render: (i) => i.certificate_link ? (<MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Certificate Link",
+        key: "certificate_link",
+        render: (i) =>
+          i.certificate_link ? (
+            <MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
@@ -177,9 +250,24 @@ export const formConfig = {
       { label: "End Date", key: "end_date" },
       { label: "Number of Days", key: "num_days" },
       { label: "Mode", key: "mode" },
-      { label: "Registration Fee Reimbursed", key: "registration_fee_reimbursed", render: (i) => (i.registration_fee_reimbursed ? "✔︎" : "") },
+      {
+        label: "Registration Fee Reimbursed",
+        key: "registration_fee_reimbursed",
+        render: (i) => (i.registration_fee_reimbursed ? "✔︎" : ""),
+      },
       { label: "Special Leave Dates", key: "special_leave_dates" },
-      { label: "Certificate Link", key: "certificate_link", render: (i) => i.certificate_link ? (<MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Certificate Link",
+        key: "certificate_link",
+        render: (i) =>
+          i.certificate_link ? (
+            <MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
@@ -202,7 +290,18 @@ export const formConfig = {
       { label: "Mode", key: "mode" },
       { label: "Participants", key: "num_participants" },
       { label: "Collaborator", key: "collaborator" },
-      { label: "Report Link", key: "report_link", render: (i) => i.report_link ? (<MuiLink href={i.report_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Report Link",
+        key: "report_link",
+        render: (i) =>
+          i.report_link ? (
+            <MuiLink href={i.report_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
@@ -222,7 +321,18 @@ export const formConfig = {
       { label: "Year of Publication", key: "publication_year" },
       { label: "Print Mode", key: "print_mode" },
       { label: "Book Type", key: "book_type" },
-      { label: "Proof Link", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
@@ -241,7 +351,18 @@ export const formConfig = {
       { label: "Indexing", key: "indexing" },
       { label: "Year of Publication", key: "publication_year" },
       { label: "Book Type", key: "book_type" },
-      { label: "Proof Link", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
       { label: "Quarter", key: "quarter" },
       { label: "Year", key: "year" },
@@ -259,7 +380,18 @@ export const formConfig = {
       { label: "ISSN/ISBN", key: "issn_isbn" },
       { label: "Indexing", key: "indexing" },
       { label: "Type", key: "type" },
-      { label: "Proof", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   "T4.2": {
@@ -271,7 +403,18 @@ export const formConfig = {
       { label: "Publication Type", key: "publication_type" },
       { label: "Title", key: "title" },
       { label: "Indexing", key: "indexing" },
-      { label: "Proof", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   "T4.3": {
@@ -283,7 +426,18 @@ export const formConfig = {
       { label: "Committee", key: "body_details" },
       { label: "Responsibility", key: "responsibility" },
       { label: "Level", key: "level" },
-      { label: "Proof", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   "T5.1": {
@@ -301,9 +455,24 @@ export const formConfig = {
       { label: "Filled Date", key: "filled_date" },
       { label: "Published/Granted Date", key: "published_granted_date" },
       { label: "Publication Number", key: "publication_number" },
-      { label: "Technology Transfer", key: "technology_transfer", render: (i) => (i.technology_transfer ? "YES" : "NO") },
+      {
+        label: "Technology Transfer",
+        key: "technology_transfer",
+        render: (i) => (i.technology_transfer ? "YES" : "NO"),
+      },
       { label: "Country of Patent", key: "country" },
-      { label: "Google Drive Link (Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -313,7 +482,10 @@ export const formConfig = {
     FormComponent: T5_2Form,
     listFields: [
       { label: "Principal Investigator (PI)", key: "principal_investigator" },
-      { label: "Co-Principal Investigator (Co-PI)", key: "co_principal_investigator" },
+      {
+        label: "Co-Principal Investigator (Co-PI)",
+        key: "co_principal_investigator",
+      },
       { label: "Members (if any)", key: "members" },
       { label: "Name of the Funding Agency", key: "funding_agency" },
       { label: "Title of the Project", key: "project_title" },
@@ -325,7 +497,18 @@ export const formConfig = {
       { label: "Amount Received (In Rupees)", key: "amount_received_rupees" },
       { label: "Duration of the Project", key: "duration" },
       { label: "Regional/National/International", key: "regionality" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -345,7 +528,18 @@ export const formConfig = {
       { label: "Status", key: "status" },
       { label: "Duration", key: "duration" },
       { label: "Regionality", key: "regionality" },
-      { label: "Proof Link", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -355,13 +549,33 @@ export const formConfig = {
     FormComponent: T5_4Form,
     listFields: [
       { label: "Name of the Faculty", key: "faculty_name" },
-      { label: "Name of the Course/e-content/Laboratory Module Developed", key: "course_module_name" },
-      { label: "Plateform on which module is developed (Moodle, Gsuite, etc.)", key: "platform" },
-      { label: "Any other Contributory Institute/Industry", key: "contributory_institute" },
+      {
+        label: "Name of the Course/e-content/Laboratory Module Developed",
+        key: "course_module_name",
+      },
+      {
+        label: "Plateform on which module is developed (Moodle, Gsuite, etc.)",
+        key: "platform",
+      },
+      {
+        label: "Any other Contributory Institute/Industry",
+        key: "contributory_institute",
+      },
       { label: "Usage and Citation etc.", key: "usage_citation" },
       { label: "Amount Spent (if any)", key: "amount_spent" },
       { label: "Date of Launching Content", key: "launch_date" },
-      { label: "Google Drive Link (Upload Proof) or Share Online Content Link", key: "link", render: (i) => i.link ? (<MuiLink href={i.link} target="_blank" rel="noreferrer">View Link</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Upload Proof) or Share Online Content Link",
+        key: "link",
+        render: (i) =>
+          i.link ? (
+            <MuiLink href={i.link} target="_blank" rel="noreferrer">
+              View Link
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -373,8 +587,22 @@ export const formConfig = {
       { label: "Name of the Laboratory", key: "lab_name" },
       { label: "Major Equipment", key: "major_equipment" },
       { label: "Purpose of the Development of the Laboratory", key: "purpose" },
-      { label: "Approx. Cost of Equipment in Developing the Laboratory", key: "equipment_cost" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Approx. Cost of Equipment in Developing the Laboratory",
+        key: "equipment_cost",
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -390,11 +618,28 @@ export const formConfig = {
       { label: "Title of Thesis", key: "thesis_title" },
       { label: "Date of Registration", key: "registration_date" },
       { label: "Date of PhD Viva-Voce", key: "viva_voce_date" },
-      { label: "Complete Details of External Examiner", key: "external_examiner_details" },
+      {
+        label: "Complete Details of External Examiner",
+        key: "external_examiner_details",
+      },
       { label: "Status (Completed/Ongoing)", key: "status" },
       { label: "Name of the Research Center", key: "research_center" },
-      { label: "Name of the PhD Conferring University", key: "conferring_university" },
-      { label: "Google Drive Link (Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Name of the PhD Conferring University",
+        key: "conferring_university",
+      },
+      {
+        label: "Google Drive Link (Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -404,13 +649,27 @@ export const formConfig = {
     FormComponent: T6_1Form,
     listFields: [
       { label: "Name of Faculty", key: "faculty_name" },
-      { label: "Name of the Certification Course", key: "certification_course" },
+      {
+        label: "Name of the Certification Course",
+        key: "certification_course",
+      },
       { label: "Course Name", key: "course_name" },
       { label: "Category of the Course", key: "category" },
       { label: "Duration of the Course", key: "duration" },
       { label: "Credit Points Earned", key: "credit_points" },
       { label: "Certification type", key: "certification_type" },
-      { label: "Google Drive Link (Upload Certificate)", key: "certificate_link", render: (i) => i.certificate_link ? (<MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Upload Certificate)",
+        key: "certificate_link",
+        render: (i) =>
+          i.certificate_link ? (
+            <MuiLink href={i.certificate_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -424,7 +683,18 @@ export const formConfig = {
       { label: "Grade of Membership", key: "membership_grade" },
       { label: "Membership Number", key: "membership_number" },
       { label: "Year of Election", key: "year_of_election" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -437,8 +707,22 @@ export const formConfig = {
       { label: "Name of Award", key: "award_name" },
       { label: "Award Conferred by", key: "conferred_by" },
       { label: "Award Date", key: "award_date" },
-      { label: "Type of Award (Regional/National/International)", key: "award_type" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Type of Award (Regional/National/International)",
+        key: "award_type",
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -453,7 +737,18 @@ export const formConfig = {
       { label: "Title/Subject of Lecture delivered", key: "lecture_title" },
       { label: "Date", key: "date" },
       { label: "Duration (hrs.)", key: "duration_hours" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   "T6.5": {
@@ -465,8 +760,22 @@ export const formConfig = {
       { label: "Name of the AICTE Initiative Taken", key: "initiative_name" },
       { label: "Date", key: "date" },
       { label: "Role", key: "role" },
-      { label: "Name of the Organizing Institute", key: "organizing_institute" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (i) => i.proof_link ? (<MuiLink href={i.proof_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Name of the Organizing Institute",
+        key: "organizing_institute",
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (i) =>
+          i.proof_link ? (
+            <MuiLink href={i.proof_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
       { label: "Department", key: "department" },
     ],
   },
@@ -483,8 +792,22 @@ export const formConfig = {
       { label: "Number of Days", key: "num_days" },
       { label: "Mode (Online/Offline)", key: "mode" },
       { label: "Number of Participants attended", key: "participants_count" },
-      { label: "Collaborator (If any) with complete contact details", key: "collaborator_details" },
-      { label: "Google Drive Link (Upload Report)", key: "report_link", render: (i) => i.report_link ? (<MuiLink href={i.report_link} target="_blank" rel="noreferrer">View</MuiLink>) : ("") },
+      {
+        label: "Collaborator (If any) with complete contact details",
+        key: "collaborator_details",
+      },
+      {
+        label: "Google Drive Link (Upload Report)",
+        key: "report_link",
+        render: (i) =>
+          i.report_link ? (
+            <MuiLink href={i.report_link} target="_blank" rel="noreferrer">
+              View
+            </MuiLink>
+          ) : (
+            ""
+          ),
+      },
     ],
   },
   "S1.1": {
@@ -510,12 +833,39 @@ export const formConfig = {
       { label: "ISSN", key: "issn_number" },
       { label: "Impact Factor", key: "impact_factor" },
       { label: "Publisher", key: "publisher" },
-      { label: "Web of Science", key: "indexing_wos", render: (item) => (item.indexing_wos ? "✔︎" : "—") },
-      { label: "Scopus", key: "indexing_scopus", render: (item) => (item.indexing_scopus ? "✔︎" : "—") },
-      { label: "UGC Care", key: "indexing_ugc", render: (item) => (item.indexing_ugc ? "✔︎" : "—") },
+      {
+        label: "Web of Science",
+        key: "indexing_wos",
+        render: (item) => (item.indexing_wos ? "✔︎" : "—"),
+      },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (item) => (item.indexing_scopus ? "✔︎" : "—"),
+      },
+      {
+        label: "UGC Care",
+        key: "indexing_ugc",
+        render: (item) => (item.indexing_ugc ? "✔︎" : "—"),
+      },
       { label: "Other Indexing", key: "indexing_other" },
       { label: "DOI", key: "doi" },
-      { label: "Proof Link", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ("N/A") },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
     ],
   },
   "S2.2": {
@@ -532,11 +882,30 @@ export const formConfig = {
       { label: "Publisher", key: "publisher" },
       { label: "Page No", key: "page_no" },
       { label: "Month & Year", key: "publication_month_year" },
-      { label: "Scopus", key: "indexing_scopus", render: (item) => (item.indexing_scopus ? "✔︎" : "—") },
+      {
+        label: "Scopus",
+        key: "indexing_scopus",
+        render: (item) => (item.indexing_scopus ? "✔︎" : "—"),
+      },
       { label: "Other Indexing", key: "indexing_other" },
       { label: "Conference Status", key: "conference_status" },
       { label: "Conference Mode", key: "conference_mode" },
-      { label: "Proof Link", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ("N/A") },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -550,7 +919,22 @@ export const formConfig = {
       { label: "Title of The Project", key: "project_title" },
       { label: "Sponsored By", key: "sponsored_by" },
       { label: "Name of The Guide", key: "guide_name" },
-      { label: "Google Drive Link", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ("N/A") },
+      {
+        label: "Google Drive Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -561,12 +945,30 @@ export const formConfig = {
     listFields: [
       { label: "Name of The Student", key: "student_name" },
       { label: "Semester", key: "semester" },
-      { label: "Type of Activity (Sports/Cultural etc.)", key: "activity_type" },
+      {
+        label: "Type of Activity (Sports/Cultural etc.)",
+        key: "activity_type",
+      },
       { label: "Organized By", key: "organized_by" },
       { label: "Date", key: "date" },
       { label: "Level (Regional/National/International)", key: "level" },
       { label: "Awards", key: "awards" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ("N/A") },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -578,10 +980,28 @@ export const formConfig = {
       { label: "Name Of The Programme/Competition", key: "program_name" },
       { label: "Number of Participants", key: "participants_count" },
       { label: "Type of Programme/Competition", key: "program_type" },
-      { label: "In collaboration with external agency (if any)", key: "external_agency" },
+      {
+        label: "In collaboration with external agency (if any)",
+        key: "external_agency",
+      },
       { label: "Date", key: "date" },
       { label: "Level (Regional/National/International)", key: "level" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -601,8 +1021,38 @@ export const formConfig = {
       { label: "Contact Details", key: "contact_details" },
       { label: "E-mail ID", key: "email" },
       { label: "Mobile No.", key: "mobile" },
-      { label: "Profile in Social Sites", key: "social_profile_link", render: (item) => item.social_profile_link ? <MuiLink href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</MuiLink> : "N/A" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Profile in Social Sites",
+        key: "social_profile_link",
+        render: (item) =>
+          item.social_profile_link ? (
+            <MuiLink
+              href={item.social_profile_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -619,8 +1069,38 @@ export const formConfig = {
       { label: "Contact Details of Student", key: "contact_details" },
       { label: "E-mail ID", key: "email" },
       { label: "Mobile No.", key: "mobile" },
-      { label: "Profile in Social Sites", key: "social_profile_link", render: (item) => item.social_profile_link ? <MuiLink href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</MuiLink> : "N/A" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Profile in Social Sites",
+        key: "social_profile_link",
+        render: (item) =>
+          item.social_profile_link ? (
+            <MuiLink
+              href={item.social_profile_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -640,8 +1120,38 @@ export const formConfig = {
       { label: "Contact Details", key: "contact_details" },
       { label: "E-mail ID", key: "email" },
       { label: "Mobile No.", key: "mobile" },
-      { label: "Profile in Social Sites", key: "social_profile_link", render: (item) => item.social_profile_link ? <MuiLink href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</MuiLink> : "N/A" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Profile in Social Sites",
+        key: "social_profile_link",
+        render: (item) =>
+          item.social_profile_link ? (
+            <MuiLink
+              href={item.social_profile_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -652,7 +1162,22 @@ export const formConfig = {
     listFields: [
       { label: "Roll No", key: "student_roll_no" },
       { label: "Name", key: "student_name" },
-      { label: "Photo", key: "photo_link", render: (item) => item.photo_link ? <MuiLink href={item.photo_link} target="_blank" rel="noopener noreferrer">View</MuiLink> : "N/A" },
+      {
+        label: "Photo",
+        key: "photo_link",
+        render: (item) =>
+          item.photo_link ? (
+            <MuiLink
+              href={item.photo_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Placement Type", key: "placement_type" },
       { label: "Name of Organization", key: "organization_name" },
       { label: "Package", key: "package_offered" },
@@ -663,9 +1188,39 @@ export const formConfig = {
       { label: "E-mail ID", key: "email" },
       { label: "Contact Details", key: "contact_details" },
       { label: "Mobile No", key: "mobile" },
-      { label: "Social Profile", key: "social_profile_link", render: (item) => item.social_profile_link ? <MuiLink href={item.social_profile_link} target="_blank" rel="noopener noreferrer">View</MuiLink> : "N/A" },
+      {
+        label: "Social Profile",
+        key: "social_profile_link",
+        render: (item) =>
+          item.social_profile_link ? (
+            <MuiLink
+              href={item.social_profile_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Joining Letter Ref", key: "offer_ref_number" },
-      { label: "Proof Link", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Proof Link",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -675,12 +1230,30 @@ export const formConfig = {
     FormComponent: S5_1Form,
     listFields: [
       { label: "Name of The Student", key: "student_name" },
-      { label: "Name of the Certification Course", key: "certification_course" },
+      {
+        label: "Name of the Certification Course",
+        key: "certification_course",
+      },
       { label: "Category of the Course", key: "category" },
       { label: "Duration of the Course", key: "duration" },
       { label: "Credit Points Earned", key: "credit_points" },
       { label: "Certification type", key: "certification_type" },
-      { label: "Google Drive Link (Upload Certificate)", key: "certificate_link", render: (item) => item.certificate_link ? (<MuiLink href={item.certificate_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Google Drive Link (Upload Certificate)",
+        key: "certificate_link",
+        render: (item) =>
+          item.certificate_link ? (
+            <MuiLink
+              href={item.certificate_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -692,7 +1265,22 @@ export const formConfig = {
       { label: "Name of the Student", key: "student_name" },
       { label: "Name of the Company", key: "company_name" },
       { label: "Duration of the Course Attended", key: "duration" },
-      { label: "Google Drive Link (Upload Certificate)", key: "certificate_link", render: (item) => item.certificate_link ? (<MuiLink href={item.certificate_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Google Drive Link (Upload Certificate)",
+        key: "certificate_link",
+        render: (item) =>
+          item.certificate_link ? (
+            <MuiLink
+              href={item.certificate_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -703,12 +1291,30 @@ export const formConfig = {
     listFields: [
       { label: "Name of the Student/Alumni", key: "student_name" },
       { label: "Name of the Award", key: "award_name" },
-      { label: "Name of the Work for which Award is received", key: "work_title" },
+      {
+        label: "Name of the Work for which Award is received",
+        key: "work_title",
+      },
       { label: "Date of Award Received", key: "date_received" },
       { label: "Name of Awarding Organization", key: "awarding_organization" },
       { label: "Award Amount (INR) if any", key: "award_amount" },
       { label: "Level of Award", key: "award_level" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
@@ -719,9 +1325,27 @@ export const formConfig = {
     listFields: [
       { label: "Name of the Student", key: "student_name" },
       { label: "Year of Establishment", key: "establishment_year" },
-      { label: "Name of Organization with Address & Website", key: "organization_details" },
+      {
+        label: "Name of Organization with Address & Website",
+        key: "organization_details",
+      },
       { label: "Sector", key: "sector" },
-      { label: "Google Drive Link (Upload Proof)", key: "proof_link", render: (item) => item.proof_link ? (<MuiLink href={item.proof_link} target="_blank" rel="noopener noreferrer">View</MuiLink>) : ( "N/A" ) },
+      {
+        label: "Google Drive Link (Upload Proof)",
+        key: "proof_link",
+        render: (item) =>
+          item.proof_link ? (
+            <MuiLink
+              href={item.proof_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View
+            </MuiLink>
+          ) : (
+            "N/A"
+          ),
+      },
       { label: "Department", key: "department_name" },
     ],
   },
