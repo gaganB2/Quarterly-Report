@@ -3,15 +3,10 @@
 import React, { useState } from "react";
 import {
   Box,
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableContainer,
   Paper,
   Typography,
   Divider,
+  Stack
 } from "@mui/material";
 import { formSections } from "../config/formConfig";
 import FormRow from "./FormRow";
@@ -25,54 +20,37 @@ export default function FormTable({ filters, formCounts, countsLoading, visibleS
   };
 
   return (
-    <Paper sx={{ p: { xs: 2, md: 3 } }}> 
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 2
-      }}>
+    <Paper sx={{ p: { xs: 2, md: 3 }, backgroundColor: 'transparent', boxShadow: 'none' }}> 
+      <Stack spacing={2} sx={{ mb: 3 }}>
         <Typography variant="h4" fontWeight={700}>
           Submission Sections
         </Typography>
         
         {FilterPanel}
-      </Box>
+      </Stack>
       
-      <Divider sx={{ mb: 1 }} />
+      <Divider sx={{ mb: 3 }} />
 
-      <TableContainer>
-        <Table>
-          <TableHead sx={{ backgroundColor: "transparent" }}>
-            <TableRow>
-              <TableCell sx={{ width: '5%', pl: 3.5, fontWeight: 'bold' }}>S. No.</TableCell>
-              <TableCell sx={{ width: '70%', fontWeight: 'bold' }}>Form</TableCell>
-              <TableCell align="center" sx={{ width: '25%', fontWeight: 'bold', pr: 3.5 }}>Options</TableCell>
-            </TableRow>
-          </TableHead>
-          
-          <TableBody>
-            {visibleSections.map((f, i) => {
-              const isActive = activeForm === f.code;
-              const count = formCounts[f.code] ?? null;
+      <Stack spacing={0}>
+        {visibleSections.map((f, i) => {
+          const isActive = activeForm === f.code;
+          const count = formCounts[f.code] ?? null;
 
-              return (
-                <FormRow
-                  key={f.code}
-                  form={f}
-                  idx={i}
-                  filters={filters}
-                  isActive={isActive}
-                  onToggleActive={handleToggleActive}
-                  count={count}
-                  isLoadingCount={countsLoading}
-                  refreshCounts={refreshCounts}
-                />
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          return (
+            <FormRow
+              key={f.code}
+              form={f}
+              idx={i}
+              filters={filters}
+              isActive={isActive}
+              onToggleActive={handleToggleActive}
+              count={count}
+              isLoadingCount={countsLoading}
+              refreshCounts={refreshCounts}
+            />
+          );
+        })}
+      </Stack>
     </Paper>
   );
 }

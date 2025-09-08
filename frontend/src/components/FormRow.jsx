@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  TableRow, TableCell, Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
+  Button, Collapse, Box, Divider, Dialog, AppBar, Toolbar,
   IconButton, Typography, Chip, useTheme, CircularProgress, Alert, alpha, Container,
-  DialogTitle, Tooltip
+  DialogTitle, Tooltip, Paper, Grid, Stack
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { FileDownload as DownloadIcon, UploadFile as UploadIcon } from '@mui/icons-material';
@@ -18,23 +18,14 @@ import { useSnackbar } from 'notistack';
 import ImportDialog from "./ImportDialog";
 
 const rowVariants = {
-  hidden: { 
-    opacity: 0,
-    y: 10,
-  },
+  hidden: { opacity: 0, y: 20 },
   visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.05,
-      duration: 0.3,
-      ease: "easeOut",
-    },
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   }),
 };
 
-const MotionTableRow = motion(TableRow);
-
+const MotionPaper = motion(Paper);
 const PREVIEW_COLUMN_LIMIT = 5;
 
 const getCurrentQuarter = () => {
@@ -50,8 +41,7 @@ const getCurrentQuarter = () => {
 
 const FilterDisplay = ({ filters }) => {
   const activeFilters = Object.entries(filters).filter(([, value]) => value).map(([key, value]) => ({
-    label: key.charAt(0).toUpperCase() + key.slice(1),
-    value: value,
+    label: key.charAt(0).toUpperCase() + key.slice(1), value,
   }));
   if (activeFilters.length === 0) return null;
   return (
@@ -119,7 +109,7 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
     try {
       await apiClient.delete(`/${cfg.endpoint}${item.id}/`);
       loadData();
-      refreshCounts(); // Refresh counts after delete
+      refreshCounts();
     } catch (err) {
        setError("Failed to delete the entry. Please try again.");
     }
@@ -127,42 +117,35 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
 
   const handleSuccess = () => {
     onToggleActive(form.code);
-    refreshCounts(); // Refresh counts after add/edit
+    refreshCounts();
   };
 
   const handleExport = async () => {
     enqueueSnackbar("Generating your Excel report...", { variant: 'info' });
     try {
-        const params = new URLSearchParams(filters).toString();
-        const url = `/${cfg.endpoint}export-excel/?${params}`;
-        const response = await apiClient.get(url, { responseType: 'blob' });
-        
-        const contentDisposition = response.headers['content-disposition'];
-        let filename = `Report_${form.code}.xlsx`;
-        if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-            if (filenameMatch && filenameMatch.length === 2)
-                filename = filenameMatch[1];
-        }
-        
-        saveAs(response.data, filename);
+      const params = new URLSearchParams(filters).toString();
+      const url = `/${cfg.endpoint}export-excel/?${params}`;
+      const response = await apiClient.get(url, { responseType: 'blob' });
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `Report_${form.code}.xlsx`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch && filenameMatch.length === 2) filename = filenameMatch[1];
+      }
+      saveAs(response.data, filename);
     } catch (error) {
-        console.error("Failed to export data:", error);
-        enqueueSnackbar("Failed to generate report. Please try again.", { variant: 'error' });
+      console.error("Failed to export data:", error);
+      enqueueSnackbar("Failed to generate report. Please try again.", { variant: 'error' });
     }
   };
 
   const renderPanelContent = () => {
     if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>;
     if (error) return <Alert severity="error">Could not load data: {error}</Alert>;
-
     const formSession = filters.session || getCurrentQuarter().session;
     const formYear = filters.year || getCurrentQuarter().year;
 
-    if (mode === "add") {
-      return (<GenericForm FormComponent={cfg.FormComponent} onSuccess={handleSuccess} session={formSession} year={formYear} />);
-    }
-
+    if (mode === "add") return <GenericForm FormComponent={cfg.FormComponent} onSuccess={handleSuccess} session={formSession} year={formYear} />;
     if (['view', 'edit', 'delete'].includes(mode)) {
       const previewFields = (cfg.listFields || []).slice(0, PREVIEW_COLUMN_LIMIT);
       return (
@@ -187,15 +170,10 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
   const renderActionButton = (btnMode, label, color = "primary", variant = "text") => {
     const active = isActive && mode === btnMode;
     const isCollapse = active && ['add', 'view', 'edit', 'delete'].includes(btnMode);
-    
     return (
       <Button
-        size="small"
-        onClick={() => handleOpen(btnMode)}
-        sx={{ 
-          minWidth: 64,
-          fontWeight: 600,
-        }}
+        size="small" onClick={() => handleOpen(btnMode)}
+        sx={{ minWidth: 64, fontWeight: 600, borderRadius: '50px' }}
         variant={active ? "contained" : variant}
         color={isCollapse ? color : "inherit"}
         {...(btnMode === 'add' && { color: 'success' })}
@@ -209,50 +187,56 @@ export default function FormRow({ form, idx, filters, isActive, onToggleActive, 
 
   return (
     <React.Fragment>
-      <MotionTableRow
-        key={`${form.code}-data`}
+      <MotionPaper
+        key={form.code}
         variants={rowVariants}
         initial="hidden"
         animate="visible"
         custom={idx}
-        hover 
-        sx={{ '& > *': { borderBottom: 'unset' } }}
+        sx={{
+          p: 2,
+          mb: 2,
+          borderRadius: 3,
+          backgroundColor: 'background.level1',
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 4px 12px 0 rgba(0,0,0,0.05)',
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 8px 24px 0 rgba(0,0,0,0.07)',
+          },
+        }}
       >
-        <TableCell sx={{ pl: 3.5 }}>{idx + 1}</TableCell>
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Typography variant="body2" component="span" sx={{ flexGrow: 1 }}><strong>{form.code}</strong> — {form.title}</Typography>
-            {isLoadingCount ? (<CircularProgress size={18} thickness={5} />) : (count !== null && (
-                <Chip label={count} size="small" color={count > 0 ? "primary" : "default"} variant={count > 0 ? "filled" : "outlined"}/>
-            ))}
+        <Grid container alignItems="center" spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Typography sx={{ color: 'text.secondary', fontWeight: 'bold' }}>{idx + 1}</Typography>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', flexGrow: 1 }}>
+                {form.code} — {form.title}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Stack direction="row" alignItems="center" justifyContent={{ xs: 'flex-start', md: 'flex-end' }} spacing={1} flexWrap="wrap">
+              {isLoadingCount ? (<CircularProgress size={24} />) : (<Chip label={count ?? 0} color={count > 0 ? "primary" : "default"} />)}
+              <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+              {renderActionButton("add", "Add", "success")}
+              {renderActionButton("view", "View", "primary")}
+              {renderActionButton("edit", "Edit", "warning")}
+              {renderActionButton("delete", "Delete", "error")}
+              <Tooltip title="Import data from Excel"><IconButton size="small" onClick={() => setImportOpen(true)}><UploadIcon /></IconButton></Tooltip>
+              <Tooltip title="Export data to Excel"><IconButton size="small" onClick={handleExport}><DownloadIcon /></IconButton></Tooltip>
+            </Stack>
+          </Grid>
+        </Grid>
+
+        <Collapse in={isActive} timeout="auto" unmountOnExit>
+          <Box sx={{ mt: 2, p: 2, borderRadius: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
+            {renderPanelContent()}
           </Box>
-        </TableCell>
-        <TableCell align="center" sx={{ pr: 3.5 }}>
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {renderActionButton("add", "Add", "success")}
-            {renderActionButton("view", "View", "primary")}
-            {renderActionButton("edit", "Edit", "warning")}
-            {renderActionButton("delete", "Delete", "error")}
-            
-            <Tooltip title="Import data from Excel">
-              <Button size="small" startIcon={<UploadIcon />} onClick={() => setImportOpen(true)}>Import</Button>
-            </Tooltip>
-            <Tooltip title="Export data to Excel">
-              <Button size="small" startIcon={<DownloadIcon />} onClick={handleExport}>Export</Button>
-            </Tooltip>
-          </Box>
-        </TableCell>
-      </MotionTableRow>
-      
-      <TableRow key={`${form.code}-collapse`}>
-        <TableCell colSpan={3} sx={{ p: 0, border: 0 }}>
-          <Collapse in={isActive} timeout="auto" unmountOnExit>
-            <Box sx={{ m: 1, p: 2, borderRadius: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
-              {renderPanelContent()}
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+        </Collapse>
+      </MotionPaper>
       
       <Dialog fullScreen open={fullOpen} onClose={() => setFullOpen(false)}>
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', background: theme.palette.background.default }}>

@@ -1,596 +1,257 @@
-// src/pages/LoginPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import {
   Box,
-  Container,
   Paper,
   Typography,
   TextField,
   Button,
-  Stack,
-  CircularProgress,
-  CssBaseline,
-  Alert,
   IconButton,
   InputAdornment,
-  Chip,
-  useTheme,
-  useMediaQuery,
-  Fade,
+  Stack,
+  Alert,
+  CircularProgress,
   Link,
+  useTheme,
+  alpha,
+  keyframes,
 } from "@mui/material";
-import {
-  Visibility,
-  VisibilityOff,
-  Person,
-  Lock,
-  School,
-  AdminPanelSettings,
-  ArrowForward,
-  Security,
-  Analytics,
-} from "@mui/icons-material";
+import { Visibility, VisibilityOff, School, AdminPanelSettings, ArrowForward } from "@mui/icons-material";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "/assets/logo.png";
+import logo from "../assets/favicon.png";
+import { useAuth } from "../context/AuthContext";
 
-const MotionBox = motion(Box);
-const MotionPaper = motion(Paper);
+const auroraVibrant = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
-const BackgroundElements = () => (
-  <Box
-    sx={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      overflow: "hidden",
-      zIndex: 0,
-    }}
-  >
-    <MotionBox
-      sx={{
-        position: "absolute",
-        top: "10%",
-        left: "5%",
-        width: 400,
-        height: 400,
-        borderRadius: "50%",
-        background:
-          "radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)",
-      }}
-      animate={{
-        scale: [1, 1.1, 1],
-        opacity: [0.5, 0.8, 0.5],
-      }}
-      transition={{
-        duration: 8,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-    <MotionBox
-      sx={{
-        position: "absolute",
-        bottom: "10%",
-        right: "5%",
-        width: 300,
-        height: 300,
-        borderRadius: "50%",
-        background:
-          "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
-      }}
-      animate={{
-        scale: [1.1, 1, 1.1],
-        opacity: [0.3, 0.6, 0.3],
-      }}
-      transition={{
-        duration: 10,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-  </Box>
-);
+const panX = keyframes`
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+`;
+
+const colorPurple = '#8B5CF6';
+const colorBlue = '#4A00E0';
 
 export default function LoginPage() {
   const [role, setRole] = useState("faculty");
+  const [showPassword, setShowPassword] = useState(false);
   const [creds, setCreds] = useState({ username: "", password: "" });
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
   const { login } = useAuth();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const validate = () => {
-    const e = {};
-    if (!creds.username.trim()) e.username = "Username cannot be blank";
-    if (creds.password.length < 6)
-      e.password = "Password must be at least 6 characters";
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  useEffect(() => {
+    setLoginError("");
+  }, [role]);
+
+  const handleChange = (e) => {
+    setCreds({ ...creds, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
-    if (!validate()) return;
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setLoginError("");
-
     try {
       const loggedInUser = await login(creds.username, creds.password);
-
       if (loggedInUser.password_changed === false) {
         navigate("/force-password-change");
-      } else if (loggedInUser.role === "Admin") {
-        navigate("/admin/users");
       } else {
         navigate("/home");
       }
-      
     } catch (error) {
-      console.error("Login failed:", error);
       const errorDetail = error.response?.data?.detail;
-      if (errorDetail && errorDetail.includes("No active account")) {
-        setLoginError(
-          "This account is not active. Please check your email for a verification link."
-        );
-      } else {
-        setLoginError("Invalid username or password. Please try again.");
-      }
+      setLoginError(errorDetail?.includes("No active account")
+        ? "This account is not active. Please check your email for a verification link."
+        : "Invalid username or password.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setCreds({ ...creds, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
+  const baseButtonStyles = {
+    borderRadius: '99px',
+    fontWeight: 700,
+    textTransform: "none",
+    fontSize: "1rem",
+    color: 'white',
+    background: `linear-gradient(45deg, ${colorBlue}, ${colorPurple})`,
+    backgroundSize: '150% 150%',
+    transition: 'background-position 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease',
+    boxShadow: `0 4px 15px -5px ${alpha(colorBlue, 0.7)}`,
+    '&:hover': {
+      transform: 'translateY(-3px)',
+      backgroundPosition: '100% 50%',
+      boxShadow: `0 6px 20px -5px ${alpha(colorPurple, 0.7)}`,
     }
   };
-
-  const roleConfig = {
-    faculty: {
-      icon: <School sx={{ fontSize: 20 }} />,
-      color: "#059669",
-      gradient: "linear-gradient(135deg, #059669, #047857)",
-      label: "Faculty",
-      description: "Academic Portal",
-    },
-    admin: {
-      icon: <AdminPanelSettings sx={{ fontSize: 20 }} />,
-      color: "#dc2626",
-      gradient: "linear-gradient(135deg, #dc2626, #b91c1c)",
-      label: "Admin",
-      description: "Control Panel",
-    },
-  };
-
-  useEffect(() => {
-    setErrors({});
-    setLoginError("");
-  }, [role]);
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        position: "relative",
-        background:
-          "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
+        width: "100%",
         display: "flex",
         alignItems: "center",
-        overflow: "hidden",
+        justifyContent: "center",
+        px: 2,
+        py: 6,
+        background: `linear-gradient(125deg, #F9F7FF, #E0F7FF, #FFF5E1, #FEDEFF, #F9F7FF)`,
+        backgroundSize: '400% 400%',
+        animation: `${auroraVibrant} 30s ease infinite`,
       }}
     >
-      <CssBaseline />
-
-      <BackgroundElements />
-
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: 4 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-            gap: { xs: 6, lg: 12 },
-            alignItems: "center",
-            minHeight: { xs: "auto", lg: "80vh" },
-          }}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "1.2fr 1fr" },
+          alignItems: "center",
+          gap: { xs: 6, lg: 12 },
+          width: "100%",
+          maxWidth: 1200,
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7 }}
         >
-          <MotionBox
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
+          <Stack 
+            spacing={3}
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 6,
-              textAlign: { xs: "center", lg: "left" },
+              display: { xs: "none", lg: "flex" },
+              alignItems: "flex-start",
             }}
           >
-            <Box>
-              <MotionBox
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                sx={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 3,
-                  mb: 4,
-                }}
-              >
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 3,
-                    background: "rgba(255, 255, 255, 0.15)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={logo}
-                    alt="BIT-DURG"
-                    sx={{
-                      height: { xs: 40, md: 48 },
-                      filter: "brightness(1.2)",
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ textAlign: "left" }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 700,
-                      color: "white",
-                      lineHeight: 1.2,
-                      opacity: 0.95,
-                    }}
-                  >
-                    BIT-DURG
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "rgba(255, 255, 255, 0.8)",
-                      fontSize: "0.75rem",
-                      fontWeight: 500,
-                      textTransform: "uppercase",
-                      letterSpacing: 1,
-                    }}
-                  >
-                    Institute Portal
-                  </Typography>
-                </Box>
-              </MotionBox>
-
-              <Typography
-                variant={isMobile ? "h4" : "h3"}
-                sx={{
-                  fontWeight: 300,
-                  color: "white",
-                  lineHeight: 1.2,
-                  mb: 2,
-                  fontFamily: '"Inter", -apple-system, sans-serif',
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                Academic Reporting
-                <Box
-                  component="span"
-                  sx={{ fontWeight: 700, display: "block" }}
-                >
-                  Made Simple
-                </Box>
-              </Typography>
-
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "rgba(255, 255, 255, 0.8)",
-                  fontWeight: 400,
-                  maxWidth: 400,
-                  lineHeight: 1.6,
-                }}
-              >
-                Streamlined quarterly reporting system for academic excellence
-                and institutional growth.
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              <Box component="img" src={logo} alt="BIT-DURG" sx={{ height: 40 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, color: "text.secondary" }}>
+                BIT Durg Portal
               </Typography>
             </Box>
+            <Typography sx={{
+              fontWeight: 800,
+              fontSize: '5rem',
+              lineHeight: 1.1,
+              letterSpacing: '-0.04em',
+              background: `linear-gradient(135deg, ${colorBlue} 15%, ${colorPurple} 50%, #111827 85%)`,
+              backgroundSize: '200% 200%',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              animation: `${panX} 8s ease-in-out infinite`,
+            }}>
+              Academic Reporting
+            </Typography>
+            <Typography variant="h6" sx={{ color: "text.secondary", maxWidth: 450, fontWeight: 400, lineHeight: 1.6 }}>
+              Sign in to continue your academic journey with a secure and modern reporting system.
+            </Typography>
+          </Stack>
+        </motion.div>
 
-            {!isMobile && (
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                <Chip
-                  icon={<Security sx={{ fontSize: 16 }} />}
-                  label="Enterprise Security"
-                  sx={{
-                    backgroundColor: "rgba(255, 255, 255, 0.15)",
-                    color: "white",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(10px)",
-                    "& .MuiChip-icon": { color: "white" },
-                  }}
-                />
-                <Chip
-                  icon={<Analytics sx={{ fontSize: 16 }} />}
-                  label="Smart Analytics"
-                  sx={{
-                    backgroundColor: "rgba(255, 255, 255, 0.15)",
-                    color: "white",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    backdropFilter: "blur(10px)",
-                    "& .MuiChip-icon": { color: "white" },
-                  }}
-                />
-              </Box>
-            )}
-          </MotionBox>
-          <MotionBox
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            sx={{ display: "flex", justifyContent: "center" }}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          <Paper
+            elevation={0}
+            sx={{
+              width: "100%",
+              maxWidth: 420,
+              mx: 'auto',
+              p: { xs: 3, sm: 5 },
+              borderRadius: 5,
+              backgroundColor: alpha(theme.palette.background.paper, 0.8),
+              backdropFilter: 'blur(16px)',
+              border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+              boxShadow: "0 16px 40px rgba(0,0,0,0.12)",
+            }}
           >
-            <MotionPaper
-              elevation={0}
-              sx={{
-                width: "100%",
-                maxWidth: 420,
-                p: { xs: 4, md: 5 },
-                borderRadius: 4,
-                background: "rgba(255, 255, 255, 0.98)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.8)",
-                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Box sx={{ mb: 4, textAlign: "center" }}>
-                <Typography
-                  variant="h5"
-                  fontWeight="600"
-                  sx={{ color: "#111827", mb: 1 }}
-                >
-                  Welcome back
-                </Typography>
-                <Typography variant="body2" sx={{ color: "#6b7280" }}>
-                  Sign in to your account
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 4 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    p: 0.5,
-                    backgroundColor: "#f3f4f6",
-                    borderRadius: 2,
-                    mb: 3,
+            <Typography variant="h4" sx={{ mb: 1, fontWeight: 700, textAlign: "center", color: "text.primary" }}>
+              Welcome Back
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, textAlign: "center", color: "text.secondary" }}>
+              Sign in to the Institute Portal
+            </Typography>
+
+            <Stack component="form" onSubmit={handleLogin} spacing={2.5}>
+              
+              {/* --- FINALIZED: Light Theme Animated Toggle --- */}
+              <Box sx={{ position: 'relative', display: 'flex', p: 0.5, backgroundColor: '#e0e0e0', borderRadius: '50px' }}>
+                <motion.div
+                  layoutId="role-glider-light"
+                  style={{
+                    position: 'absolute',
+                    top: '4px',
+                    bottom: '4px',
+                    width: 'calc(50% - 4px)',
+                    left: role === 'faculty' ? '4px' : 'calc(50% + 4px)',
+                    background: `linear-gradient(45deg, ${colorBlue}, ${colorPurple})`,
+                    borderRadius: '50px',
+                    boxShadow: `0 3px 10px ${alpha(colorPurple, 0.3)}`,
                   }}
-                >
-                  {Object.entries(roleConfig).map(([key, config]) => (
-                    <Button
-                      key={key}
-                      onClick={() => setRole(key)}
-                      variant={role === key ? "contained" : "text"}
-                      fullWidth
-                      sx={{
-                        py: 1.5,
-                        borderRadius: 1.5,
-                        textTransform: "none",
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        background:
-                          role === key ? config.gradient : "transparent",
-                        color: role === key ? "white" : "#6b7280",
-                        boxShadow:
-                          role === key ? "0 2px 8px rgba(0,0,0,0.15)" : "none",
-                        "&:hover": {
-                          backgroundColor:
-                            role === key ? undefined : "rgba(0,0,0,0.04)",
-                        },
-                      }}
-                    >
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        {config.icon}
-                        {config.label}
-                      </Box>
-                    </Button>
-                  ))}
-                </Box>
-              </Box>
-              <Stack
-                spacing={2}
-                component="form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleLogin();
-                }}
-              >
-                <AnimatePresence>
-                  {loginError && (
-                    <Fade in={!!loginError}>
-                      <Alert
-                        severity="error"
-                        sx={{
-                          borderRadius: 2,
-                          backgroundColor: "#fef2f2",
-                          border: "1px solid #fecaca",
-                          color: "#dc2626",
-                        }}
-                      >
-                        {loginError}
-                      </Alert>
-                    </Fade>
-                  )}
-                </AnimatePresence>
-                <TextField
-                  name="username"
-                  label={role === "faculty" ? "Faculty ID" : "Admin Username"}
-                  fullWidth
-                  variant="outlined"
-                  value={creds.username}
-                  error={!!errors.username}
-                  helperText={errors.username}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person sx={{ color: "#9ca3af", fontSize: 20 }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 2,
-                      backgroundColor: "#fafafa",
-                      "& fieldset": {
-                        borderColor: "#e5e7eb",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#d1d5db",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: roleConfig[role].color,
-                        borderWidth: "2px",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#6b7280",
-                      fontSize: "0.9rem",
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "#111827",
-                      fontSize: "0.95rem",
-                    },
-                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                 />
-                <TextField
-                  name="password"
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  fullWidth
-                  variant="outlined"
-                  value={creds.password}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                  onChange={handleChange}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Lock sx={{ color: "#9ca3af", fontSize: 20 }} />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          sx={{ color: "#9ca3af" }}
-                          size="small"
-                        >
-                          {showPassword ? (
-                            <VisibilityOff fontSize="small" />
-                          ) : (
-                            <Visibility fontSize="small" />
-                          )}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: 2,
-                      backgroundColor: "#fafafa",
-                      "& fieldset": {
-                        borderColor: "#e5e7eb",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#d1d5db",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: roleConfig[role].color,
-                        borderWidth: "2px",
-                      },
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#6b7280",
-                      fontSize: "0.9rem",
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "#111827",
-                      fontSize: "0.95rem",
-                    },
-                  }}
-                />
-                
-                <Box sx={{ textAlign: 'right', width: '100%', mt: -1, mb: 1 }}>
-                  <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ fontWeight: 500 }}>
-                    Forgot Password?
-                  </Link>
-                </Box>
-                
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  disabled={loading}
-                  endIcon={
-                    loading ? null : <ArrowForward sx={{ fontSize: 18 }} />
-                  }
-                  sx={{
-                    py: 1.75,
-                    borderRadius: 2,
-                    fontSize: "0.95rem",
-                    fontWeight: 600,
-                    textTransform: "none",
-                    background: roleConfig[role].gradient,
-                    boxShadow: `0 4px 16px ${roleConfig[role].color}30`,
-                    "&:hover": {
-                      background: roleConfig[role].gradient,
-                      transform: "translateY(-1px)",
-                      boxShadow: `0 8px 25px ${roleConfig[role].color}40`,
-                    },
-                    "&:active": {
-                      transform: "translateY(0px)",
-                    },
-                    "&:disabled": {
-                      background: "#e5e7eb",
-                      color: "#9ca3af",
-                    },
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : (
-                    `Sign in`
-                  )}
+                <Button fullWidth onClick={() => setRole('faculty')} sx={{ zIndex: 1, color: role === 'faculty' ? 'white' : 'text.primary', fontWeight: 600, textTransform: 'none', py:1.25 }}>
+                  <School sx={{ mr: 1, fontSize: 20 }} /> Faculty
                 </Button>
-              </Stack>
-              <Box sx={{ mt: 4, textAlign: "center" }}>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "#9ca3af",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  Secured by enterprise-grade encryption
-                </Typography>
+                <Button fullWidth onClick={() => setRole('admin')} sx={{ zIndex: 1, color: role === 'admin' ? 'white' : 'text.primary', fontWeight: 600, textTransform: 'none', py:1.25 }}>
+                  <AdminPanelSettings sx={{ mr: 1, fontSize: 20 }} /> Admin
+                </Button>
               </Box>
-            </MotionPaper>
-          </MotionBox>
-        </Box>
-      </Container>
+
+              <AnimatePresence>
+                {loginError && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                    <Alert severity="error" variant="filled">{loginError}</Alert>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <TextField name="username" label={role === "faculty" ? "Faculty ID" : "Admin Username"} value={creds.username} onChange={handleChange} />
+              <TextField
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                value={creds.password}
+                onChange={handleChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <Box sx={{ textAlign: 'right', width: '100%', mt: -1.5 }}>
+                <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ fontWeight: 500 }}>
+                  Forgot Password?
+                </Link>
+              </Box>
+
+              <Button type="submit" fullWidth disabled={loading} sx={{ ...baseButtonStyles, py: 1.5, mt: 1 }}>
+                {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
+                {!loading && <ArrowForward sx={{ ml: 1 }} />}
+              </Button>
+
+              <Typography variant="body2" align="center" sx={{ pt: 2 }}>
+                Are you a student?{" "}
+                <Link component={RouterLink} to="/login/student" fontWeight="bold">
+                  Login Here
+                </Link>
+              </Typography>
+            </Stack>
+          </Paper>
+        </motion.div>
+      </Box>
     </Box>
   );
 }

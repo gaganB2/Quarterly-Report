@@ -1,7 +1,7 @@
 // src/pages/StudentLoginPage.jsx
+
 import React, { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import {
   Box,
   Container,
@@ -15,36 +15,42 @@ import {
   IconButton,
   InputAdornment,
   Link,
+  useTheme,
+  alpha,
+  keyframes,
+  Divider, // --- FIX: Add Divider to the import list ---
 } from "@mui/material";
-import { Visibility, VisibilityOff, Person, Lock } from "@mui/icons-material";
-import { motion } from "framer-motion";
-import logo from "/assets/favicon.png";
+import { Visibility, VisibilityOff, PersonOutline, LockOutlined, ArrowForward } from "@mui/icons-material";
+import { motion, AnimatePresence } from "framer-motion";
+import logo from "../assets/favicon.png";
+import { useAuth } from "../context/AuthContext";
 
-const MotionPaper = motion(Paper);
+const auroraVibrant = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
 export default function StudentLoginPage() {
   const [creds, setCreds] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
   const { login } = useAuth();
+  const theme = useTheme();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setLoginError("");
-
     try {
       const loggedInUser = await login(creds.username, creds.password);
-
       if (loggedInUser.role !== 'Student') {
         setLoginError("This login is for students only. Please use the main login page for other roles.");
         return; 
       }
-      
       navigate("/student/dashboard");
-
     } catch (error) {
       console.error("Login failed:", error);
       const errorDetail = error.response?.data?.detail;
@@ -66,41 +72,52 @@ export default function StudentLoginPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #007BFF 0%, #0056b3 100%)",
+        width: '100%',
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        px: 2,
+        background: `linear-gradient(125deg, #E6F7FF, #EBF5FF, #F0F9FF, #F5F3FF, #E6F7FF)`,
+        backgroundSize: '400% 400%',
+        animation: `${auroraVibrant} 30s ease infinite`,
       }}
     >
-      <Container maxWidth="xs">
-        <MotionPaper
-          elevation={12}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          sx={{
-            p: 4,
-            borderRadius: 4,
-            textAlign: "center",
-          }}
-        >
-          <img src={logo} alt="BIT Durg Logo" style={{ height: 60, marginBottom: '16px' }} />
-          <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
-            Student Portal Login
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Access your quarterly report dashboard.
-          </Typography>
+      <Paper
+        component={motion.div}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        elevation={0}
+        sx={{
+          width: "100%",
+          maxWidth: 420,
+          p: { xs: 3, sm: 5 },
+          borderRadius: 5,
+          backgroundColor: alpha(theme.palette.background.paper, 0.8),
+          backdropFilter: 'blur(16px)',
+          border: `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+          boxShadow: "0 16px 40px rgba(0,0,0,0.12)",
+        }}
+      >
+        <Stack spacing={3}>
+          <Box sx={{ mb: 1, textAlign: 'center' }}>
+            <Box component="img" src={logo} alt="BIT-DURG Logo" sx={{ height: 50, mb: 2 }} />
+            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
+              Student Portal Login
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Access your report dashboard.
+            </Typography>
+          </Box>
 
-          <Stack
-            spacing={2}
-            component="form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}
-          >
-            {loginError && <Alert severity="error">{loginError}</Alert>}
+          <Stack component="form" onSubmit={handleLogin} spacing={2.5}>
+            <AnimatePresence>
+              {loginError && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                  <Alert severity="error" variant="filled">{loginError}</Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <TextField
               name="username"
@@ -109,14 +126,9 @@ export default function StudentLoginPage() {
               value={creds.username}
               onChange={handleChange}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Person />
-                  </InputAdornment>
-                ),
+                startAdornment: (<InputAdornment position="start"><PersonOutline /></InputAdornment>),
               }}
             />
-
             <TextField
               name="password"
               label="Password"
@@ -125,11 +137,7 @@ export default function StudentLoginPage() {
               value={creds.password}
               onChange={handleChange}
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock />
-                  </InputAdornment>
-                ),
+                startAdornment: (<InputAdornment position="start"><LockOutlined /></InputAdornment>),
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
@@ -140,8 +148,8 @@ export default function StudentLoginPage() {
               }}
             />
 
-            <Box sx={{ textAlign: 'right', width: '100%', mt: -1, mb: 1 }}>
-              <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+            <Box sx={{ textAlign: 'right', width: '100%', mt: -1.5 }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2" sx={{ fontWeight: 500 }}>
                 Forgot Password?
               </Link>
             </Box>
@@ -152,20 +160,36 @@ export default function StudentLoginPage() {
               fullWidth
               size="large"
               disabled={loading}
-              sx={{ py: 1.5 }}
+              sx={{ py: 1.75, textTransform: 'none', fontSize: '1rem', fontWeight: 700, borderRadius: '99px' }}
             >
-              {loading ? <CircularProgress size={24} /> : "Login"}
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+              {!loading && <ArrowForward sx={{ ml: 1 }} />}
             </Button>
 
-            <Typography variant="body2" sx={{ pt: 2 }}>
-              Don't have an account?{" "}
-              <Link component={RouterLink} to="/signup" fontWeight="bold">
-                Sign Up
+            <Divider sx={{ pt: 1 }}>
+              <Typography variant="body2" color="text.secondary">New Here?</Typography>
+            </Divider>
+
+            <Button
+              component={RouterLink}
+              to="/signup"
+              variant="outlined"
+              fullWidth
+              size="large"
+              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: '99px' }}
+            >
+              Create an Account
+            </Button>
+            
+            <Typography variant="body2" align="center" sx={{ pt: 1 }}>
+              Are you Faculty or Staff?{" "}
+              <Link component={RouterLink} to="/login" fontWeight="bold">
+                Login Here
               </Link>
             </Typography>
           </Stack>
-        </MotionPaper>
-      </Container>
+        </Stack>
+      </Paper>
     </Box>
   );
 }
