@@ -5,24 +5,35 @@ FROM node:20-alpine AS builder
 # Set the working directory inside the container
 WORKDIR /app
 
+# --- THIS IS THE ENVIRONMENT VARIABLE FIX ---
+# 1. Declare a build argument. Railway will automatically find the
+#    VITE_API_BASE_URL environment variable from your service and pass it
+#    to this build argument.
+ARG VITE_API_BASE_URL
+
+# 2. Set this build argument as an environment variable that is available
+#    *during the build process*.
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+# --- END OF FIX ---
+
 # Install pnpm globally
 RUN npm install -g pnpm
 
 # Copy only the necessary config files to leverage Docker's layer caching
 COPY package.json pnpm-lock.yaml .npmrc* ./
-# The .npmrc* will copy .npmrc if it exists, but won't fail if it doesn't
 
 # Install all dependencies using pnpm
 RUN pnpm install --frozen-lockfile
 
-# --- THIS IS THE CRITICAL FIX ---
-# After installation, manually make the Vite CLI executable.
-RUN chmod +x ./node_modules/.bin/vite
-
 # Copy the rest of our application's source code
 COPY . .
 
-# Run the build script
+# --- THIS IS THE PERMISSION FIX ---
+# Manually make the vite CLI executable before trying to run it.
+RUN chmod +x ./node_modules/.bin/vite
+
+# Now, run the build script. It will now have access to the environment
+# variable AND the correct permissions. This will succeed.
 RUN pnpm run build
 
 
@@ -30,7 +41,6 @@ RUN pnpm run build
 # Use a minimal, clean image for the final deployment
 FROM node:20-alpine
 
-# Set the working directory
 WORKDIR /app
 
 # Install only the 'serve' package, which is all we need to run the app
@@ -43,6 +53,4 @@ COPY --from=builder /app/dist .
 EXPOSE 3000
 
 # The command to start the server.
-# -s tells it to serve as a Single Page App.
-# -l 3000 tells it to listen on all interfaces on port 3000.
 CMD [ "serve", "-s", ".", "-l", "3000" ]

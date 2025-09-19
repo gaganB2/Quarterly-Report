@@ -2,19 +2,14 @@
 
 import axios from 'axios';
 
-// Get the base URL from Vite's environment variables
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
-// --- NEW: A professional safety check for production builds ---
-// This check ensures that if the environment variable is missing during the build,
-// the application will fail loudly instead of deploying a broken version.
+// This check now runs during the build process on the server. If the variable
+// is missing for any reason, the entire build will fail, which is safer.
 if (import.meta.env.PROD && !apiBaseUrl) {
-  console.error("CRITICAL ERROR: VITE_API_BASE_URL is not defined in the production environment.");
-  // You can also throw an error to halt execution completely
-  // throw new Error("VITE_API_BASE_URL is not defined in production.");
+  throw new Error("CRITICAL BUILD ERROR: VITE_API_BASE_URL is not defined in the production environment. Build failed.");
 }
 
-// Use the environment variable if it exists, otherwise fall back to localhost for development
 const baseURL = apiBaseUrl || 'http://localhost:8000';
 
 const apiClient = axios.create({
@@ -58,6 +53,8 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        // In a real app, you would redirect to login here.
+        // For example, by calling a global logout function.
         return Promise.reject(refreshError);
       }
     }
