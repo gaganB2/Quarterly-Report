@@ -1,79 +1,83 @@
 // src/api/axios.js
 
-import axios from "axios";
+import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+// --- FIX: Read the baseURL from Vite's environment variables ---
+// This makes the code production-aware.
+// It will use the VITE_API_BASE_URL from Railway in production,
+// and fall back to localhost:8000 for local development.
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const apiClient = axios.create({
-  baseURL: `${BASE_URL}/`,
-  headers: { "Content-Type": "application/json" },
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// --- V NEW: JWT Request Interceptor ---
-// This function runs before every single request is sent.
+// --- Request Interceptor to add the JWT token ---
 apiClient.interceptors.request.use(
   (config) => {
-    // Get the access token from local storage.
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      // If the token exists, add the 'Bearer' token to the Authorization header.
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
-    // If there's an error during the request setup, reject the promise.
     return Promise.reject(error);
   }
 );
-// --- ^ END NEW ---
 
 
-// --- V NEW: JWT Response Interceptor for Token Refresh ---
-// This function runs after a response is received.
+// --- Response Interceptor for silent token refresh ---
 apiClient.interceptors.response.use(
-  // If the response is successful (e.g., 200 OK), just return it.
   (response) => {
     return response;
   },
-  // If the response is an error...
   async (error) => {
     const originalRequest = error.config;
-
-    // Check if the error is a 401 (Unauthorized) and if we haven't already tried to refresh.
+    
+    // Check if the error is 401 and it's not a retry request
     if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark this request as having been retried.
+      originalRequest._retry = true;
+      
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        // If no refresh token, logout or redirect
+        console.error("No refresh token available. Redirecting to login.");
+        // Optional: window.location.href = '/login';
+        return Promise.reject(error);
+      }
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
-        // Make a request to our new /api/token/refresh/ endpoint.
-        const response = await axios.post(`${BASE_URL}/api/token/refresh/`, {
+        console.log("Access token expired, interceptor will refresh.");
+        const response = await axios.post(`${baseURL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
-        
+
         const { access } = response.data;
+        localStorage.setItem('accessToken', access);
         
-        // Store the new access token.
-        localStorage.setItem("accessToken", access);
-        
-        // Update the authorization header on our original failed request.
+        // Update the header of the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${access}`;
         
-        // Retry the original request with the new token.
+        // Retry the original request
         return apiClient(originalRequest);
 
       } catch (refreshError) {
-        // If the refresh token is also invalid, log the user out.
-        // (This will be handled by the AuthContext in a later step).
         console.error("Token refresh failed:", refreshError);
-        // It's important to reject the promise to stop the request chain.
+        // Clear tokens and redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        // Optional: window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
-    // For any other errors, just pass them along.
+
     return Promise.reject(error);
   }
 );
-// --- ^ END NEW ---
+
 
 export default apiClient;
