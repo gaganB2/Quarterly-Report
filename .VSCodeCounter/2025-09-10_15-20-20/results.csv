@@ -1,0 +1,129 @@
+"filename", "language", "Markdown", "JSON", "JavaScript", "JavaScript JSX", "PostCSS", "Python", "pip requirements", "HTML", "Properties", "comment", "blank", "total"
+"g:\professional life\projects\Final sem project\Quarterly Report\README.md", "Markdown", 207, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 294
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\admin.py", "Python", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\apps.py", "Python", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 7
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\migrations\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\models.py", "Python", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 2, 4
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\tests.py", "Python", 0, 0, 0, 0, 0, 80, 0, 0, 0, 34, 26, 140
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\urls.py", "Python", 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 4, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\utils.py", "Python", 0, 0, 0, 0, 0, 93, 0, 0, 0, 5, 6, 104
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\views.py", "Python", 0, 0, 0, 0, 0, 66, 0, 0, 0, 16, 22, 104
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\manage.py", "Python", 0, 0, 0, 0, 0, 6, 0, 0, 0, 1, 2, 9
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\settings.py", "Python", 0, 0, 0, 0, 0, 138, 0, 0, 0, 33, 23, 194
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\urls.py", "Python", 0, 0, 0, 0, 0, 81, 0, 0, 0, 8, 11, 100
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\wsgi.py", "Python", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 7
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\admin.py", "Python", 0, 0, 0, 0, 0, 353, 0, 0, 0, 12, 43, 408
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\apps.py", "Python", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 2, 6
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\filters.py", "Python", 0, 0, 0, 0, 0, 181, 0, 0, 0, 4, 40, 225
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0001_initial.py", "Python", 0, 0, 0, 0, 0, 908, 0, 0, 0, 1, 7, 916
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0002_initial_data.py", "Python", 0, 0, 0, 0, 0, 22, 0, 0, 0, 11, 10, 43
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0003_alter_t2_2workshoporganized_role.py", "Python", 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0004_alter_s1_1theorysubjectdata_department_and_more.py", "Python", 0, 0, 0, 0, 0, 360, 0, 0, 0, 1, 6, 367
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\models.py", "Python", 0, 0, 0, 0, 0, 547, 0, 0, 0, 24, 99, 670
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\permissions.py", "Python", 0, 0, 0, 0, 0, 20, 0, 0, 0, 8, 7, 35
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py", "Python", 0, 0, 0, 0, 0, 65, 0, 0, 0, 27, 18, 110
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\tests.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\utils.py", "Python", 0, 0, 0, 0, 0, 142, 0, 0, 0, 10, 33, 185
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\views.py", "Python", 0, 0, 0, 0, 0, 158, 0, 0, 0, 13, 25, 196
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\requirements.txt", "pip requirements", 0, 0, 0, 0, 0, 0, 61, 0, 0, 0, 0, 61
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\admin.py", "Python", 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 5
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\apps.py", "Python", 0, 0, 0, 0, 0, 6, 0, 0, 0, 4, 3, 13
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0001_initial.py", "Python", 0, 0, 0, 0, 0, 29, 0, 0, 0, 6, 6, 41
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0002_alter_profile_department.py", "Python", 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 6, 21
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0003_profile_middle_name_profile_prefix.py", "Python", 0, 0, 0, 0, 0, 17, 0, 0, 0, 1, 6, 24
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0004_alter_profile_department.py", "Python", 0, 0, 0, 0, 0, 14, 0, 0, 0, 1, 6, 21
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0005_profile_password_changed.py", "Python", 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0006_alter_profile_role.py", "Python", 0, 0, 0, 0, 0, 12, 0, 0, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", "Python", 0, 0, 0, 0, 0, 49, 0, 0, 0, 1, 14, 64
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\serializers.py", "Python", 0, 0, 0, 0, 0, 150, 0, 0, 0, 8, 35, 193
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\tests.py", "Python", 0, 0, 0, 0, 0, 74, 0, 0, 0, 37, 20, 131
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", "Python", 0, 0, 0, 0, 0, 183, 0, 0, 0, 12, 47, 242
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\.env", "Properties", 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 3
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\dist\assets\index-B3Lllsr0.js", "JavaScript", 0, 0, 272, 0, 0, 0, 0, 0, 0, 1, 13, 286
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\dist\index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 33, 0, 5, 3, 41
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 29, 0, 4, 3, 36
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\package-lock.json", "JSON", 0, 3657, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3658
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\package.json", "JSON", 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 1, 44
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\App.jsx", "JavaScript JSX", 0, 0, 0, 65, 0, 0, 0, 0, 0, 4, 7, 76
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\ThemeContext.js", "JavaScript", 0, 0, 5, 0, 0, 0, 0, 0, 0, 2, 5, 12
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\api\axios.js", "JavaScript", 0, 0, 44, 0, 0, 0, 0, 0, 0, 21, 15, 80
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\AdminFilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 165, 0, 0, 0, 0, 0, 1, 10, 176
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\CreateUserDialog.jsx", "JavaScript JSX", 0, 0, 0, 208, 0, 0, 0, 0, 0, 2, 8, 218
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\EditUserDialog.jsx", "JavaScript JSX", 0, 0, 0, 212, 0, 0, 0, 0, 0, 5, 20, 237
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FacultyFilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 113, 0, 0, 0, 0, 0, 4, 9, 126
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 151, 0, 0, 0, 0, 0, 11, 16, 178
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FormRow.jsx", "JavaScript JSX", 0, 0, 0, 241, 0, 0, 0, 0, 0, 1, 22, 264
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FormTable.jsx", "JavaScript JSX", 0, 0, 0, 64, 0, 0, 0, 0, 0, 2, 8, 74
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\GenericForm.jsx", "JavaScript JSX", 0, 0, 0, 27, 0, 0, 0, 0, 0, 5, 2, 34
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\GenericList.jsx", "JavaScript JSX", 0, 0, 0, 98, 0, 0, 0, 0, 0, 1, 7, 106
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\ImportDialog.jsx", "JavaScript JSX", 0, 0, 0, 196, 0, 0, 0, 0, 0, 1, 23, 220
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S1_1Form.jsx", "JavaScript JSX", 0, 0, 0, 14, 0, 0, 0, 0, 0, 3, 1, 18
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_1Form.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 0, 0, 9, 11, 188
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_2Form.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 0, 0, 9, 12, 189
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_3Form.jsx", "JavaScript JSX", 0, 0, 0, 97, 0, 0, 0, 0, 0, 9, 10, 116
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S3_1Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 0, 0, 9, 12, 140
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S3_2Form.jsx", "JavaScript JSX", 0, 0, 0, 250, 0, 0, 0, 0, 0, 9, 11, 270
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_1Form.jsx", "JavaScript JSX", 0, 0, 0, 110, 0, 0, 0, 0, 0, 6, 10, 126
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_2Form.jsx", "JavaScript JSX", 0, 0, 0, 103, 0, 0, 0, 0, 0, 6, 10, 119
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_3Form.jsx", "JavaScript JSX", 0, 0, 0, 109, 0, 0, 0, 0, 0, 6, 10, 125
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_4Form.jsx", "JavaScript JSX", 0, 0, 0, 122, 0, 0, 0, 0, 0, 10, 14, 146
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_1Form.jsx", "JavaScript JSX", 0, 0, 0, 111, 0, 0, 0, 0, 0, 7, 12, 130
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_2Form.jsx", "JavaScript JSX", 0, 0, 0, 93, 0, 0, 0, 0, 0, 6, 10, 109
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_3Form.jsx", "JavaScript JSX", 0, 0, 0, 105, 0, 0, 0, 0, 0, 6, 10, 121
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_4Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 0, 0, 6, 10, 112
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T1_1Form.jsx", "JavaScript JSX", 0, 0, 0, 394, 0, 0, 0, 0, 0, 5, 9, 408
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T1_2Form.jsx", "JavaScript JSX", 0, 0, 0, 378, 0, 0, 0, 0, 0, 13, 15, 406
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T2_1Form.jsx", "JavaScript JSX", 0, 0, 0, 129, 0, 0, 0, 0, 0, 9, 13, 151
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T2_2Form.jsx", "JavaScript JSX", 0, 0, 0, 110, 0, 0, 0, 0, 0, 12, 13, 135
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T3_1Form.jsx", "JavaScript JSX", 0, 0, 0, 290, 0, 0, 0, 0, 0, 9, 11, 310
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T3_2Form.jsx", "JavaScript JSX", 0, 0, 0, 101, 0, 0, 0, 0, 0, 9, 10, 120
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_1Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_2Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_3Form.jsx", "JavaScript JSX", 0, 0, 0, 238, 0, 0, 0, 0, 0, 9, 11, 258
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_1Form.jsx", "JavaScript JSX", 0, 0, 0, 347, 0, 0, 0, 0, 0, 9, 11, 367
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_2Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 0, 0, 9, 10, 138
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_3Form.jsx", "JavaScript JSX", 0, 0, 0, 106, 0, 0, 0, 0, 0, 9, 10, 125
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_4Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_5Form.jsx", "JavaScript JSX", 0, 0, 0, 90, 0, 0, 0, 0, 0, 9, 10, 109
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_6Form.jsx", "JavaScript JSX", 0, 0, 0, 330, 0, 0, 0, 0, 0, 9, 11, 350
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_1Form.jsx", "JavaScript JSX", 0, 0, 0, 97, 0, 0, 0, 0, 0, 9, 10, 116
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_2Form.jsx", "JavaScript JSX", 0, 0, 0, 95, 0, 0, 0, 0, 0, 9, 10, 114
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_3Form.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 0, 0, 9, 10, 111
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_4Form.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 0, 0, 9, 10, 111
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_5Form.jsx", "JavaScript JSX", 0, 0, 0, 118, 0, 0, 0, 0, 0, 5, 10, 133
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T7_1Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 0, 0, 10, 12, 141
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\Topbar.jsx", "JavaScript JSX", 0, 0, 0, 177, 0, 0, 0, 0, 0, 5, 22, 204
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formConfig.jsx", "JavaScript JSX", 0, 0, 0, 1349, 0, 0, 0, 0, 0, 1, 3, 1353
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formConstants.js", "JavaScript", 0, 0, 10, 0, 0, 0, 0, 0, 0, 8, 2, 20
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formFieldTemplates.jsx", "JavaScript JSX", 0, 0, 0, 40, 0, 0, 0, 0, 0, 4, 11, 55
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\context\AuthContext.jsx", "JavaScript JSX", 0, 0, 0, 76, 0, 0, 0, 0, 0, 14, 18, 108
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\hooks\useFormManager.js", "JavaScript", 0, 0, 80, 0, 0, 0, 0, 0, 0, 8, 12, 100
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\index.css", "PostCSS", 0, 0, 0, 0, 21, 0, 0, 0, 0, 3, 5, 29
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\main.jsx", "JavaScript JSX", 0, 0, 0, 55, 0, 0, 0, 0, 0, 5, 7, 67
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\AnalyticsDashboard.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 0, 0, 6, 17, 191
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\DepartmentManagement.jsx", "JavaScript JSX", 0, 0, 0, 202, 0, 0, 0, 0, 0, 2, 21, 225
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\EmailVerificationPage.jsx", "JavaScript JSX", 0, 0, 0, 51, 0, 0, 0, 0, 0, 1, 5, 57
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ForcePasswordChangePage.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 0, 0, 2, 14, 108
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ForgotPasswordPage.jsx", "JavaScript JSX", 0, 0, 0, 58, 0, 0, 0, 0, 0, 0, 6, 64
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\HomePage.jsx", "JavaScript JSX", 0, 0, 0, 77, 0, 0, 0, 0, 0, 3, 9, 89
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\LoginPage.jsx", "JavaScript JSX", 0, 0, 0, 239, 0, 0, 0, 0, 0, 1, 17, 257
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ResetPasswordPage.jsx", "JavaScript JSX", 0, 0, 0, 70, 0, 0, 0, 0, 0, 0, 7, 77
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentDashboard.jsx", "JavaScript JSX", 0, 0, 0, 68, 0, 0, 0, 0, 0, 3, 8, 79
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentLoginPage.jsx", "JavaScript JSX", 0, 0, 0, 181, 0, 0, 0, 0, 0, 1, 13, 195
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentSignupPage.jsx", "JavaScript JSX", 0, 0, 0, 189, 0, 0, 0, 0, 0, 1, 12, 202
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\UserManagement.jsx", "JavaScript JSX", 0, 0, 0, 254, 0, 0, 0, 0, 0, 1, 14, 269
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\WelcomePage.jsx", "JavaScript JSX", 0, 0, 0, 610, 0, 0, 0, 0, 0, 11, 26, 647
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\AdminRoute.jsx", "JavaScript JSX", 0, 0, 0, 26, 0, 0, 0, 0, 0, 15, 4, 45
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\PrivateRoute.jsx", "JavaScript JSX", 0, 0, 0, 14, 0, 0, 0, 0, 0, 13, 5, 32
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\PublicRoute.jsx", "JavaScript JSX", 0, 0, 0, 26, 0, 0, 0, 0, 0, 11, 6, 43
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\StudentRoute.jsx", "JavaScript JSX", 0, 0, 0, 27, 0, 0, 0, 0, 0, 10, 5, 42
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\theme.js", "JavaScript", 0, 0, 90, 0, 0, 0, 0, 0, 0, 8, 3, 101
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\vercel.json", "JSON", 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\vite.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"Total", "-", 207, 3708, 501, 10787, 21, 3823, 61, 62, 2, 783, 1467, 21422

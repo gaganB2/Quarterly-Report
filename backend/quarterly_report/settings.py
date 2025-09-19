@@ -16,6 +16,10 @@ ROOT_URLCONF = 'quarterly_report.urls'
 WSGI_APPLICATION = 'quarterly_report.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- NEW: CSRF Trusted Origins for Production ---
+# Railway will provide a production URL. We need to trust it.
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default="", cast=Csv)
+
 # --- Application Definition ---
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,25 +27,24 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic', # Important for serving static files correctly
     'django.contrib.staticfiles',
     
-    # Third-party apps
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
     'drf_spectacular',
 
-    # Local apps
     'analytics.apps.AnalyticsConfig',
     'reports.apps.ReportsConfig',
     'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware', # Should be high up
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Should be right after SecurityMiddleware
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,14 +70,17 @@ TEMPLATES = [
 ]
 
 # --- Database ---
+# This setup is already perfect for Railway. It will use the DATABASE_URL
+# environment variable provided by Railway, or fall back to your .env settings.
 DATABASES = {
     'default': dj_database_url.config(
         default=f"postgres://{config('DB_USER')}:{config('DB_PASSWORD')}@{config('DB_HOST')}:{config('DB_PORT')}/{config('DB_NAME')}",
-        conn_max_age=600
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
-# --- Password Validation (FIXED) ---
+# --- Password Validation ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -138,36 +144,12 @@ SPECTACULAR_SETTINGS = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'debug.log',
-            'formatter': 'verbose',
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
-    },
+    'formatters': { 'verbose': { 'format': '{levelname} {asctime} {module} {message}', 'style': '{', }, },
+    'handlers': { 'console': { 'class': 'logging.StreamHandler', 'formatter': 'verbose', }, },
+    'root': { 'handlers': ['console'], 'level': 'INFO', },
 }
 
-# PASSWORD_RESET_TIMEOUT = 3600  # Sets timeout to 1 hour (in seconds)
-
 # --- Email Configuration ---
-# Use console backend for development to see emails printed to the terminal
-# In production, use smtp and set credentials in the environment
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -175,19 +157,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
-# --- Celery Configuration (for Async Tasks) ---
-# CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://localhost:6379/0')
-# CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = TIME_ZONE
-
-# --- Production Security Settings ( uncomment when deploying ) ---
-# SECURE_SSL_REDIRECT = not DEBUG
-# SESSION_COOKIE_SECURE = not DEBUG
-# CSRF_COOKIE_SECURE = not DEBUG
-# SECURE_HSTS_SECONDS = 31536000 # 1 year
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-
+# --- Production Security Settings ---
+# These settings will be controlled by environment variables.
+# For Railway, we often set SECURE_PROXY_SSL_HEADER to handle SSL termination.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=not DEBUG, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)

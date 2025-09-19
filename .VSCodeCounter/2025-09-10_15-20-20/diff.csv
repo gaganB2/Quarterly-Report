@@ -1,0 +1,85 @@
+"filename", "language", "Markdown", "JSON", "JavaScript", "JavaScript JSX", "PostCSS", "HTML", "Properties", "comment", "blank", "total"
+"g:\professional life\projects\Final sem project\Quarterly Report\README.md", "Markdown", 207, 0, 0, 0, 0, 0, 0, 0, 87, 294
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\.env", "Properties", 0, 0, 0, 0, 0, 0, 2, 0, 1, 3
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\dist\assets\index-B3Lllsr0.js", "JavaScript", 0, 0, 272, 0, 0, 0, 0, 1, 13, 286
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\dist\index.html", "HTML", 0, 0, 0, 0, 0, 33, 0, 5, 3, 41
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\index.html", "HTML", 0, 0, 0, 0, 0, 29, 0, 4, 3, 36
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\package-lock.json", "JSON", 0, 3657, 0, 0, 0, 0, 0, 0, 1, 3658
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\package.json", "JSON", 0, 43, 0, 0, 0, 0, 0, 0, 1, 44
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\App.jsx", "JavaScript JSX", 0, 0, 0, 65, 0, 0, 0, 4, 7, 76
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\ThemeContext.js", "JavaScript", 0, 0, 5, 0, 0, 0, 0, 2, 5, 12
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\api\axios.js", "JavaScript", 0, 0, 44, 0, 0, 0, 0, 21, 15, 80
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\AdminFilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 165, 0, 0, 0, 1, 10, 176
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\CreateUserDialog.jsx", "JavaScript JSX", 0, 0, 0, 208, 0, 0, 0, 2, 8, 218
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\EditUserDialog.jsx", "JavaScript JSX", 0, 0, 0, 212, 0, 0, 0, 5, 20, 237
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FacultyFilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 113, 0, 0, 0, 4, 9, 126
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FilterPanel.jsx", "JavaScript JSX", 0, 0, 0, 151, 0, 0, 0, 11, 16, 178
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FormRow.jsx", "JavaScript JSX", 0, 0, 0, 241, 0, 0, 0, 1, 22, 264
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\FormTable.jsx", "JavaScript JSX", 0, 0, 0, 64, 0, 0, 0, 2, 8, 74
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\GenericForm.jsx", "JavaScript JSX", 0, 0, 0, 27, 0, 0, 0, 5, 2, 34
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\GenericList.jsx", "JavaScript JSX", 0, 0, 0, 98, 0, 0, 0, 1, 7, 106
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\ImportDialog.jsx", "JavaScript JSX", 0, 0, 0, 196, 0, 0, 0, 1, 23, 220
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S1_1Form.jsx", "JavaScript JSX", 0, 0, 0, 14, 0, 0, 0, 3, 1, 18
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_1Form.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 9, 11, 188
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_2Form.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 9, 12, 189
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S2_3Form.jsx", "JavaScript JSX", 0, 0, 0, 97, 0, 0, 0, 9, 10, 116
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S3_1Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 9, 12, 140
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S3_2Form.jsx", "JavaScript JSX", 0, 0, 0, 250, 0, 0, 0, 9, 11, 270
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_1Form.jsx", "JavaScript JSX", 0, 0, 0, 110, 0, 0, 0, 6, 10, 126
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_2Form.jsx", "JavaScript JSX", 0, 0, 0, 103, 0, 0, 0, 6, 10, 119
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_3Form.jsx", "JavaScript JSX", 0, 0, 0, 109, 0, 0, 0, 6, 10, 125
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S4_4Form.jsx", "JavaScript JSX", 0, 0, 0, 122, 0, 0, 0, 10, 14, 146
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_1Form.jsx", "JavaScript JSX", 0, 0, 0, 111, 0, 0, 0, 7, 12, 130
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_2Form.jsx", "JavaScript JSX", 0, 0, 0, 93, 0, 0, 0, 6, 10, 109
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_3Form.jsx", "JavaScript JSX", 0, 0, 0, 105, 0, 0, 0, 6, 10, 121
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\S5_4Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 6, 10, 112
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T1_1Form.jsx", "JavaScript JSX", 0, 0, 0, 394, 0, 0, 0, 5, 9, 408
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T1_2Form.jsx", "JavaScript JSX", 0, 0, 0, 378, 0, 0, 0, 13, 15, 406
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T2_1Form.jsx", "JavaScript JSX", 0, 0, 0, 129, 0, 0, 0, 9, 13, 151
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T2_2Form.jsx", "JavaScript JSX", 0, 0, 0, 110, 0, 0, 0, 12, 13, 135
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T3_1Form.jsx", "JavaScript JSX", 0, 0, 0, 290, 0, 0, 0, 9, 11, 310
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T3_2Form.jsx", "JavaScript JSX", 0, 0, 0, 101, 0, 0, 0, 9, 10, 120
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_1Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_2Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T4_3Form.jsx", "JavaScript JSX", 0, 0, 0, 238, 0, 0, 0, 9, 11, 258
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_1Form.jsx", "JavaScript JSX", 0, 0, 0, 347, 0, 0, 0, 9, 11, 367
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_2Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 9, 10, 138
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_3Form.jsx", "JavaScript JSX", 0, 0, 0, 106, 0, 0, 0, 9, 10, 125
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_4Form.jsx", "JavaScript JSX", 0, 0, 0, 96, 0, 0, 0, 9, 10, 115
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_5Form.jsx", "JavaScript JSX", 0, 0, 0, 90, 0, 0, 0, 9, 10, 109
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T5_6Form.jsx", "JavaScript JSX", 0, 0, 0, 330, 0, 0, 0, 9, 11, 350
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_1Form.jsx", "JavaScript JSX", 0, 0, 0, 97, 0, 0, 0, 9, 10, 116
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_2Form.jsx", "JavaScript JSX", 0, 0, 0, 95, 0, 0, 0, 9, 10, 114
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_3Form.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 9, 10, 111
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_4Form.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 9, 10, 111
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T6_5Form.jsx", "JavaScript JSX", 0, 0, 0, 118, 0, 0, 0, 5, 10, 133
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\T7_1Form.jsx", "JavaScript JSX", 0, 0, 0, 119, 0, 0, 0, 10, 12, 141
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\components\Topbar.jsx", "JavaScript JSX", 0, 0, 0, 177, 0, 0, 0, 5, 22, 204
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formConfig.jsx", "JavaScript JSX", 0, 0, 0, 1349, 0, 0, 0, 1, 3, 1353
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formConstants.js", "JavaScript", 0, 0, 10, 0, 0, 0, 0, 8, 2, 20
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\config\formFieldTemplates.jsx", "JavaScript JSX", 0, 0, 0, 40, 0, 0, 0, 4, 11, 55
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\context\AuthContext.jsx", "JavaScript JSX", 0, 0, 0, 76, 0, 0, 0, 14, 18, 108
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\hooks\useFormManager.js", "JavaScript", 0, 0, 80, 0, 0, 0, 0, 8, 12, 100
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\index.css", "PostCSS", 0, 0, 0, 0, 21, 0, 0, 3, 5, 29
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\main.jsx", "JavaScript JSX", 0, 0, 0, 55, 0, 0, 0, 5, 7, 67
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\AnalyticsDashboard.jsx", "JavaScript JSX", 0, 0, 0, 168, 0, 0, 0, 6, 17, 191
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\DepartmentManagement.jsx", "JavaScript JSX", 0, 0, 0, 202, 0, 0, 0, 2, 21, 225
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\EmailVerificationPage.jsx", "JavaScript JSX", 0, 0, 0, 51, 0, 0, 0, 1, 5, 57
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ForcePasswordChangePage.jsx", "JavaScript JSX", 0, 0, 0, 92, 0, 0, 0, 2, 14, 108
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ForgotPasswordPage.jsx", "JavaScript JSX", 0, 0, 0, 58, 0, 0, 0, 0, 6, 64
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\HomePage.jsx", "JavaScript JSX", 0, 0, 0, 77, 0, 0, 0, 3, 9, 89
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\LoginPage.jsx", "JavaScript JSX", 0, 0, 0, 239, 0, 0, 0, 1, 17, 257
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\ResetPasswordPage.jsx", "JavaScript JSX", 0, 0, 0, 70, 0, 0, 0, 0, 7, 77
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentDashboard.jsx", "JavaScript JSX", 0, 0, 0, 68, 0, 0, 0, 3, 8, 79
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentLoginPage.jsx", "JavaScript JSX", 0, 0, 0, 181, 0, 0, 0, 1, 13, 195
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\StudentSignupPage.jsx", "JavaScript JSX", 0, 0, 0, 189, 0, 0, 0, 1, 12, 202
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\UserManagement.jsx", "JavaScript JSX", 0, 0, 0, 254, 0, 0, 0, 1, 14, 269
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\pages\WelcomePage.jsx", "JavaScript JSX", 0, 0, 0, 610, 0, 0, 0, 11, 26, 647
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\AdminRoute.jsx", "JavaScript JSX", 0, 0, 0, 26, 0, 0, 0, 15, 4, 45
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\PrivateRoute.jsx", "JavaScript JSX", 0, 0, 0, 14, 0, 0, 0, 13, 5, 32
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\PublicRoute.jsx", "JavaScript JSX", 0, 0, 0, 26, 0, 0, 0, 11, 6, 43
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\routes\StudentRoute.jsx", "JavaScript JSX", 0, 0, 0, 27, 0, 0, 0, 10, 5, 42
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\src\theme.js", "JavaScript", 0, 0, 90, 0, 0, 0, 0, 8, 3, 101
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\vercel.json", "JSON", 0, 8, 0, 0, 0, 0, 0, 0, 0, 8
+"g:\professional life\projects\Final sem project\Quarterly Report\frontend\vite.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"Total", "-", 207, 3708, 501, 10787, 21, 62, 2, 498, 902, 16688

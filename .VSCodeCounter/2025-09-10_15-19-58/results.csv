@@ -1,0 +1,46 @@
+"filename", "language", "Python", "pip requirements", "comment", "blank", "total"
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\admin.py", "Python", 1, 0, 1, 2, 4
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\apps.py", "Python", 4, 0, 0, 3, 7
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\migrations\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\models.py", "Python", 1, 0, 1, 2, 4
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\tests.py", "Python", 80, 0, 34, 26, 140
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\urls.py", "Python", 14, 0, 1, 4, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\utils.py", "Python", 93, 0, 5, 6, 104
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\views.py", "Python", 66, 0, 16, 22, 104
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\manage.py", "Python", 6, 0, 1, 2, 9
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\settings.py", "Python", 138, 0, 33, 23, 194
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\urls.py", "Python", 81, 0, 8, 11, 100
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\wsgi.py", "Python", 4, 0, 0, 3, 7
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\admin.py", "Python", 353, 0, 12, 43, 408
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\apps.py", "Python", 4, 0, 0, 2, 6
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\filters.py", "Python", 181, 0, 4, 40, 225
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0001_initial.py", "Python", 908, 0, 1, 7, 916
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0002_initial_data.py", "Python", 22, 0, 11, 10, 43
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0003_alter_t2_2workshoporganized_role.py", "Python", 12, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0004_alter_s1_1theorysubjectdata_department_and_more.py", "Python", 360, 0, 1, 6, 367
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\models.py", "Python", 547, 0, 24, 99, 670
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\permissions.py", "Python", 20, 0, 8, 7, 35
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py", "Python", 65, 0, 27, 18, 110
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\tests.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\utils.py", "Python", 142, 0, 10, 33, 185
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\views.py", "Python", 158, 0, 13, 25, 196
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\requirements.txt", "pip requirements", 0, 61, 0, 0, 61
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\admin.py", "Python", 3, 0, 0, 2, 5
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\apps.py", "Python", 6, 0, 4, 3, 13
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0001_initial.py", "Python", 29, 0, 6, 6, 41
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0002_alter_profile_department.py", "Python", 14, 0, 1, 6, 21
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0003_profile_middle_name_profile_prefix.py", "Python", 17, 0, 1, 6, 24
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0004_alter_profile_department.py", "Python", 14, 0, 1, 6, 21
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0005_profile_password_changed.py", "Python", 12, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0006_alter_profile_role.py", "Python", 12, 0, 1, 6, 19
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\__init__.py", "Python", 0, 0, 0, 1, 1
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py", "Python", 49, 0, 1, 14, 64
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\serializers.py", "Python", 150, 0, 8, 35, 193
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\tests.py", "Python", 74, 0, 37, 20, 131
+"g:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py", "Python", 183, 0, 12, 47, 242
+"Total", "-", 3823, 61, 285, 565, 4734

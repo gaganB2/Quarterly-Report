@@ -1,0 +1,80 @@
+Date : 2025-09-10 15:16:00
+Directory : g:\professional life\projects\Final sem project\Quarterly Report\backend
+Total : 44 files,  3884 codes, 285 comments, 565 blanks, all 4734 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         43 |      3,823 |        285 |        565 |      4,673 |
+| pip requirements |          1 |         61 |          0 |          0 |         61 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                                | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                                   |         44 |      3,884 |        285 |        565 |      4,734 |
+| . (Files)                                                                                                                                           |          2 |         67 |          1 |          2 |         70 |
+| analytics                                                                                                                                           |          9 |        259 |         58 |         67 |        384 |
+| analytics (Files)                                                                                                                                   |          8 |        259 |         58 |         66 |        383 |
+| analytics\migrations                                                                                                                                |          1 |          0 |          0 |          1 |          1 |
+| quarterly_report                                                                                                                                    |          4 |        223 |         41 |         38 |        302 |
+| reports                                                                                                                                             |         15 |      2,772 |        112 |        299 |      3,183 |
+| reports (Files)                                                                                                                                     |         10 |      1,470 |         98 |        269 |      1,837 |
+| reports\migrations                                                                                                                                  |          5 |      1,302 |         14 |         30 |      1,346 |
+| users                                                                                                                                               |         14 |        563 |         73 |        159 |        795 |
+| users (Files)                                                                                                                                       |          7 |        465 |         62 |        122 |        649 |
+| users\migrations                                                                                                                                    |          7 |         98 |         11 |         37 |        146 |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                                                                            | language         | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\__init__.py                                                      | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\admin.py                                                         | Python           |          1 |          1 |          2 |          4 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\apps.py                                                          | Python           |          4 |          0 |          3 |          7 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\migrations\__init__.py                                           | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\models.py                                                        | Python           |          1 |          1 |          2 |          4 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\tests.py                                                         | Python           |         80 |         34 |         26 |        140 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\urls.py                                                          | Python           |         14 |          1 |          4 |         19 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\utils.py                                                         | Python           |         93 |          5 |          6 |        104 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\analytics\views.py                                                         | Python           |         66 |         16 |         22 |        104 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\manage.py                                                                  | Python           |          6 |          1 |          2 |          9 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\__init__.py                                               | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\settings.py                                               | Python           |        138 |         33 |         23 |        194 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\urls.py                                                   | Python           |         81 |          8 |         11 |        100 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\quarterly_report\wsgi.py                                                   | Python           |          4 |          0 |          3 |          7 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\__init__.py                                                        | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\admin.py                                                           | Python           |        353 |         12 |         43 |        408 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\apps.py                                                            | Python           |          4 |          0 |          2 |          6 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\filters.py                                                         | Python           |        181 |          4 |         40 |        225 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0001_initial.py                                         | Python           |        908 |          1 |          7 |        916 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0002_initial_data.py                                    | Python           |         22 |         11 |         10 |         43 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0003_alter_t2_2workshoporganized_role.py                | Python           |         12 |          1 |          6 |         19 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\0004_alter_s1_1theorysubjectdata_department_and_more.py | Python           |        360 |          1 |          6 |        367 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\migrations\__init__.py                                             | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\models.py                                                          | Python           |        547 |         24 |         99 |        670 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\permissions.py                                                     | Python           |         20 |          8 |          7 |         35 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\serializers.py                                                     | Python           |         65 |         27 |         18 |        110 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\tests.py                                                           | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\utils.py                                                           | Python           |        142 |         10 |         33 |        185 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\reports\views.py                                                           | Python           |        158 |         13 |         25 |        196 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\requirements.txt                                                           | pip requirements |         61 |          0 |          0 |         61 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\__init__.py                                                          | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\admin.py                                                             | Python           |          3 |          0 |          2 |          5 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\apps.py                                                              | Python           |          6 |          4 |          3 |         13 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0001_initial.py                                           | Python           |         29 |          6 |          6 |         41 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0002_alter_profile_department.py                          | Python           |         14 |          1 |          6 |         21 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0003_profile_middle_name_profile_prefix.py                | Python           |         17 |          1 |          6 |         24 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0004_alter_profile_department.py                          | Python           |         14 |          1 |          6 |         21 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0005_profile_password_changed.py                          | Python           |         12 |          1 |          6 |         19 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\0006_alter_profile_role.py                                | Python           |         12 |          1 |          6 |         19 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\migrations\__init__.py                                               | Python           |          0 |          0 |          1 |          1 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\models.py                                                            | Python           |         49 |          1 |         14 |         64 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\serializers.py                                                       | Python           |        150 |          8 |         35 |        193 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\tests.py                                                             | Python           |         74 |         37 |         20 |        131 |
+| g:\professional life\projects\Final sem project\Quarterly Report\backend\users\views.py                                                             | Python           |        183 |         12 |         47 |        242 |
+| Total                                                                                                                                               |                  |      3,884 |        285 |        565 |      4,734 |
++-----------------------------------------------------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
