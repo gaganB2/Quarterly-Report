@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "chmod +x ./node_modules/.bin/vite && npx vite build",
-    "start": "serve -s dist -p $PORT",
+    "build": "vite build",
+    "start": "npx serve -s dist -p $PORT",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
