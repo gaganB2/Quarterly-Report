@@ -2,11 +2,20 @@
 
 import axios from 'axios';
 
-// --- FIX: Read the baseURL from Vite's environment variables ---
-// This makes the code production-aware.
-// It will use the VITE_API_BASE_URL from Railway in production,
-// and fall back to localhost:8000 for local development.
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// Get the base URL from Vite's environment variables
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+// --- NEW: A professional safety check for production builds ---
+// This check ensures that if the environment variable is missing during the build,
+// the application will fail loudly instead of deploying a broken version.
+if (import.meta.env.PROD && !apiBaseUrl) {
+  console.error("CRITICAL ERROR: VITE_API_BASE_URL is not defined in the production environment.");
+  // You can also throw an error to halt execution completely
+  // throw new Error("VITE_API_BASE_URL is not defined in production.");
+}
+
+// Use the environment variable if it exists, otherwise fall back to localhost for development
+const baseURL = apiBaseUrl || 'http://localhost:8000';
 
 const apiClient = axios.create({
   baseURL: baseURL,
@@ -15,7 +24,7 @@ const apiClient = axios.create({
   },
 });
 
-// --- Request Interceptor to add the JWT token ---
+// Request Interceptor to add the JWT token
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
@@ -24,60 +33,36 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-
-// --- Response Interceptor for silent token refresh ---
+// Response Interceptor for silent token refresh
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
-    // Check if the error is 401 and it's not a retry request
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
-        // If no refresh token, logout or redirect
-        console.error("No refresh token available. Redirecting to login.");
-        // Optional: window.location.href = '/login';
         return Promise.reject(error);
       }
-
       try {
-        console.log("Access token expired, interceptor will refresh.");
         const response = await axios.post(`${baseURL}/api/token/refresh/`, {
           refresh: refreshToken,
         });
-
         const { access } = response.data;
         localStorage.setItem('accessToken', access);
-        
-        // Update the header of the original request with the new token
         originalRequest.headers.Authorization = `Bearer ${access}`;
-        
-        // Retry the original request
         return apiClient(originalRequest);
-
       } catch (refreshError) {
-        console.error("Token refresh failed:", refreshError);
-        // Clear tokens and redirect to login
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        // Optional: window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
-
     return Promise.reject(error);
   }
 );
-
 
 export default apiClient;
