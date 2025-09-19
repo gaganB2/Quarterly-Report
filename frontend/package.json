@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "echo VITE_API_BASE_URL=$VITE_API_BASE_URL > .env && vite build",
-    "start": "serve -s dist -l tcp://0.0.0.0:$PORT",
+    "build": "vite build",
+    "start": "serve -s dist",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
