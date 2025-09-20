@@ -77,51 +77,40 @@ class StudentRegisterView(generics.CreateAPIView):
 
 class VerifyEmailView(APIView):
     permission_classes = [permissions.AllowAny]
-
     def post(self, request, *args, **kwargs):
         uidb64 = request.data.get('uid')
         token = request.data.get('token')
-
         if not uidb64 or not token:
             return Response({"error": "Missing UID or token."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-
         if user is not None and not user.is_active and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
             return Response({"message": "Email verified successfully. You can now log in."}, status=status.HTTP_200_OK)
-        
         return Response({"error": "Invalid or expired verification link."}, status=status.HTTP_400_BAD_REQUEST)
 
 class SetInitialPasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
     def post(self, request, *args, **kwargs):
         user = request.user
         new_password = request.data.get("new_password")
-
         if user.profile.password_changed:
             return Response({"error": "Password has already been set."}, status=status.HTTP_400_BAD_REQUEST)
-
         if not new_password:
             return Response({"error": "New password not provided."}, status=status.HTTP_400_BAD_REQUEST)
-        
         user.set_password(new_password)
         user.profile.password_changed = True
         user.save()
         user.profile.save()
-
         return Response({"message": "Password set successfully."}, status=status.HTTP_200_OK)
 
 class GetUserProfileView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
-
     def get_object(self):
         try:
             return self.request.user.profile
@@ -131,112 +120,87 @@ class GetUserProfileView(generics.RetrieveAPIView):
 class UserManagementViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().select_related('profile', 'profile__department').order_by('username')
     permission_classes = [permissions.IsAdminUser]
-
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update', 'create']:
             return UserManagementSerializer
         return UserDetailSerializer
-    
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance == request.user:
             role = request.data.get('role')
             is_active = request.data.get('is_active')
             if (role and role != Profile.Role.ADMIN) or (is_active is False):
-                return Response(
-                    {"error": "You cannot remove your own admin role or deactivate your own account."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
+                return Response({"error": "You cannot remove your own admin role or deactivate your own account."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
-
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance == request.user:
-            return Response(
-                {"error": "You cannot deactivate your own account."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+            return Response({"error": "You cannot deactivate your own account."}, status=status.HTTP_403_FORBIDDEN)
         instance.is_active = False
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# ==============================================================================
-# --- FINALIZED PASSWORD RESET VIEWS ---
-# ==============================================================================
-
 class RequestPasswordResetView(APIView):
-    """
-    Handles the first step of the password reset process.
-    Takes an email, and if it exists, sends a secure reset link.
-    """
     permission_classes = [permissions.AllowAny]
     throttle_scope = 'password-reset'
-
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")
         if not email:
             return Response({"error": "Email address is required."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
             user = None
-
         if user:
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             frontend_url = config('FRONTEND_BASE_URL', 'http://localhost:5173')
             reset_url = f"{frontend_url}/reset-password/{uid}/{token}/"
-
-            email_body = render_to_string('password_reset_email.txt', {
-                'user': user,
-                'reset_url': reset_url,
-            })
-            
-            send_mail(
-                "Password Reset Request for QR Portal",
-                email_body,
-                settings.EMAIL_HOST_USER,
-                [user.email],
-                fail_silently=False,
-            )
-        
+            email_body = render_to_string('password_reset_email.txt', {'user': user, 'reset_url': reset_url})
+            send_mail("Password Reset Request for QR Portal", email_body, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
         return Response({"message": "If an account with that email exists, a password reset link has been sent."}, status=status.HTTP_200_OK)
 
 class ConfirmPasswordResetView(APIView):
-    """
-    Handles the final step of the password reset.
-    Validates the token and UID, then sets the new password.
-    """
     permission_classes = [permissions.AllowAny]
     throttle_scope = 'password-reset'
-
     def post(self, request, *args, **kwargs):
-        uidb64 = request.data.get('uid')
-        token = request.data.get('token')
-        password = request.data.get('password')
-
+        uidb64, token, password = request.data.get('uid'), request.data.get('token'), request.data.get('password')
         if not all([uidb64, token, password]):
             return Response({"error": "UID, token, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-
         if user is None or not default_token_generator.check_token(user, token):
             return Response({"error": "Invalid or expired password reset link."}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             validate_password(password, user)
         except ValidationError as e:
             return Response({"error": list(e.messages)}, status=status.HTTP_400_BAD_REQUEST)
-
         user.set_password(password)
         if hasattr(user, 'profile') and user.profile.password_changed is False:
             user.profile.password_changed = True
             user.profile.save()
         user.save()
-        
         return Response({"message": "Password has been reset successfully. You can now log in."}, status=status.HTTP_200_OK)
+
+class ResendVerificationEmailView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        if not username:
+            return Response({"error": "Username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return Response({"message": "If an account with this username exists and is not active, a new verification link has been sent."}, status=status.HTTP_200_OK)
+
+        if user.is_active:
+            return Response({"message": "If an account with this username exists and is not active, a new verification link has been sent."}, status=status.HTTP_200_OK)
+        
+        send_verification_email(user)
+        
+        return Response({"message": "A new verification link has been sent. Please check the email associated with this account."}, status=status.HTTP_200_OK)

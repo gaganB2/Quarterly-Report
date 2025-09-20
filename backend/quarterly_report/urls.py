@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import RedirectView
 from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework import status, permissions, generics, viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from reports.views import *
 from users.views import (
     RegisterUserView, 
@@ -15,6 +18,7 @@ from users.views import (
     SetInitialPasswordView,
     RequestPasswordResetView,
     ConfirmPasswordResetView,
+    ResendVerificationEmailView,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -92,6 +96,7 @@ urlpatterns = [
     path('api/set-password/', SetInitialPasswordView.as_view(), name='set-initial-password'),
     path('api/password-reset/request/', RequestPasswordResetView.as_view(), name='password-reset-request'),
     path('api/password-reset/confirm/', ConfirmPasswordResetView.as_view(), name='password-reset-confirm'),
+    path('api/resend-verification/', ResendVerificationEmailView.as_view(), name='resend-verification'),
 
     # API DOCUMENTATION URLS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -20,6 +20,8 @@ import { Visibility, VisibilityOff, School, AdminPanelSettings, ArrowForward } f
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/favicon.png";
 import { useAuth } from "../context/AuthContext";
+import apiClient from "../api/axios";
+import { useSnackbar } from "notistack";
 
 const auroraVibrant = keyframes`
   0% { background-position: 0% 50%; }
@@ -41,12 +43,15 @@ export default function LoginPage() {
   const [creds, setCreds] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [showResendLink, setShowResendLink] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     setLoginError("");
+    setShowResendLink(false);
   }, [role]);
 
   const handleChange = (e) => {
@@ -57,6 +62,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setLoginError("");
+    setShowResendLink(false);
     try {
       const loggedInUser = await login(creds.username, creds.password);
       if (loggedInUser.password_changed === false) {
@@ -66,11 +72,32 @@ export default function LoginPage() {
       }
     } catch (error) {
       const errorDetail = error.response?.data?.detail;
-      setLoginError(errorDetail?.includes("No active account")
-        ? "This account is not active. Please check your email for a verification link."
-        : "Invalid username or password.");
+      if (errorDetail?.includes("No active account")) {
+        setLoginError("This account is not active. Please check your email for a verification link.");
+        setShowResendLink(true);
+      } else {
+        setLoginError("Invalid username or password.");
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!creds.username) {
+        enqueueSnackbar("Please enter your Faculty ID in the username field first.", { variant: 'warning' });
+        return;
+    }
+    setLoading(true);
+    try {
+        await apiClient.post('/api/resend-verification/', { username: creds.username });
+        enqueueSnackbar("A new verification link has been sent. Please check the email associated with your account.", { variant: 'success' });
+        setShowResendLink(false);
+        setLoginError(""); // Clear the old error message
+    } catch (err) {
+        enqueueSnackbar("An error occurred while resending the email. Please try again.", { variant: 'error' });
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -180,8 +207,6 @@ export default function LoginPage() {
             </Typography>
 
             <Stack component="form" onSubmit={handleLogin} spacing={2.5}>
-              
-              {/* --- FINALIZED: Light Theme Animated Toggle --- */}
               <Box sx={{ position: 'relative', display: 'flex', p: 0.5, backgroundColor: '#e0e0e0', borderRadius: '50px' }}>
                 <motion.div
                   layoutId="role-glider-light"
@@ -208,12 +233,24 @@ export default function LoginPage() {
               <AnimatePresence>
                 {loginError && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                    <Alert severity="error" variant="filled">{loginError}</Alert>
+                    <Alert
+                      severity="error"
+                      variant="filled"
+                      action={
+                        showResendLink && (
+                          <Button color="inherit" size="small" onClick={handleResendVerification} disabled={loading}>
+                            Resend Email
+                          </Button>
+                        )
+                      }
+                    >
+                      {loginError}
+                    </Alert>
                   </motion.div>
                 )}
               </AnimatePresence>
               
-              <TextField name="username" label={role === "faculty" ? "Faculty ID" : "Admin Username"} value={creds.username} onChange={handleChange} />
+              <TextField name="username" label="Faculty ID" value={creds.username} onChange={handleChange} />
               <TextField
                 name="password"
                 label="Password"
