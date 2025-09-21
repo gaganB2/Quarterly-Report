@@ -98,7 +98,7 @@ export default function Topbar() {
               }}
             />
             <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700, display: { xs: 'none', sm: 'block' }, color: 'text.primary' }}>
-              QR Portal
+              Quarterly Report Management System
             </Typography>
           </Box>
 

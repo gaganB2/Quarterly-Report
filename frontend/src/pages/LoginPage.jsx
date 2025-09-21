@@ -158,7 +158,7 @@ export default function LoginPage() {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
               <Box component="img" src={logo} alt="BIT-DURG" sx={{ height: 40 }} />
               <Typography variant="h6" sx={{ fontWeight: 600, color: "text.secondary" }}>
-                BIT Durg Portal
+                Quarterly Report Management System
               </Typography>
             </Box>
             <Typography sx={{

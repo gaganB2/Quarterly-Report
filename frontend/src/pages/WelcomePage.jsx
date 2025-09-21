@@ -269,7 +269,7 @@ export default function WelcomePage() {
                 variant="h6"
                 sx={{ fontWeight: 700, color: "#111827" }}
               >
-                BIT Durg Portal
+                Quarterly Report Management System
               </Typography>
               {/* --- FIX: DUAL LOGIN BUTTONS IN TOP BAR --- */}
               <Stack direction="row" spacing={1}>
