@@ -1,4 +1,4 @@
-# Quarterly Report Portal for BIT Durg
+# Quarterly Report Management System
 
 <p align="center">
   <img src="frontend/public/assets/logo.png" alt="BIT-DURG Banner" width="400"/>
@@ -19,7 +19,6 @@
 
 - [About The Project](#about-the-project)
 - [Key Features](#-key-features)
-- [✨ Feature Showcase](#-feature-showcase)
 - [Technology Stack](#-technology-stack)
 - [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
@@ -60,43 +59,6 @@ This project incorporates a range of industry-standard features with a focus on 
 
 ---
 
-## ✨ Feature Showcase
-
-#### Role-Based Dashboards
-*The UI and available forms adapt based on whether the user is a Faculty, Student, or Admin.*
-
-![Faculty Dashboard Screenshot](./frontend/src/assets/Screenshot/faculty_dashboard.png)
-
-<br/>
-
-#### Centralized User Management
-*Admins have a dedicated interface to manage all user accounts, roles, and statuses.*
-
-![User Management Screenshot](./frontend/src/assets/Screenshot/user_management.png)
-
-<br/>
-
-#### Interactive Analytics
-*Admins can visualize submission data with interactive charts and dynamic filters.*
-
-![Analytics Dashboard Screenshot](./frontend/src/assets/Screenshot/analytics_dashboard.png)
-
-<br/>
-
-#### Intelligent Excel Import Wizard
-*A guided, template-driven workflow ensures data integrity during bulk uploads.*
-
-![Excel Import Screenshot](./frontend/src/assets/Screenshot/excel_import_wizard.png)
-
-<br/>
-
-#### Secure Onboarding & Password Recovery
-*Users are guided through secure processes for account activation and password resets.*
-
-![Security Flow Screenshot](./frontend/src/assets/Screenshot/security_flow.png)
-
----
-
 ## Technology Stack
 
 | Area                   | Technology                                     |
@@ -128,33 +90,40 @@ Make sure you have the following software installed on your machine:
 
 ### 1\. Database Setup (First Time Only)
 
-Before running the backend, you must create the database and a dedicated user in PostgreSQL.
+Before running the backend, you must create the database and a dedicated user with the correct permissions in PostgreSQL.
 
-1.  Open your terminal or command prompt and start the PostgreSQL interactive terminal by running:
+1.  Open your terminal or command prompt and start the PostgreSQL interactive terminal (`psql`).
     ```bash
     psql -U postgres
     ```
-    You may be prompted for the password for the `postgres` superuser.
+    You will be prompted for the password for the `postgres` superuser, which you set during installation.
 
-2.  Inside the `psql` shell (e.g., `postgres=#`), run the following SQL commands. **Remember to replace `'your_secure_password'` with the actual password you will use in your `.env` file.**
+2.  Inside the `psql` shell (e.g., `postgres=#`), run the following SQL commands in order. **These must match the `DB_` values in your `.env` file.**
 
     ```sql
-    -- Create the database for the project.
-    CREATE DATABASE quarterly_report_db;
+    -- 1. Create the database for the project.
+    CREATE DATABASE qr_db;
 
-    -- Create a new user (role) for the application.
-    CREATE USER qr_user WITH PASSWORD 'your_secure_password';
+    -- 2. Create a new user (role) for the application with a password.
+    CREATE USER qr_user WITH PASSWORD 'qr_pass';
 
-    -- Grant the new user all permissions on the new database.
-    GRANT ALL PRIVILEGES ON DATABASE quarterly_report_db TO qr_user;
+    -- 3. Connect to the new database to set internal permissions.
+    \c qr_db
 
-    -- Set recommended default settings for the user.
-    ALTER ROLE qr_user SET client_encoding TO 'utf8';
-    ALTER ROLE qr_user SET default_transaction_isolation TO 'read committed';
-    ALTER ROLE qr_user SET timezone TO 'UTC';
+    -- 4. Grant all privileges on the 'public' schema to your new user.
+    GRANT ALL ON SCHEMA public TO qr_user;
+
+    -- 5. Grant future privileges on tables and sequences created by the superuser (for migrations).
+    ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES TO qr_user;
+    ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES TO qr_user;
     ```
+    You should see `CREATE DATABASE`, `CREATE ROLE`, `You are now connected...`, `GRANT`, `ALTER DEFAULT PRIVILEGES` as output for each command.
 
-3.  Once complete, exit the `psql` shell by typing `\q` and pressing Enter.
+3.  **Verify the setup (optional but recommended):**
+    *   To list all databases, run: `\l` (You should see `qr_db` in the list).
+    *   To list all users, run: `\du` (You should see `qr_user` in the list).
+
+4.  Exit the `psql` shell by typing `\q` and pressing Enter.
 
 ### 2\. Backend Setup
 
@@ -170,11 +139,11 @@ python -m venv env
 source env/bin/activate  # On Windows: env\Scripts\activate
 
 # 3. Install dependencies
-pip install -r requirements.txt
+# On Windows, it's safer to run pip through the python executable
+python -m pip install -r requirements.txt
 
 # 4. Set up the environment file
-cp .env.example .env
-# IMPORTANT: Edit the .env file with your actual database credentials from Step 1.
+# Create a file named .env and copy the contents from your provided .env file.
 
 # 5. Run database migrations to create the tables
 python manage.py migrate
@@ -199,8 +168,9 @@ cd <repository-folder>/frontend
 # 2. Install dependencies
 npm install
 
-# 3. Set up the environment file (optional, defaults are provided)
-cp .env.example .env
+# 3. Set up the environment file
+# Create a .env file and add the following line:
+# VITE_API_BASE_URL=http://127.0.0.1:8000
 
 # 4. Start the development server
 npm run dev
@@ -212,30 +182,32 @@ The frontend application will now be running at `http://localhost:5173`.
 
 ## 🔑 Environment Variables
 
-You must create a `.env` file in the `/backend` directory. Below is a description of the required variables.
+You must create a `.env` file in the `/backend` directory. Below is an example based on your provided file.
 
 #### Backend (`/backend/.env`)
 
 
-| Variable              | Description                                          | Example                       |
+| Variable              | Description                                          | Your Value                    |
 | --------------------- | ---------------------------------------------------- | ----------------------------- |
-| `SECRET_KEY`          | A secret key for a Django installation.              | `'your-super-secret-key'`     |
-| `DEBUG`               | Django debug mode. Set to `False` in production.     | `True`                        |
-| `ALLOWED_HOSTS`       | Hosts/domains the Django app can serve.              | `127.0.0.1,localhost`         |
-| `DB_NAME`             | Your PostgreSQL database name.                       | `quarterly_report_db`         |
+| `SECRET_KEY`          | A secret key for a Django installation.              | `$$*p8^...`                   |
+| `DEBUG`               | Django debug mode. Should be `True` for local.       | `True`                        |
+| `ALLOWED_HOSTS`       | Hosts/domains the Django app can serve.              | `.localhost, 127.0.0.1`       |
+| `DB_NAME`             | Your PostgreSQL database name.                       | `qr_db`                       |
 | `DB_USER`             | Your PostgreSQL username.                            | `qr_user`                     |
-| `DB_PASSWORD`         | Your PostgreSQL password.                            | `your_secure_password`        |
+| `DB_PASSWORD`         | Your PostgreSQL password.                            | `qr_pass`                     |
 | `DB_HOST`             | Database host.                                       | `localhost`                   |
 | `DB_PORT`             | Database port.                                       | `5432`                        |
-| `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173`       |
-| `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `your.email@gmail.com`        |
-| `EMAIL_HOST_PASSWORD` | Your Gmail App Password (not your regular password). | `your_app_password`           |
+| `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173,...`   |
+| `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `gagannn.skyy@gmail.com`      |
+| `EMAIL_HOST_PASSWORD` | Your 16-character Gmail App Password.                | `vbwuzzcnmbawcqow`            |
 
 ---
 
 ## 🧪 Running Tests
 
-The backend includes a suite of tests to ensure the reliability of the user authentication and management system. To run these tests, navigate to the `/backend` directory and run:
+The backend includes a suite of tests to ensure the reliability of the user authentication and management system. These tests cover the user registration lifecycle and key administrative actions.
+
+To run these tests, navigate to the `/backend` directory and run:
 
 ```bash
 # Ensure your virtual environment is activated
@@ -246,7 +218,7 @@ python manage.py test
 
 ## 🌐 API Overview
 
-The backend exposes a set of RESTful endpoints for managing data.
+The backend exposes a set of RESTful endpoints for managing data. The full, interactive documentation is available via Swagger UI when the local server is running.
 
 | Endpoint                                 | Description                                               |
 | ---------------------------------------- | --------------------------------------------------------- |
@@ -255,6 +227,7 @@ The backend exposes a set of RESTful endpoints for managing data.
 | `/api/student/register/`                 | **(Public)** Allows students to self-register.            |
 | `/api/password-reset/request/`           | **(Public)** Request a password reset email.              |
 | `/api/password-reset/confirm/`           | **(Public)** Confirm a password reset with a token.       |
+| `/api/resend-verification/`              | **(Public)** Request a new account activation email.      |
 | `/api/admin/users/`                      | **(Admin)** Manage all user accounts.                     |
 | `/api/admin/departments/`                | **(Admin)** Manage academic departments.                  |
 | `/api/data/{form}/`                      | Endpoints for CRUD on report data.                        |
@@ -270,9 +243,9 @@ The backend exposes a set of RESTful endpoints for managing data.
 The application has four user roles with different capabilities:
 
   * **Student:** Can log in, view their submission dashboard, and add, edit, or delete their own S-series report records.
-  * **Faculty:** Can log in, view their submission dashboard, and add, edit, or delete their own T-series and S1.1 report records.
+  * **Faculty:** Can log in, view their submission dashboard, and add, edit, or delete their own T-series report records.
   * **HOD (Head of Department):** Has all the permissions of a Faculty member, but can also view all submissions from every user within their specific department.
-  * **Admin:** Has full access to the system. They can view all submissions from all departments and access the administrative dashboard to manage users and departments.
+  * **Admin:** Has full access to the system. They can view all submissions from all departments, manage users and departments, and access the `S1.1` form for result analysis.
 
 ---
 
@@ -291,4 +264,4 @@ Contributions to this project are welcome. Please follow these steps:
 
 ## 📄 License
 
-This will be updated soon!
+This project is licensed under the MIT License.

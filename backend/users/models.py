@@ -57,7 +57,12 @@ class Profile(models.Model):
 @receiver(post_save, sender=User)
 def handle_user_creation(sender, instance, created, **kwargs):
     if created:
+        # --- THE DEFINITIVE FIX ---
+        # The 'createsuperuser' command sets this flag before saving.
+        # This check ensures we ONLY deactivate regular users, not superusers.
+        if not instance.is_superuser:
+            instance.is_active = False
+            instance.save(update_fields=['is_active'])
+        
+        # Create a profile for the new user regardless of their status.
         Profile.objects.create(user=instance)
-        instance.is_active = False
-        instance.save(update_fields=['is_active'])
-
