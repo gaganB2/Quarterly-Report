@@ -11,7 +11,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- Core Settings ---
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'qrmsb.graphingbits.online',
+]
+
+# Add the backend's public URL when running in a production-like environment
+BACKEND_HOSTNAME = config('BACKEND_HOSTNAME', default=None)
+if BACKEND_HOSTNAME:
+    ALLOWED_HOSTS.append(BACKEND_HOSTNAME)
 ROOT_URLCONF = 'quarterly_report.urls'
 WSGI_APPLICATION = 'quarterly_report.wsgi.application'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
