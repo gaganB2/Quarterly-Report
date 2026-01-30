@@ -1,0 +1,56 @@
+# =====================================================================
+# General Exclusions
+# =====================================================================
+# IDE folders and local config
+.vscode/
+.idea/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# =====================================================================
+# Python / Django Backend Exclusions (in /backend)
+# =====================================================================
+
+# Virtual Environments
+backend/env/
+backend/venv/
+
+# Secrets - NEVER commit the .env file
+# The .env.example file IS safe and SHOULD be committed.
+backend/.env
+
+# Django specific
+backend/__pycache__/
+backend/staticfiles/
+backend/db.sqlite3
+
+# Heroku/Deployment specific
+Procfile
+
+
+# =====================================================================
+# JavaScript / React Frontend Exclusions (in /frontend)
+# =====================================================================
+
+# Dependencies
+frontend/node_modules/
+
+# Build artifacts
+frontend/dist/
+
+# Local environment variables
+frontend/.env.local
+frontend/.env.*.local
+
+# Vercel specific
+.vercel/

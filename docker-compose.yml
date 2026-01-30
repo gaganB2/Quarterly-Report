@@ -1,0 +1,53 @@
+# =====================================================================
+# Docker Compose for the Quarterly Report Portal
+# =====================================================================
+
+services:
+  # --- Database Service (PostgreSQL) ---
+  db:
+    image: postgres:16-alpine
+    container_name: qr_database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=quarterly_report_db
+      - POSTGRES_USER=qr_user
+      - POSTGRES_PASSWORD=qr_password
+    restart: unless-stopped
+
+backend:
+  build: ./backend
+  volumes:
+    - ./backend:/app
+  ports:
+    - "8000:8000"
+  env_file:
+    - ./backend/.env
+  # --- ADD THIS NEW SECTION ---
+  environment:
+    - BACKEND_HOSTNAME=qrmsb.graphingbits.online
+  # --- END OF NEW SECTION ---
+  depends_on:
+    - db
+  restart: unless-stopped
+
+  # --- Frontend Service (React) ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=https://qrmsb.graphingbits.online
+    container_name: qr_frontend
+    ports:
+      - "5173:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+# --- Volumes Definition ---
+volumes:
+  postgres_data:
+    driver: local
