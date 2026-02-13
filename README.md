@@ -192,14 +192,14 @@ You must create a `.env` file in the `/backend` directory. Below is an example b
 | `SECRET_KEY`          | A secret key for a Django installation.              | `$$*p8^...`                   |
 | `DEBUG`               | Django debug mode. Should be `True` for local.       | `True`                        |
 | `ALLOWED_HOSTS`       | Hosts/domains the Django app can serve.              | `.localhost, 127.0.0.1`       |
-| `DB_NAME`             | Your PostgreSQL database name.                       | `qr_db`                       |
-| `DB_USER`             | Your PostgreSQL username.                            | `qr_user`                     |
-| `DB_PASSWORD`         | Your PostgreSQL password.                            | `qr_pass`                     |
+| `DB_NAME`             | Your PostgreSQL database name.                       | `database`                    |
+| `DB_USER`             | Your PostgreSQL username.                            | `user`                        |
+| `DB_PASSWORD`         | Your PostgreSQL password.                            | `password`                    |
 | `DB_HOST`             | Database host.                                       | `localhost`                   |
 | `DB_PORT`             | Database port.                                       | `5432`                        |
 | `CORS_ALLOWED_ORIGINS`| The frontend URL for CORS.                           | `http://localhost:5173,...`   |
-| `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `gagannn.skyy@gmail.com`      |
-| `EMAIL_HOST_PASSWORD` | Your 16-character Gmail App Password.                | `vbwuzzcnmbawcqow`            |
+| `EMAIL_HOST_USER`     | Your Gmail address for sending verification emails.  | `example@gmail.com`           |
+| `EMAIL_HOST_PASSWORD` | Your 16-character Gmail App Password.                | `xxxxxxxxxxxxxxxx`            |
 
 ---
 
